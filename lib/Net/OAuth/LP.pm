@@ -169,7 +169,7 @@ sub _nonce {
 
 =head1 NAME
 
-Net::OAuth::LP - Launchpad.net OAuth 1.0a
+Net::OAuth::LP - Launchpad.net OAuth 1.0
 
 =head1 SYNOPSIS
 

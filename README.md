@@ -1,6 +1,6 @@
 Net-OAuth-LP
 
-Launchpad.net authorization and client utilities over OAuth 1.0a
+Launchpad.net authorization and client utilities over OAuth 1.0
 
 INSTALLATION
 
