@@ -13,7 +13,7 @@ use JSON;
 use Carp ();
 use URI;
 use Data::Dumper;
-$Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+$Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 our $VERSION = '0.20132702';
 
@@ -67,18 +67,18 @@ sub authorize_token_url {
 sub login_with_creds {
     my $self    = shift;
     my $request = Net::OAuth->request('consumer')->new(
-        consumer_key     => $self->consumer_key,
-        consumer_secret  => '',
-        request_url      => $self->request_url_path,
-        request_method   => 'POST',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => $self->_nonce,
+        consumer_key       => $self->consumer_key,
+        consumer_secret    => '',
+        request_url        => $self->request_token_url,
+        request_method     => 'POST',
+        signature_method   => 'PLAINTEXT',
+        timestamp          => time,
+        nonce              => $self->_nonce,
     );
 
     $request->sign;
-    my $res =
-      $self->ua->request(POST $request->to_url, Content => $request->to_post_body);
+    my $res = $self->ua->request(POST $request->to_url,
+        Content => $request->to_post_body);
     my $token;
     my $token_secret;
     if ($res->is_success) {
@@ -87,7 +87,7 @@ sub login_with_creds {
           ->from_post_body($res->content);
         $token        = $response->token;
         $token_secret = $response->token_secret;
-        open_browser($self->authorize_path . "?oauth_token=" . $token);
+        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
     }
     else {
         Carp::croak("Unable to get request token or secret");
@@ -97,7 +97,7 @@ sub login_with_creds {
     sleep(20);
 
     $request = Net::OAuth->request('access token')->new(
-        consumer_key     => consumer_key(),
+        consumer_key     => $self->consumer_key,
         consumer_secret  => '',
         token            => $token,
         token_secret     => $token_secret,
@@ -110,8 +110,8 @@ sub login_with_creds {
 
     $request->sign;
 
-    $res =
-      $self->ua->request(POST $request->to_url, Content => $request->to_post_body);
+    $res = $self->ua->request(POST $request->to_url,
+        Content => $request->to_post_body);
 
     if ($res->is_success) {
         my $response =
