@@ -10,10 +10,10 @@ use Browser::Open qw[open_browser];
 use Net::OAuth;
 use YAML qw[LoadFile DumpFile];
 use JSON;
-use Carp ();
+use Carp;
 use URI;
 use URI::QueryParam;
-use URI::Escape;
+use URI::Encode;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
@@ -92,7 +92,7 @@ sub login_with_creds {
         open_browser($self->authorize_token_url . "?oauth_token=" . $token);
     }
     else {
-        Carp::croak("Unable to get request token or secret");
+        croak("Unable to get request token or secret");
     }
 
     print "Waiting for 20 seconds to authorize.\n";
@@ -126,7 +126,7 @@ sub login_with_creds {
           };
     }
     else {
-        Carp::croak("Unable to obtain access token and secret");
+        croak("Unable to obtain access token and secret");
     }
 
 
@@ -153,10 +153,10 @@ sub call {
     my $res = $self->ua->request(GET $request->to_url);
 
     if ($res->is_success) {
-        return decode_json($res->content);
+        return (decode_json($res->content), "Success", 0);
     }
     else {
-        Carp::croak("Could not pull resource");
+        return (undef, "Failed to pull resource", 1);
     }
 }
 
@@ -180,10 +180,10 @@ sub update {
     my $res = $self->ua->request(POST $request->to_url);
 
     if ($res->is_success) {
-        return decode_json($res->content);
+        return (decode_json($res->content), "Success", 0);
     }
     else {
-        Carp::croak("Could not save resource");
+	return (undef, "Failed to save", 1);
     }
 }
 
@@ -209,7 +209,6 @@ sub _query_from_hash {
       $uri->query_param_append($param, $params->{$param});
     }
     $uri->query;
-
 }
 
 # construct path, if a resource link just provide as is.
