@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
-# browse
-# Quickly browse UA bugs via database
+# user-profile
 #
+# Example for querying a user
 # Author: Adam Stokes <adam.stokes@ubuntu.com>
 
 use strict;
@@ -20,8 +20,7 @@ my $lp = Net::OAuth::LP->new;
 $lp->consumer_key('stokachu-wuz-here');
 
 if ($is_auth == 0) {
-  $lp->login_with_creds();
+  $lp->login_with_creds;
 }
 
 print Dumper($lp->call("~adam-stokes"));
-print Dumper($lp->call("ubuntu-advantage"));

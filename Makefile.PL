@@ -1,4 +1,3 @@
-use 5.006;
 use strict;
 use warnings FATAL => 'all';
 use inc::Module::Install;
@@ -7,8 +6,8 @@ name 'Net-OAuth-LP';
 all_from 'lib/Net/OAuth/LP.pm';
 author q{=Adam Stokes <adam.stokes@ubuntu.com>};
 license 'perl';
-
-perl_version 5.006;
+no_index 'directory' => 'exaxmples';
+perl_version 5.014002;
 
 tests_recursive('t');
 

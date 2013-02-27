@@ -130,6 +130,7 @@ sub login_with_creds {
 
 }
 
+# TODO: Unexport at some point
 sub call {
     my $self    = shift;
     my $path    = shift;
@@ -167,6 +168,13 @@ sub _nonce {
     $nonce;
 }
 
+# Happy happy client interfaces
+
+sub me {
+  my $self = shift;
+  $self->call('~');
+}
+
 =head1 NAME
 
 Net::OAuth::LP - Launchpad.net OAuth 1.0
@@ -196,6 +204,8 @@ L<Net::OAuth::LP> implements the following attributes:
 
 Holds the string that identifies your application.
 
+    $lp->consumer_key('my-app-name');
+
 =head1 METHODS
 
 =head2 C<new>
@@ -208,7 +218,16 @@ Holds the string that identifies your application.
 
 =head2 C<call>
 
+Eventually this won't be exposed and would only be accessed through
+helper interfaces.
+
     $lp->call('~adam-stokes');
+
+=head2 C<me>
+
+Translates into '~' which is used within Launchpad to capture current user
+
+    $lp->me;
 
 =head1 AUTHOR
 
@@ -232,7 +251,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013 =Adam Stokes.
+Copyright 2013 Adam Stokes.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
