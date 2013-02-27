@@ -136,7 +136,7 @@ sub login_with_creds {
 sub call {
     my $self    = shift;
     my $path    = shift;
-    my $uri     = URI->new($self->api_v1."/$path", 'https');
+    my $uri     = $self->_path_cons($path);
     my $yml     = LoadFile $self->cfg_file;
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $yml->{consumer_key},
@@ -160,6 +160,36 @@ sub call {
     }
 }
 
+sub update {
+    my $self    = shift;
+    my $path    = shift;
+    my $uri     = $self->_path_cons($path);
+    my $yml     = LoadFile $self->cfg_file;
+    my $request = Net::OAuth->request('protected resource')->new(
+        consumer_key     => $yml->{consumer_key},
+        consumer_secret  => '',
+        token            => $yml->{access_token},
+        token_secret     => $yml->{access_token_secret},
+        request_url      => $uri->as_string(),
+        request_method   => 'POST',
+        signature_method => 'PLAINTEXT',
+        timestamp        => time,
+        nonce            => $self->_nonce
+    );
+    $request->sign;
+    my $res = $self->ua->request(POST $request->to_url);
+
+    if ($res->is_success) {
+        return decode_json($res->content);
+    }
+    else {
+        Carp::croak("Could not save resource");
+    }
+}
+
+# unexported helpers
+
+# return nonce for signed request
 sub _nonce {
     my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
     my $nonce = '';
@@ -181,6 +211,16 @@ sub _query_from_hash {
     $uri->query;
 
 }
+
+# construct path, if a resource link just provide as is.
+sub _path_cons {
+  my $self = shift;
+  my $path = shift;
+  if ($path =~ /api/) {
+    return URI->new("$path", 'https');
+  }
+  URI->new($self->api_v1 . "/$path", 'https');
+}
 # Happy happy client interfaces
 
 sub me {
@@ -193,6 +233,12 @@ sub project {
   my $self = shift;
   my $project = shift;
   $self->call($project);
+}
+
+sub bug {
+    my $self   = shift;
+    my $bug_link = shift;
+    $self->call($bug_link);
 }
 
 sub search {
