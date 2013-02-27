@@ -2,7 +2,7 @@ package Net::OAuth::LP;
 
 use strict;
 use warnings;
-use File::Spec qw[catdir catfile];
+use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
 use LWP::UserAgent;
 use HTTP::Request::Common;
@@ -11,6 +11,8 @@ use Net::OAuth;
 use YAML qw[LoadFile DumpFile];
 use JSON;
 use Carp ();
+use URI;
+use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
 our $VERSION = '0.20132702';
@@ -30,7 +32,7 @@ sub new {
     $attrs->{request_token_url}   = q[https://launchpad.net/+request-token];
     $attrs->{access_token_url}    = q[https://launchpad.net/+access-token];
     $attrs->{authorize_token_url} = q[https://launchpad.net/+authorize-token];
-    $attrs->{api_v1}              = q[https://api.launchpad.net/1.0"];
+    $attrs->{api_v1}              = q[https://api.launchpad.net/1.0];
     $attrs->{api_dev}             = q[https://api.launchpad.net/devel];
     $attrs->{ua} = _UA;
 
@@ -131,14 +133,14 @@ sub login_with_creds {
 sub call {
     my $self    = shift;
     my $path    = shift;
-    my $uri     = catdir($self->api_v1, $path);
+    my $uri     = URI->new($self->api_v1."/$path", 'https');
     my $yml     = LoadFile $self->cfg_file;
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $yml->{consumer_key},
         consumer_secret  => '',
         token            => $yml->{access_token},
         token_secret     => $yml->{access_token_secret},
-        request_url      => $uri,
+        request_url      => $uri->as_string(),
         request_method   => 'GET',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
@@ -146,6 +148,7 @@ sub call {
     );
     $request->sign;
     my $res = $self->ua->request(GET $request->to_url);
+
     if ($res->is_success) {
         return decode_json($res->content);
     }
