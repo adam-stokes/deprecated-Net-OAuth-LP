@@ -17,7 +17,7 @@ use URI::Encode;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.20132702';
+our $VERSION = '0.201302.1';
 
 BEGIN {
   my $ua = LWP::UserAgent->new;
