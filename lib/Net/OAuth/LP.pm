@@ -15,6 +15,11 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
 our $VERSION = '0.20132702';
 
+BEGIN {
+  my $ua = LWP::UserAgent->new;
+  *_UA = sub () { $ua };
+}
+
 sub new {
     my $class = shift;
 
@@ -27,6 +32,7 @@ sub new {
     $attrs->{authorize_token_url} = q[https://launchpad.net/+authorize-token];
     $attrs->{api_v1}              = q[https://api.launchpad.net/1.0"];
     $attrs->{api_dev}             = q[https://api.launchpad.net/devel];
+    $attrs->{ua} = _UA;
 
     my $self = {%$attrs, @_};
     bless $self, $class;
@@ -36,6 +42,7 @@ sub new {
 sub cfg_file { @_ > 1 ? $_[0]->{cfg_file} = $_[1] : $_[0]->{cfg_file} }
 sub api_v1   { @_ > 1 ? $_[0]->{api_v1}   = $_[1] : $_[0]->{api_v1} }
 sub api_dev  { @_ > 1 ? $_[0]->{api_dev}  = $_[1] : $_[0]->{api_dev} }
+sub ua  { @_ > 1 ? $_[0]->{ua}  = $_[1] : $_[0]->{ua} }
 
 sub consumer_key {
     @_ > 1 ? $_[0]->{consumer_key} = $_[1] : $_[0]->{consumer_key};
@@ -69,7 +76,7 @@ sub login_with_creds {
 
     $request->sign;
     my $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
+      $self->ua->request(POST $request->to_url, Content => $request->to_post_body);
     my $token;
     my $token_secret;
     if ($res->is_success) {
@@ -102,7 +109,7 @@ sub login_with_creds {
     $request->sign;
 
     $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
+      $self->ua->request(POST $request->to_url, Content => $request->to_post_body);
 
     if ($res->is_success) {
         my $response =
@@ -138,7 +145,7 @@ sub call {
         nonce            => $self->_nonce
     );
     $request->sign;
-    my $res = $ua->request(GET $request->to_url);
+    my $res = $self->ua->request(GET $request->to_url);
     if ($res->is_success) {
         return decode_json($res->content);
     }
@@ -146,7 +153,6 @@ sub call {
         Carp::croak("Could not pull resource");
     }
 }
-
 
 sub _nonce {
     my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
