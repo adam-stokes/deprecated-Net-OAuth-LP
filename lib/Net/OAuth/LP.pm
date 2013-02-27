@@ -10,14 +10,14 @@ use Browser::Open qw[open_browser];
 use Net::OAuth;
 use YAML qw[LoadFile DumpFile];
 use JSON;
-use Carp ();
+use Carp;
 use URI;
 use URI::QueryParam;
-use URI::Escape;
+use URI::Encode;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.20132702';
+our $VERSION = '0.201302.1';
 
 BEGIN {
   my $ua = LWP::UserAgent->new;
@@ -92,7 +92,7 @@ sub login_with_creds {
         open_browser($self->authorize_token_url . "?oauth_token=" . $token);
     }
     else {
-        Carp::croak("Unable to get request token or secret");
+        croak("Unable to get request token or secret");
     }
 
     print "Waiting for 20 seconds to authorize.\n";
@@ -126,7 +126,7 @@ sub login_with_creds {
           };
     }
     else {
-        Carp::croak("Unable to obtain access token and secret");
+        croak("Unable to obtain access token and secret");
     }
 
 
@@ -136,7 +136,7 @@ sub login_with_creds {
 sub call {
     my $self    = shift;
     my $path    = shift;
-    my $uri     = URI->new($self->api_v1."/$path", 'https');
+    my $uri     = $self->_path_cons($path);
     my $yml     = LoadFile $self->cfg_file;
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $yml->{consumer_key},
@@ -153,13 +153,43 @@ sub call {
     my $res = $self->ua->request(GET $request->to_url);
 
     if ($res->is_success) {
-        return decode_json($res->content);
+        return (decode_json($res->content), "Success", 0);
     }
     else {
-        Carp::croak("Could not pull resource");
+        return (undef, "Failed to pull resource", 1);
     }
 }
 
+sub update {
+    my $self    = shift;
+    my $path    = shift;
+    my $uri     = $self->_path_cons($path);
+    my $yml     = LoadFile $self->cfg_file;
+    my $request = Net::OAuth->request('protected resource')->new(
+        consumer_key     => $yml->{consumer_key},
+        consumer_secret  => '',
+        token            => $yml->{access_token},
+        token_secret     => $yml->{access_token_secret},
+        request_url      => $uri->as_string(),
+        request_method   => 'POST',
+        signature_method => 'PLAINTEXT',
+        timestamp        => time,
+        nonce            => $self->_nonce
+    );
+    $request->sign;
+    my $res = $self->ua->request(POST $request->to_url);
+
+    if ($res->is_success) {
+        return (decode_json($res->content), "Success", 0);
+    }
+    else {
+	return (undef, "Failed to save", 1);
+    }
+}
+
+# unexported helpers
+
+# return nonce for signed request
 sub _nonce {
     my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
     my $nonce = '';
@@ -179,7 +209,16 @@ sub _query_from_hash {
       $uri->query_param_append($param, $params->{$param});
     }
     $uri->query;
+}
 
+# construct path, if a resource link just provide as is.
+sub _path_cons {
+  my $self = shift;
+  my $path = shift;
+  if ($path =~ /api/) {
+    return URI->new("$path", 'https');
+  }
+  URI->new($self->api_v1 . "/$path", 'https');
 }
 # Happy happy client interfaces
 
@@ -193,6 +232,12 @@ sub project {
   my $self = shift;
   my $project = shift;
   $self->call($project);
+}
+
+sub bug {
+    my $self   = shift;
+    my $bug_link = shift;
+    $self->call($bug_link);
 }
 
 sub search {
