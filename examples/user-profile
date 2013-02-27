@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+# user-profile
+#
+# Example for querying a user
+# Author: Adam Stokes <adam.stokes@ubuntu.com>
+
+use strict;
+use warnings;
+use Net::OAuth::LP;
+use File::Spec::Functions;
+use Data::Dumper;
+
+my $is_auth = 0;
+
+if( -e catfile($ENV{HOME},'.lp-auth.yml' )) {
+  $is_auth = 1;
+}
+
+my $lp = Net::OAuth::LP->new;
+
+if ($is_auth == 0) {
+  $lp->consumer_key('stokachu-wuz-here');
+  $lp->login_with_creds;
+}
+
+print Dumper($lp->me('~adam-stokes'));
