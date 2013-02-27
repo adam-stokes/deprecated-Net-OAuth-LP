@@ -12,6 +12,8 @@ use YAML qw[LoadFile DumpFile];
 use JSON;
 use Carp ();
 use URI;
+use URI::QueryParam;
+use URI::Escape;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
@@ -168,11 +170,37 @@ sub _nonce {
     $nonce;
 }
 
+# url query builder
+sub _query_from_hash {
+    my $self   = shift;
+    my ($params) = @_;
+    my $uri    = URI->new;
+    for my $param (keys $params) {
+      $uri->query_param_append($param, $params->{$param});
+    }
+    $uri->query;
+
+}
 # Happy happy client interfaces
 
 sub me {
   my $self = shift;
-  $self->call('~');
+  my $person = shift;
+  $self->call($person);
+}
+
+sub project {
+  my $self = shift;
+  my $project = shift;
+  $self->call($project);
+}
+
+sub search {
+  my $self = shift;
+  my $path = shift;
+  my $query = $self->_query_from_hash(@_);
+  my $uri =  join("?",$path, $query);
+  $self->call($uri);
 }
 
 =head1 NAME
@@ -225,9 +253,17 @@ helper interfaces.
 
 =head2 C<me>
 
-Translates into '~' which is used within Launchpad to capture current user
+    $lp->me('~name');
 
-    $lp->me;
+=head2 C<project>
+
+    $lp->project('ubuntu');
+
+=head2 C<search>
+
+    $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
+                            'ws.size' => '10',
+                            'status' => 'New' });
 
 =head1 AUTHOR
 

@@ -17,10 +17,10 @@ if( -e catfile($ENV{HOME},'.lp-auth.yml' )) {
 }
 
 my $lp = Net::OAuth::LP->new;
-$lp->consumer_key('stokachu-wuz-here');
 
 if ($is_auth == 0) {
+  $lp->consumer_key('stokachu-wuz-here');
   $lp->login_with_creds;
 }
 
-print Dumper($lp->call("~adam-stokes"));
+print Dumper($lp->me('~adam-stokes'));
