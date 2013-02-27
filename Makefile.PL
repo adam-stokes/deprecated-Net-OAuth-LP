@@ -32,7 +32,8 @@ requires(
     'LWP::UserAgent'        => 0,
     'Net::OAuth'            => 0,
     'HTTP::Request::Common' => 0,
-    'Browser::Open'         => 0
+    'Browser::Open'         => 0,
+    'URI'                   => 0
 );
 
 install_as_cpan;
