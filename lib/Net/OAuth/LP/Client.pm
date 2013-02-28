@@ -110,7 +110,7 @@ sub bug {
 sub search {
   my $self = shift;
   my $path = shift;
-  my $query = $self->_query_from_hash(@_);
+  my $query = $self->__query_from_hash(@_);
   my $uri =  join("?",$path, $query);
   $self->__call($uri);
 }
@@ -132,9 +132,17 @@ Client for performing query tasks.
 
 =head1 METHODS
 
+=head2 C<new>
+
+    my $lp = Net::OAuth::LP::Client->new('consumerkey','accesstoken','accesstokensecret');
+
 =head2 C<me>
 
     $lp->me('<lp name>');
+
+=head2 C<bug>
+
+    $lp->bug(1);
 
 =head2 C<project>
 
