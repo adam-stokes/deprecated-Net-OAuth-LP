@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors(
-    qw/cfg_file consumer_key request_token_url access_token_url authorize_token_url api_v1 api_dev ua/
+    qw/cfg_file consumer_key request_token_url access_token_url authorize_token_url ua/
 );
 use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
@@ -12,8 +12,7 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use Browser::Open qw[open_browser];
 use Net::OAuth;
-use YAML qw[LoadFile DumpFile];
-use JSON;
+use YAML qw[DumpFile];
 use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
@@ -30,24 +29,22 @@ sub new {
     $attrs{request_token_url}   = q[https://launchpad.net/+request-token];
     $attrs{access_token_url}    = q[https://launchpad.net/+access-token];
     $attrs{authorize_token_url} = q[https://launchpad.net/+authorize-token];
-    $attrs{api_v1}              = q[https://api.launchpad.net/1.0];
-    $attrs{api_dev}             = q[https://api.launchpad.net/devel];
     $attrs{ua} ||= LWP::UserAgent->new;
 
-    my $self = bless \%opts, $class;
+    my $self = bless \%attrs, $class;
     return $self;
 }
 
 sub login_with_creds {
     my $self    = shift;
     my $request = Net::OAuth->request('consumer')->new(
-        consumer_key       => $self->consumer_key,
-        consumer_secret    => '',
-        request_url        => $self->request_token_url,
-        request_method     => 'POST',
-        signature_method   => 'PLAINTEXT',
-        timestamp          => time,
-        nonce              => $self->_nonce,
+        consumer_key     => $self->consumer_key,
+        consumer_secret  => '',
+        request_url      => $self->request_token_url,
+        request_method   => 'POST',
+        signature_method => 'PLAINTEXT',
+        timestamp        => time,
+        nonce            => $self->_nonce,
     );
 
     $request->sign;
@@ -100,8 +97,6 @@ sub login_with_creds {
     else {
         croak("Unable to obtain access token and secret");
     }
-
-
 }
 
 
@@ -118,8 +113,6 @@ sub _nonce {
     $nonce;
 }
 
-
-
 =head1 NAME
 
 Net::OAuth::LP - Launchpad.net OAuth 1.0
@@ -128,18 +121,13 @@ Net::OAuth::LP - Launchpad.net OAuth 1.0
 
 OAuth 1.0a authorization and client for Launchpad.net
 
-Perhaps a little code snippet.
-
     use Net::OAuth::LP;
 
-    my $lp = Net::OAuth::LP->new;
+    my $lp = Net::OAuth::LP;
     $lp->consumer_key('my-lp-app');
 
     # Authorize yourself
     $lp->login_with_creds;
-
-    # Perform client call
-    $lp->call('~adam-stokes');
 
 =head1 ATTRIBUTES
 
@@ -160,27 +148,6 @@ Holds the string that identifies your application.
 =head2 C<login_with_creds>
 
     $lp->login_with_creds;
-
-=head2 C<call>
-
-Eventually this won't be exposed and would only be accessed through
-helper interfaces.
-
-    $lp->call('~adam-stokes');
-
-=head2 C<me>
-
-    $lp->me('~name');
-
-=head2 C<project>
-
-    $lp->project('ubuntu');
-
-=head2 C<search>
-
-    $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
-                            'ws.size' => '10',
-                            'status' => 'New' });
 
 =head1 AUTHOR
 

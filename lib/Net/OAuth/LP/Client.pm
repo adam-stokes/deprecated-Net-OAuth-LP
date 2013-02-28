@@ -1,45 +1,54 @@
 package Net::OAuth::LP::Client;
 
 use base qw(Class::Accessor::Fast);
-__PACKAGE__->mk_accessors(qw/user_agent/);
+__PACKAGE__->mk_accessors(qw/ua consumer_key token token_secret api_v1 api_dev/);
 use LWP::UserAgent;
+use HTTP::Request::Common;
+use File::Spec::Functions;
 use strict;
 use warnings;
 use Net::OAuth::LP;
+use JSON;
 use URI;
 use URI::QueryParam;
 use URI::Encode;
+use Data::Dumper;
 
 sub new {
-  my $class = shift;
-  my $consumer_key = shift;
-  my $token = shift;
-  my $token_secret = shift;
-  my %opts = @_;
+    my $class        = shift;
+    my $consumer_key = shift;
+    my $token        = shift;
+    my $token_secret = shift;
+    my %opts         = @_;
 
-  $opts{user_agent} ||= LWP::UserAgent->new;
-  my $self = bless \%opts, $class;
-  return $self;
+    $opts{ua} ||= LWP::UserAgent->new;
+    $opts{consumer_key} = $consumer_key;
+    $opts{token}        = $token;
+    $opts{token_secret} = $token_secret;
+    $opts{api_v1}       = q[https://api.launchpad.net/1.0];
+    $opts{api_dev}      = q[https://api.launchpad.net/devel];
+
+    my $self = bless \%opts, $class;
+    return $self;
 }
 
 # lazy private
 # url query builder
 # TODO: Unexport at some point
-sub _call {
+sub __call {
     my $self    = shift;
     my $path    = shift;
-    my $uri     = $self->_path_cons($path);
-    my $yml     = LoadFile $self->cfg_file;
+    my $uri     = $self->__path_cons($path);
     my $request = Net::OAuth->request('protected resource')->new(
-        consumer_key     => $yml->{consumer_key},
+        consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        token            => $yml->{access_token},
-        token_secret     => $yml->{access_token_secret},
-        request_url      => $uri->as_string(),
+        token            => $self->token,
+        token_secret     => $self->token_secret,
+        request_url      => $uri->as_string,
         request_method   => 'GET',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
-        nonce            => $self->_nonce
+        nonce            => Net::OAuth::LP->_nonce
     );
     $request->sign;
     my $res = $self->ua->request(GET $request->to_url);
@@ -52,7 +61,7 @@ sub _call {
     }
 }
 
-sub _query_from_hash {
+sub __query_from_hash {
     my $self   = shift;
     my ($params) = @_;
     my $uri    = URI->new;
@@ -63,7 +72,7 @@ sub _query_from_hash {
 }
 
 # construct path, if a resource link just provide as is.
-sub _path_cons {
+sub __path_cons {
   my $self = shift;
   my $path = shift;
   if ($path =~ /api/) {
@@ -72,29 +81,30 @@ sub _path_cons {
   URI->new($self->api_v1 . "/$path", 'https');
 }
 
-sub request {
+sub _request {
   my $self = shift;
-  my $response = $self->user_agent->request(@_);
+  my $response = $self->ua->request(@_);
 }
 
 # Happy happy client interfaces
 
 sub me {
   my $self = shift;
-  my $person = shift;
-  $self->call($person);
+  my $login = shift;
+  $self->__call('~'.$login);
+
 }
 
 sub project {
   my $self = shift;
   my $project = shift;
-  $self->call($project);
+  $self->__call($project);
 }
 
 sub bug {
     my $self   = shift;
     my $bug_link = shift;
-    $self->call($bug_link);
+    $self->__call($bug_link);
 }
 
 sub search {
@@ -102,5 +112,41 @@ sub search {
   my $path = shift;
   my $query = $self->_query_from_hash(@_);
   my $uri =  join("?",$path, $query);
-  $self->call($uri);
+  $self->__call($uri);
 }
+
+=head1 NAME
+
+Net::OAuth::LP::Client - Launchpad.net Client routines
+
+=head1 SYNOPSIS
+
+Client for performing query tasks.
+
+    my $lp = Net::OAuth::LP::Client->new('consumer-key', 'access-token', 'access-token-secret');
+
+    # Use your launchpad.net name in place of adam-stokes. You can figure that out by visiting
+    # https://launchpad.net/~ and look at Launchpad Id.
+
+    my ($person, $err, $ret) = $lp->me('adam-stokes');
+
+=head1 METHODS
+
+=head2 C<me>
+
+    $lp->me('<lp name>');
+
+=head2 C<project>
+
+    $lp->project('ubuntu');
+
+=head2 C<search>
+
+    $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
+                            'ws.size' => '10',
+                            'status' => 'New' });
+
+
+=cut
+
+1; # End of Net::OAuth::LP::Client
