@@ -101,11 +101,6 @@ sub project {
   $self->__call($project);
 }
 
-sub bug {
-    my $self   = shift;
-    my $bug_link = shift;
-    $self->__call($bug_link);
-}
 
 sub search {
   my $self = shift;
@@ -113,6 +108,28 @@ sub search {
   my $query = $self->__query_from_hash(@_);
   my $uri =  join("?",$path, $query);
   $self->__call($uri);
+}
+
+#################################
+# Bug and Related tasks, messages
+#################################
+sub bug {
+    my $self   = shift;
+    my $bug_id = shift;
+    my $resource_link = $self->__path_cons("/bugs/$bug_id");
+    $self->__call($resource_link);
+}
+
+sub bug_msgs {
+  my $self = shift;
+  my $msg_link = shift;
+  $self->__call($msg_link);
+}
+
+sub bug_activity {
+  my $self = shift;
+  my $activity_link = shift;
+  $self->__call($activity_link);
 }
 
 =head1 NAME
@@ -143,6 +160,18 @@ Client for performing query tasks.
 =head2 C<bug>
 
     $lp->bug(1);
+
+=head2 C<bug_msgs>
+
+    my $bug = $lp->bug(1);
+    $lp->bug_msgs($bug->{messages_collection_link});
+
+=head2 C<bug_activity>
+
+Return a log of modifications to bug
+
+    my $bug = $lp->bug(1);
+    $lp->bug_activity($bug->{activity_collection_link});
 
 =head2 C<project>
 

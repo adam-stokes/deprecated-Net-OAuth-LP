@@ -17,7 +17,7 @@ use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.201302.2';
+our $VERSION = '0.201302.3';
 
 sub new {
     my $class = shift;
