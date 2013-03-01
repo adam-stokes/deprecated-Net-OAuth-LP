@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors(
-    qw/cfg_file consumer_key request_token_url access_token_url authorize_token_url ua/
+    qw/cfg_file consumer_key request_token_url staging_request_token_url request_access_token_url staging_access_token_url request_authorize_token_url staging_authorize_token_url ua/
 );
 use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
@@ -29,6 +29,10 @@ sub new {
     $attrs{request_token_url}   = q[https://launchpad.net/+request-token];
     $attrs{access_token_url}    = q[https://launchpad.net/+access-token];
     $attrs{authorize_token_url} = q[https://launchpad.net/+authorize-token];
+    $attrs{staging_request_token_url}   = q[https://staging.launchpad.net/+request-token];
+    $attrs{staging_access_token_url}    = q[https://staging.launchpad.net/+access-token];
+    $attrs{staging_authorize_token_url} = q[https://staging.launchpad.net/+authorize-token];
+
     $attrs{ua} ||= LWP::UserAgent->new;
 
     my $self = bless \%attrs, $class;
@@ -40,7 +44,7 @@ sub login_with_creds {
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        request_url      => $self->request_token_url,
+        request_url      => $self->staging_request_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
@@ -58,7 +62,7 @@ sub login_with_creds {
           ->from_post_body($res->content);
         $token        = $response->token;
         $token_secret = $response->token_secret;
-        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
+        open_browser($self->staging_authorize_token_url . "?oauth_token=" . $token);
     }
     else {
         croak("Unable to get request token or secret");
@@ -72,7 +76,7 @@ sub login_with_creds {
         consumer_secret  => '',
         token            => $token,
         token_secret     => $token_secret,
-        request_url      => $self->access_token_url,
+        request_url      => $self->staging_access_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
         timestamp        => time,

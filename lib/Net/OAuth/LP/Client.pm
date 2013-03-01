@@ -1,8 +1,11 @@
 package Net::OAuth::LP::Client;
 
 use base qw(Class::Accessor::Fast);
-__PACKAGE__->mk_accessors(qw/ua consumer_key token token_secret api_v1 api_dev/);
+__PACKAGE__->mk_accessors(
+    qw/ua consumer_key token token_secret api_v1 api_dev api_staging/);
 use LWP::UserAgent;
+use HTTP::Request;
+use HTTP::Headers;
 use HTTP::Request::Common;
 use File::Spec::Functions;
 use strict;
@@ -27,110 +30,168 @@ sub new {
     $opts{token_secret} = $token_secret;
     $opts{api_v1}       = q[https://api.launchpad.net/1.0];
     $opts{api_dev}      = q[https://api.launchpad.net/devel];
+    $opts{api_staging}  = q[https://api.staging.launchpad.net/1.0];
 
     my $self = bless \%opts, $class;
     return $self;
 }
 
-# lazy private
-# url query builder
-# TODO: Unexport at some point
-sub __call {
-    my $self    = shift;
-    my $path    = shift;
-    my $uri     = $self->__path_cons($path);
-    my $request = Net::OAuth->request('protected resource')->new(
-        consumer_key     => $self->consumer_key,
-        consumer_secret  => '',
-        token            => $self->token,
-        token_secret     => $self->token_secret,
-        request_url      => $uri->as_string,
-        request_method   => 'GET',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => Net::OAuth::LP->_nonce
-    );
-    $request->sign;
-    my $res = $self->ua->request(GET $request->to_url);
-
-    if ($res->is_success) {
-        return (decode_json($res->content), "Success", 0);
-    }
-    else {
-        return (undef, "Failed to pull resource", 1);
-    }
-}
-
+###########################################################################
+# Assumed private and semi-private though nothing is enforced :\
+###########################################################################
 sub __query_from_hash {
-    my $self   = shift;
+    my $self     = shift;
     my ($params) = @_;
-    my $uri    = URI->new;
+    my $uri      = URI->new;
     for my $param (keys $params) {
-      $uri->query_param_append($param, $params->{$param});
+        $uri->query_param_append($param, $params->{$param});
     }
     $uri->query;
 }
 
 # construct path, if a resource link just provide as is.
 sub __path_cons {
-  my $self = shift;
-  my $path = shift;
-  if ($path =~ /api/) {
-    return URI->new("$path", 'https');
-  }
-  URI->new($self->api_v1 . "/$path", 'https');
+    my $self = shift;
+    my $path = shift;
+    if ($path =~ /api/) {
+        return URI->new("$path", 'https');
+    }
+    URI->new($self->api_staging . "/$path", 'https');
+}
+
+sub __oauth_authorization_header {
+    my ($self, $request) = @_;
+    my $enc = URI::Encode->new({encode_reserved => 1});
+
+    join(",",
+        'OAuth realm="https://api.staging.launchpad.net"',
+        'oauth_consumer_key="' . $request->consumer_key . '"',
+        'oauth_token="' . $request->token . '"',
+        'oauth_signature_method="PLAINTEXT"',
+        'oauth_signature="' . $enc->encode($request->signature) . '"',
+        'oauth_timestamp="' . $request->timestamp . '"',
+        'oauth_nonce="' . $request->nonce . '"',
+        'oauth_version="' . $request->version . '"');
 }
 
 sub _request {
-  my $self = shift;
-  my $response = $self->ua->request(@_);
+    my ($self, $resource, $params, $method) = @_;
+    my $uri     = $self->__path_cons($resource);
+    my $request = Net::OAuth->request('protected resource')->new(
+        consumer_key     => $self->consumer_key,
+        consumer_secret  => '',
+        token            => $self->token,
+        token_secret     => $self->token_secret,
+        request_url      => $uri->as_string,
+        request_method   => $method,
+        signature_method => 'PLAINTEXT',
+        timestamp        => time,
+        nonce            => Net::OAuth::LP->_nonce
+    );
+    $request->sign;
+
+    if ($method eq "POST") {
+        my $res = $self->ua->request(POST $request->to_url,
+            Content => $self->__query_from_hash($params));
+        if ($res->is_success) {
+            return (decode_json($res->content), "Success", 0);
+        }
+    }
+    elsif ($method eq "PATCH") {
+
+        # HTTP::Request::Common doesnt support PATCH verb
+        my $_req =
+          HTTP::Request->new(PATCH => $request->normalized_request_url);
+        $_req->header('User-Agent'    => 'imafreakinninjai/1.0');
+        $_req->header('Content-Type'  => 'application/json');
+        $_req->header('Authorization' => $self->__oauth_authorization_header($request));
+        $_req->content(encode_json($params));
+        my $res = $self->ua->request($_req);
+
+        # For current Launchpad API 1.0 the response code is 209
+        # (Initially in draft spec for PATCH, but, later removed
+        # during final)
+        # FIXME: Check for Proper response code 200 after 2015 when
+        # API is expired.
+        if ($res->{_rc} == 209) {
+            return (decode_json($res->content), "Success", 0);
+        }
+    }
+    else {
+        my $res = $self->ua->request(GET $request->to_url);
+        if ($res->is_success) {
+            return (decode_json($res->content), "Success", 0);
+        }
+    }
+    return (undef, "Failed to pull resource", 1);
 }
 
-# Happy happy client interfaces
+
+
+###########################################################################
+# Public methods
+###########################################################################
+sub get {
+    my ($self, $resource) = @_;
+    $self->_request($resource, undef, 'GET');
+}
+
+sub post {
+  my ($self, $resource, $params) = @_;
+  $self->_request($resource, $params, 'POST');
+}
+
+sub update {
+  my ($self, $resource, $params) = @_;
+  $self->_request($resource, $params, 'PATCH');
+}
 
 sub me {
-  my $self = shift;
-  my $login = shift;
-  $self->__call('~'.$login);
-
+    my ($self, $login) = @_;
+    $self->get('~' . $login);
 }
 
 sub project {
-  my $self = shift;
-  my $project = shift;
-  $self->__call($project);
+    my ($self, $project) = @_;
+    $self->get($project);
 }
-
 
 sub search {
-  my $self = shift;
-  my $path = shift;
-  my $query = $self->__query_from_hash(@_);
-  my $uri =  join("?",$path, $query);
-  $self->__call($uri);
+    my ($self, $path, $segments) = @_;
+    my $query = $self->__query_from_hash($segments);
+    my $uri = join("?", $path, $query);
+    $self->get($uri);
 }
 
 #################################
-# Bug and Related tasks, messages
+# Bug Getters
 #################################
 sub bug {
-    my $self   = shift;
-    my $bug_id = shift;
+    my $self          = shift;
+    my $bug_id        = shift;
     my $resource_link = $self->__path_cons("/bugs/$bug_id");
-    $self->__call($resource_link);
+    $self->get($resource_link);
 }
 
-sub bug_msgs {
-  my $self = shift;
-  my $msg_link = shift;
-  $self->__call($msg_link);
+sub bug_resource {
+    my ($self, $resource_link) = @_;
+    $self->get($resource_link);
 }
 
-sub bug_activity {
-  my $self = shift;
-  my $activity_link = shift;
-  $self->__call($activity_link);
+#################################
+# Bug Setters
+#################################
+
+sub bug_set_tags {
+  my ($self, $resource, $tags) = @_;
+  $self->update($resource, { 'tags' => $tags });
 }
+
+sub bug_set_title {
+    my ($self, $resource, $title) = @_;
+    $self->update($resource, {'title' => $title});
+}
+
 
 =head1 NAME
 
@@ -186,4 +247,4 @@ Return a log of modifications to bug
 
 =cut
 
-1; # End of Net::OAuth::LP::Client
+1;    # End of Net::OAuth::LP::Client
