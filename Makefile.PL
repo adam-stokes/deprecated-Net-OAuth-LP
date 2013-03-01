@@ -7,7 +7,7 @@ all_from 'lib/Net/OAuth/LP.pm';
 author q{=Adam Stokes <adam.stokes@ubuntu.com>};
 license 'perl';
 no_index 'directory' => 'exaxmples';
-perl_version 5.014002;
+perl_version 5.008;
 
 tests_recursive('t');
 
