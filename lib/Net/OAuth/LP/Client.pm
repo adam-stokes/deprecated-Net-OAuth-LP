@@ -1,15 +1,14 @@
 package Net::OAuth::LP::Client;
 
+use strict;
+use warnings;
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors(
     qw/ua consumer_key token token_secret api_v1 api_dev api_staging/);
 use LWP::UserAgent;
 use HTTP::Request;
-use HTTP::Headers;
 use HTTP::Request::Common;
 use File::Spec::Functions;
-use strict;
-use warnings;
 use Net::OAuth::LP;
 use JSON;
 use URI;
@@ -113,6 +112,7 @@ sub _request {
         # during final)
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
+	print Dumper($res);
         if ($res->{_rc} == 209) {
             return (decode_json($res->content), "Success", 0);
         }
@@ -183,8 +183,8 @@ sub bug_resource {
 #################################
 
 sub bug_set_tags {
-  my ($self, $resource, $tags) = @_;
-  $self->update($resource, { 'tags' => $tags });
+    my ($self, $resource, $existing_tags, $tags) = @_;
+    $self->update($resource, {'tags' => @$existing_tags});
 }
 
 sub bug_set_title {

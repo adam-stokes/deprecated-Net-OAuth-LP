@@ -12,9 +12,9 @@ perl_version 5.014002;
 tests_recursive('t');
 
 resources(
-    homepage => 'http://astokes.org/Net-OAuth-LP',
+    homepage => 'http://net.oauth.lp.astokes.org',
 
-    #IRC        => 'irc://irc.perl.org/#Net-OAuth-LP',
+    IRC        => 'irc://irc.freenode.net/#perl (nick: stokachu)',
     license    => 'http://dev.perl.org/licenses/',
     repository => 'git://github.com/battlemidget/Net-OAuth-LP.git',
     bugtracker => 'https://github.com/battlemidget/Net-OAuth-LP/issues',
@@ -30,9 +30,14 @@ requires(
     'JSON'                  => 0,
     'LWP::UserAgent'        => 0,
     'Net::OAuth'            => 0,
+    'HTTP::Request'         => 0,
     'HTTP::Request::Common' => 0,
     'Browser::Open'         => 0,
-    'URI'                   => 0
+    'URI'                   => 0,
+    'URI::Encode'           => 0,
+    'URI::QueryParam'       => 0,
+    'Class::Accessor::Fast' => 0,
+    'Carp'                  => 0,
 );
 
 install_as_cpan;
