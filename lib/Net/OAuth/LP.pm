@@ -3,6 +3,7 @@ package Net::OAuth::LP;
 use Modern::Perl '2013';
 use autodie;
 use Moose;
+use Moose::Util::TypeConstraints;
 use MooseX::StrictConstructor;
 use namespace::autoclean;
 use File::Spec::Functions;
@@ -34,30 +35,29 @@ has consumer_key => (
 has request_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+request-token',
+    default => 'https://staging.launchpad.net/+request-token',
 );
 
 has access_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+access-token',
+    default => 'https://staging.launchpad.net/+access-token',
 );
 
 has authorize_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+authorize-token',
+    default => 'https://staging.launchpad.net/+authorize-token',
 );
 
-my $ua = LWP::UserAgent->new;
-
+sub ua { LWP::UserAgent->new }
 
 sub login_with_creds {
-    my $self    = shift;
+    my $self = shift;
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        request_url      => $self->staging_request_token_url,
+        request_url      => $self->request_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
@@ -75,8 +75,7 @@ sub login_with_creds {
           ->from_post_body($res->content);
         $token        = $response->token;
         $token_secret = $response->token_secret;
-        open_browser(
-            $self->staging_authorize_token_url . "?oauth_token=" . $token);
+        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
     }
     else {
         croak("Unable to get request token or secret");
@@ -90,7 +89,7 @@ sub login_with_creds {
         consumer_secret  => '',
         token            => $token,
         token_secret     => $token_secret,
-        request_url      => $self->staging_access_token_url,
+        request_url      => $self->access_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
@@ -106,7 +105,7 @@ sub login_with_creds {
         my $response =
           Net::OAuth->response('access token')->from_post_body($res->content);
         umask 0177;
-        DumpFile $self->cfg_file,
+        DumpFile $self->cfg,
           { consumer_key        => $self->consumer_key,
             access_token        => $response->token,
             access_token_secret => $response->token_secret,

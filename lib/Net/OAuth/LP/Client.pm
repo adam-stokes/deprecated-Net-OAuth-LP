@@ -1,10 +1,9 @@
 package Net::OAuth::LP::Client;
 
-use strict;
-use warnings;
-use base qw(Class::Accessor::Fast);
-__PACKAGE__->mk_accessors(
-    qw/ua consumer_key token token_secret api_v1 api_dev api_staging/);
+use Modern::Perl '2013';
+use autodie;
+use Moose;
+use MooseX::StrictConstructor;
 use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Request::Common;
@@ -17,24 +16,32 @@ use URI::Encode;
 use Data::Dumper;
 use Carp;
 
-sub new {
-    my $class        = shift;
-    my $consumer_key = shift;
-    my $token        = shift;
-    my $token_secret = shift;
-    my %opts         = @_;
+has consumer_key => (
+    is       => 'rw',
+    isa      => 'Str',
+    required => 1
+);
 
-    $opts{ua} ||= LWP::UserAgent->new;
-    $opts{consumer_key} = $consumer_key;
-    $opts{token}        = $token;
-    $opts{token_secret} = $token_secret;
-    $opts{api_v1}       = q[https://api.launchpad.net/1.0];
-    $opts{api_dev}      = q[https://api.launchpad.net/devel];
-    $opts{api_staging}  = q[https://api.staging.launchpad.net/1.0];
+has token => (
+	      is => 'rw',
+	      isa => 'Str',
+	      required => 1
+);
 
-    my $self = bless \%opts, $class;
-    return $self;
-}
+has token_secret => (
+		     is => 'rw',
+		     isa => 'Str',
+		     required => 1
+);
+
+has api_url => (
+		is => 'rw',
+		isa => 'Str',
+		required => 1,
+		default => q[https://api.staging.launchpad.net/1.0]
+);
+
+sub ua { LWP::UserAgent->new }
 
 ###########################################################################
 # Assumed private and semi-private though nothing is enforced :\
