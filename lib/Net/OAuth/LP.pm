@@ -2,10 +2,9 @@ package Net::OAuth::LP;
 
 use Modern::Perl '2013';
 use autodie;
-use base qw(Class::Accessor::Fast);
-__PACKAGE__->mk_accessors(
-    qw/cfg_file consumer_key request_token_url staging_request_token_url request_access_token_url staging_access_token_url request_authorize_token_url staging_authorize_token_url ua/
-);
+use Moose;
+use MooseX::StrictConstructor;
+use namespace::autoclean;
 use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
 use LWP::UserAgent;
@@ -19,25 +18,39 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 our $VERSION = '0.001004';
 
-sub new {
-    my $class = shift;
+has cfg => (
+    is       => 'rw',
+    isa      => 'Str',
+    default  => catfile($ENV{HOME}, ".lp-auth.yml"),
+    required => 1,
+);
 
-    # Default attrs
-    my %attrs = @_;
-    $attrs{cfg_file}            = catfile($ENV{HOME}, '.lp-auth.yml');
-    $attrs{consumer_key}        = '';
-    $attrs{request_token_url}   = q[https://launchpad.net/+request-token];
-    $attrs{access_token_url}    = q[https://launchpad.net/+access-token];
-    $attrs{authorize_token_url} = q[https://launchpad.net/+authorize-token];
-    $attrs{staging_request_token_url}   = q[https://staging.launchpad.net/+request-token];
-    $attrs{staging_access_token_url}    = q[https://staging.launchpad.net/+access-token];
-    $attrs{staging_authorize_token_url} = q[https://staging.launchpad.net/+authorize-token];
+has consumer_key => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+);
 
-    $attrs{ua} ||= LWP::UserAgent->new;
+has request_token_url => (
+    is      => 'r',
+    isa     => 'Str',
+    default => 'https://launchpad.net/+request-token',
+);
 
-    my $self = bless \%attrs, $class;
-    return $self;
-}
+has access_token_url => (
+    is      => 'r',
+    isa     => 'Str',
+    default => 'https://launchpad.net/+access-token',
+);
+
+has authorize_token_url => (
+    is      => 'r',
+    isa     => 'Str',
+    default => 'https://launchpad.net/+authorize-token',
+);
+
+my $ua = LWP::UserAgent->new;
+
 
 sub login_with_creds {
     my $self    = shift;
@@ -62,7 +75,8 @@ sub login_with_creds {
           ->from_post_body($res->content);
         $token        = $response->token;
         $token_secret = $response->token_secret;
-        open_browser($self->staging_authorize_token_url . "?oauth_token=" . $token);
+        open_browser(
+            $self->staging_authorize_token_url . "?oauth_token=" . $token);
     }
     else {
         croak("Unable to get request token or secret");
@@ -186,4 +200,5 @@ See L<http://dev.perl.org/licenses/> for more information.
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 1;    # End of Net::OAuth::LP
