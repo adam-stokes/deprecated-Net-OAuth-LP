@@ -2,6 +2,7 @@ Changes
 examples/user-profile
 ignore.txt
 lib/Net/OAuth/LP.pm
+lib/Net/OAuth/LP/Client.pm
 Makefile
 Makefile.old
 Makefile.PL

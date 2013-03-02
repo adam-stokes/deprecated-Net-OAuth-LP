@@ -1,81 +1,54 @@
 package Net::OAuth::LP;
 
-use strict;
-use warnings;
+use Modern::Perl '2013';
+use autodie;
+use base qw(Class::Accessor::Fast);
+__PACKAGE__->mk_accessors(
+    qw/cfg_file consumer_key request_token_url staging_request_token_url request_access_token_url staging_access_token_url request_authorize_token_url staging_authorize_token_url ua/
+);
 use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use Browser::Open qw[open_browser];
 use Net::OAuth;
-use YAML qw[LoadFile DumpFile];
-use JSON;
+use YAML qw[DumpFile];
 use Carp;
-use URI;
-use URI::QueryParam;
-use URI::Encode;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.201302.1';
-
-BEGIN {
-  my $ua = LWP::UserAgent->new;
-  *_UA = sub () { $ua };
-}
+our $VERSION = '0.001004';
 
 sub new {
     my $class = shift;
 
     # Default attrs
-    my $attrs = {};
-    $attrs->{cfg_file}            = catfile($ENV{HOME}, '.lp-auth.yml');
-    $attrs->{consumer_key}        = '';
-    $attrs->{request_token_url}   = q[https://launchpad.net/+request-token];
-    $attrs->{access_token_url}    = q[https://launchpad.net/+access-token];
-    $attrs->{authorize_token_url} = q[https://launchpad.net/+authorize-token];
-    $attrs->{api_v1}              = q[https://api.launchpad.net/1.0];
-    $attrs->{api_dev}             = q[https://api.launchpad.net/devel];
-    $attrs->{ua} = _UA;
+    my %attrs = @_;
+    $attrs{cfg_file}            = catfile($ENV{HOME}, '.lp-auth.yml');
+    $attrs{consumer_key}        = '';
+    $attrs{request_token_url}   = q[https://launchpad.net/+request-token];
+    $attrs{access_token_url}    = q[https://launchpad.net/+access-token];
+    $attrs{authorize_token_url} = q[https://launchpad.net/+authorize-token];
+    $attrs{staging_request_token_url}   = q[https://staging.launchpad.net/+request-token];
+    $attrs{staging_access_token_url}    = q[https://staging.launchpad.net/+access-token];
+    $attrs{staging_authorize_token_url} = q[https://staging.launchpad.net/+authorize-token];
 
-    my $self = {%$attrs, @_};
-    bless $self, $class;
+    $attrs{ua} ||= LWP::UserAgent->new;
+
+    my $self = bless \%attrs, $class;
     return $self;
-}
-
-sub cfg_file { @_ > 1 ? $_[0]->{cfg_file} = $_[1] : $_[0]->{cfg_file} }
-sub api_v1   { @_ > 1 ? $_[0]->{api_v1}   = $_[1] : $_[0]->{api_v1} }
-sub api_dev  { @_ > 1 ? $_[0]->{api_dev}  = $_[1] : $_[0]->{api_dev} }
-sub ua  { @_ > 1 ? $_[0]->{ua}  = $_[1] : $_[0]->{ua} }
-
-sub consumer_key {
-    @_ > 1 ? $_[0]->{consumer_key} = $_[1] : $_[0]->{consumer_key};
-}
-
-sub request_token_url {
-    @_ > 1 ? $_[0]->{request_token_url} = $_[1] : $_[0]->{request_token_url};
-}
-
-sub access_token_url {
-    @_ > 1 ? $_[0]->{access_token_url} = $_[1] : $_[0]->{access_token_url};
-}
-
-sub authorize_token_url {
-    @_ > 1
-      ? $_[0]->{authorize_token_url} = $_[1]
-      : $_[0]->{authorize_token_url};
 }
 
 sub login_with_creds {
     my $self    = shift;
     my $request = Net::OAuth->request('consumer')->new(
-        consumer_key       => $self->consumer_key,
-        consumer_secret    => '',
-        request_url        => $self->request_token_url,
-        request_method     => 'POST',
-        signature_method   => 'PLAINTEXT',
-        timestamp          => time,
-        nonce              => $self->_nonce,
+        consumer_key     => $self->consumer_key,
+        consumer_secret  => '',
+        request_url      => $self->staging_request_token_url,
+        request_method   => 'POST',
+        signature_method => 'PLAINTEXT',
+        timestamp        => time,
+        nonce            => $self->_nonce,
     );
 
     $request->sign;
@@ -89,7 +62,7 @@ sub login_with_creds {
           ->from_post_body($res->content);
         $token        = $response->token;
         $token_secret = $response->token_secret;
-        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
+        open_browser($self->staging_authorize_token_url . "?oauth_token=" . $token);
     }
     else {
         croak("Unable to get request token or secret");
@@ -103,7 +76,7 @@ sub login_with_creds {
         consumer_secret  => '',
         token            => $token,
         token_secret     => $token_secret,
-        request_url      => $self->access_token_url,
+        request_url      => $self->staging_access_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
         timestamp        => time,
@@ -128,64 +101,8 @@ sub login_with_creds {
     else {
         croak("Unable to obtain access token and secret");
     }
-
-
 }
 
-# TODO: Unexport at some point
-sub call {
-    my $self    = shift;
-    my $path    = shift;
-    my $uri     = $self->_path_cons($path);
-    my $yml     = LoadFile $self->cfg_file;
-    my $request = Net::OAuth->request('protected resource')->new(
-        consumer_key     => $yml->{consumer_key},
-        consumer_secret  => '',
-        token            => $yml->{access_token},
-        token_secret     => $yml->{access_token_secret},
-        request_url      => $uri->as_string(),
-        request_method   => 'GET',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => $self->_nonce
-    );
-    $request->sign;
-    my $res = $self->ua->request(GET $request->to_url);
-
-    if ($res->is_success) {
-        return (decode_json($res->content), "Success", 0);
-    }
-    else {
-        return (undef, "Failed to pull resource", 1);
-    }
-}
-
-sub update {
-    my $self    = shift;
-    my $path    = shift;
-    my $uri     = $self->_path_cons($path);
-    my $yml     = LoadFile $self->cfg_file;
-    my $request = Net::OAuth->request('protected resource')->new(
-        consumer_key     => $yml->{consumer_key},
-        consumer_secret  => '',
-        token            => $yml->{access_token},
-        token_secret     => $yml->{access_token_secret},
-        request_url      => $uri->as_string(),
-        request_method   => 'POST',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => $self->_nonce
-    );
-    $request->sign;
-    my $res = $self->ua->request(POST $request->to_url);
-
-    if ($res->is_success) {
-        return (decode_json($res->content), "Success", 0);
-    }
-    else {
-	return (undef, "Failed to save", 1);
-    }
-}
 
 # unexported helpers
 
@@ -200,54 +117,6 @@ sub _nonce {
     $nonce;
 }
 
-# url query builder
-sub _query_from_hash {
-    my $self   = shift;
-    my ($params) = @_;
-    my $uri    = URI->new;
-    for my $param (keys $params) {
-      $uri->query_param_append($param, $params->{$param});
-    }
-    $uri->query;
-}
-
-# construct path, if a resource link just provide as is.
-sub _path_cons {
-  my $self = shift;
-  my $path = shift;
-  if ($path =~ /api/) {
-    return URI->new("$path", 'https');
-  }
-  URI->new($self->api_v1 . "/$path", 'https');
-}
-# Happy happy client interfaces
-
-sub me {
-  my $self = shift;
-  my $person = shift;
-  $self->call($person);
-}
-
-sub project {
-  my $self = shift;
-  my $project = shift;
-  $self->call($project);
-}
-
-sub bug {
-    my $self   = shift;
-    my $bug_link = shift;
-    $self->call($bug_link);
-}
-
-sub search {
-  my $self = shift;
-  my $path = shift;
-  my $query = $self->_query_from_hash(@_);
-  my $uri =  join("?",$path, $query);
-  $self->call($uri);
-}
-
 =head1 NAME
 
 Net::OAuth::LP - Launchpad.net OAuth 1.0
@@ -256,18 +125,13 @@ Net::OAuth::LP - Launchpad.net OAuth 1.0
 
 OAuth 1.0a authorization and client for Launchpad.net
 
-Perhaps a little code snippet.
-
     use Net::OAuth::LP;
 
-    my $lp = Net::OAuth::LP->new;
+    my $lp = Net::OAuth::LP;
     $lp->consumer_key('my-lp-app');
 
     # Authorize yourself
     $lp->login_with_creds;
-
-    # Perform client call
-    $lp->call('~adam-stokes');
 
 =head1 ATTRIBUTES
 
@@ -288,27 +152,6 @@ Holds the string that identifies your application.
 =head2 C<login_with_creds>
 
     $lp->login_with_creds;
-
-=head2 C<call>
-
-Eventually this won't be exposed and would only be accessed through
-helper interfaces.
-
-    $lp->call('~adam-stokes');
-
-=head2 C<me>
-
-    $lp->me('~name');
-
-=head2 C<project>
-
-    $lp->project('ubuntu');
-
-=head2 C<search>
-
-    $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
-                            'ws.size' => '10',
-                            'status' => 'New' });
 
 =head1 AUTHOR
 
