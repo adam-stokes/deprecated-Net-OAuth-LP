@@ -15,6 +15,7 @@ use URI;
 use URI::QueryParam;
 use URI::Encode;
 use Data::Dumper;
+use Carp;
 
 sub new {
     my $class        = shift;
