@@ -93,7 +93,7 @@ sub _request {
         my $res = $self->ua->request(POST $request->to_url,
             Content => $self->__query_from_hash($params));
         if ($res->is_success) {
-            return (decode_json($res->content), "Success", 0);
+            return decode_json($res->content);
         }
     }
     elsif ($method eq "PATCH") {
@@ -112,21 +112,18 @@ sub _request {
         # during final)
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
-	print Dumper($res);
         if ($res->{_rc} == 209) {
-            return (decode_json($res->content), "Success", 0);
+            return decode_json($res->content);
         }
     }
     else {
         my $res = $self->ua->request(GET $request->to_url);
         if ($res->is_success) {
-            return (decode_json($res->content), "Success", 0);
+            return decode_json($res->content);
         }
     }
-    return (undef, "Failed to pull resource", 1);
+    carp "Failed to pull resource";
 }
-
-
 
 ###########################################################################
 # Public methods
@@ -146,21 +143,20 @@ sub update {
   $self->_request($resource, $params, 'PATCH');
 }
 
-sub me {
-    my ($self, $login) = @_;
-    $self->get('~' . $login);
-}
-
+#################################
+# Project Getters
+#################################
 sub project {
     my ($self, $project) = @_;
     $self->get($project);
 }
 
-sub search {
-    my ($self, $path, $segments) = @_;
-    my $query = $self->__query_from_hash($segments);
-    my $uri = join("?", $path, $query);
-    $self->get($uri);
+#################################
+# Person/Team Getters
+#################################
+sub person {
+    my ($self, $login) = @_;
+    $self->get('~' . $login);
 }
 
 #################################
@@ -173,18 +169,19 @@ sub bug {
     $self->get($resource_link);
 }
 
-sub bug_resource {
-    my ($self, $resource_link) = @_;
-    $self->get($resource_link);
-}
-
 #################################
 # Bug Setters
 #################################
 
 sub bug_set_tags {
     my ($self, $resource, $existing_tags, $tags) = @_;
-    $self->update($resource, {'tags' => @$existing_tags});
+
+    # Merge new tags into existing and process a
+    # -<tag> in order to remove a tag.
+    # FIXME: Incomplete
+    my $join_ref = [@$existing_tags, @$tags];
+    my @filtered_lists = grep {!/^\-/} @$join_ref;
+    $self->update($resource, {'tags' => \@filtered_lists});
 }
 
 sub bug_set_title {
@@ -192,6 +189,23 @@ sub bug_set_title {
     $self->update($resource, {'title' => $title});
 }
 
+#################################
+# Resource Link getter
+#################################
+sub resource {
+  my ($self, $resource_link) = @_;
+  $self->get($resource_link);
+}
+
+#################################
+# Search
+#################################
+sub search {
+    my ($self, $path, $segments) = @_;
+    my $query = $self->__query_from_hash($segments);
+    my $uri = join("?", $path, $query);
+    $self->get($uri);
+}
 
 =head1 NAME
 

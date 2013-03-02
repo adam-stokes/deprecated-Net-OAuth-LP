@@ -1,7 +1,7 @@
 package Net::OAuth::LP;
 
-use strict;
-use warnings;
+use Modern::Perl '2013';
+use autodie;
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors(
     qw/cfg_file consumer_key request_token_url staging_request_token_url request_access_token_url staging_access_token_url request_authorize_token_url staging_authorize_token_url ua/
@@ -17,7 +17,7 @@ use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.201302.3';
+our $VERSION = '0.001004';
 
 sub new {
     my $class = shift;
