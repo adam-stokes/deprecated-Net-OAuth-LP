@@ -23,7 +23,7 @@ extends 'Net::OAuth::LP';
 has consumer_key => (
     is       => 'rw',
     isa      => 'Str',
-    required => 1
+    required => 1,
 );
 
 has token => (
@@ -48,7 +48,6 @@ has api_url => (
 ###########################################################################
 # Private
 ###########################################################################
-
 private_method __query_from_hash => sub {
     my $self     = shift;
     my ($params) = @_;

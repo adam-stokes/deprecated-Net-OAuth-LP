@@ -13,7 +13,7 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use Browser::Open qw[open_browser];
 use Net::OAuth;
-use YAML qw[DumpFile];
+use YAML qw[LoadFile DumpFile];
 use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
@@ -21,9 +21,10 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 our $VERSION = '0.001005';
 
 has cfg => (
-    is       => 'rw',
-    isa      => 'Str',
-    default  => catfile($ENV{HOME}, ".lp-auth.yml"),
+    traits   => ['Hash'],
+    is       => 'ro',
+    isa      => 'HashRef',
+    default  => sub { LoadFile catfile($ENV{HOME}, ".lp-auth.yml") },
     required => 1,
 );
 
@@ -54,7 +55,7 @@ has authorize_token_url => (
 protected_method ua => sub { LWP::UserAgent->new };
 
 sub login_with_creds {
-    my $self = shift;
+    my $self    = shift;
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',

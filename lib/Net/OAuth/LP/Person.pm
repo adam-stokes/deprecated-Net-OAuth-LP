@@ -12,69 +12,25 @@ use Data::Dumper;
 extends 'Net::OAuth::LP::Client';
 
 has 'name' => (
+    is      => 'rw',
+    isa     => 'Str'
+);
+
+has 'person' => (
+    traits => ['Hash'],
     is     => 'rw',
-    isa    => 'Str',
-    reader => 'get_name',
-    writer => 'set_name'
+    isa    => 'HashRef',
 );
-
-has 'display_name' => (
-    is     => 'rw',
-    isa    => 'Str',
-    reader => 'get_display_name',
-    writer => 'set_display_name'
-
-);
-
-has 'homepage_content' => (
-    is     => 'rw',
-    isa    => 'Str',
-    reader => 'get_homepage_content',
-    writer => 'set_homepage_content'
-);
-
-has 'ppas' => (
-    is     => 'ro',
-    isa    => 'Str',
-    reader => 'get_ppas',
-);
-
 ###########################################################################
 # Protected
 ###########################################################################
-sub description {
-    my $self = shift;
-    $self->get($self->person->{description});
-}
-
-protected_method set_description => sub { };
-
-protected_method get_name => sub {
-    my $self = shift;
-    $self->get($self->person->{name});
-
-};
-protected_method set_name => sub { };
-protected_method get_display_name => sub {
-    my $self = shift;
-    $self->get($self->person->{display_name});
-
-};
-protected_method set_display_name => sub { };
-protected_method get_homepage_content => sub {
-    my $self = shift;
-    $self->get($self->person->{homepage_content});
-
-};
-protected_method set_homepage_content => sub { };
 
 ###########################################################################
 # Public methods
 ###########################################################################
-sub person {
-    my $self  = shift;
-    my $p_str = shift;
-    $self->get('~' . $p_str);
+sub identify {
+    my $self = shift;
+    $self->person($self->get('~' . $self->name));
 }
 
 =head1 NAME
