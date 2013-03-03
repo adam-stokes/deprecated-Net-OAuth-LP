@@ -2,6 +2,7 @@ package Net::OAuth::LP::Client;
 
 use Modern::Perl '2013';
 use autodie;
+use namespace::autoclean;
 use Moose;
 use MooseX::StrictConstructor;
 use MooseX::Privacy;
@@ -165,27 +166,6 @@ sub project {
 }
 
 #################################
-# Person/Team Getters
-#################################
-sub person {
-    my ($self, $login) = @_;
-    $self->get('~' . $login);
-}
-
-sub person_ppas {
-  my ($self, $resource) = @_;
-  $self->get($resource->{ppas_collection_link});
-}
-
-#################################
-# Person setter
-#################################
-sub person_set {
-  my ($self, $resource, $attr) = @_;
-  $self->update($resource->{self_link}, $attr);
-}
-
-#################################
 # Bug Getters
 #################################
 sub bug {
@@ -269,18 +249,6 @@ Client for performing query tasks.
     my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
                                          token => 'accesstoken',
                                          token_secret => 'accesstokensecret');
-
-=head2 C<person>
-
-    $lp->person('<lp name>');
-
-=head2 C<person_ppas>
-
-    $lp->person_ppas;
-
-=head2 C<person_set>
-
-    $lp->person_set($person, {'description' => 'A new description of this person'});
 
 =head2 C<bug>
 
