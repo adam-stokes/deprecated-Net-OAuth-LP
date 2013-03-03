@@ -23,28 +23,28 @@ has consumer_key => (
 );
 
 has token => (
-	      is => 'rw',
-	      isa => 'Str',
-	      required => 1
+    is       => 'rw',
+    isa      => 'Str',
+    required => 1
 );
 
 has token_secret => (
-		     is => 'rw',
-		     isa => 'Str',
-		     required => 1
+    is       => 'rw',
+    isa      => 'Str',
+    required => 1
 );
 
 has api_url => (
-		is => 'rw',
-		isa => 'Str',
-		required => 1,
-		default => q[https://api.staging.launchpad.net/1.0]
+    is       => 'rw',
+    isa      => 'Str',
+    required => 1,
+    default  => q[https://api.staging.launchpad.net/1.0]
 );
 
 sub ua { LWP::UserAgent->new }
 
 ###########################################################################
-# Assumed private and semi-private though nothing is enforced :\
+# Protected
 ###########################################################################
 sub __query_from_hash {
     my $self     = shift;
@@ -63,7 +63,7 @@ sub __path_cons {
     if ($path =~ /api/) {
         return URI->new("$path", 'https');
     }
-    URI->new($self->api_staging . "/$path", 'https');
+    URI->new($self->api_url . "/$path", 'https');
 }
 
 sub __oauth_authorization_header {
