@@ -20,24 +20,6 @@ use Carp;
 
 extends 'Net::OAuth::LP';
 
-has consumer_key => (
-    is       => 'rw',
-    isa      => 'Str',
-    required => 1,
-);
-
-has token => (
-    is       => 'rw',
-    isa      => 'Str',
-    required => 1
-);
-
-has token_secret => (
-    is       => 'rw',
-    isa      => 'Str',
-    required => 1
-);
-
 has api_url => (
     is       => 'rw',
     isa      => 'Str',
@@ -114,11 +96,13 @@ protected_method _request => sub {
         # HTTP::Request::Common doesnt support PATCH verb
         my $_req =
           HTTP::Request->new(PATCH => $request->normalized_request_url);
-        $_req->header('User-Agent'    => 'imafreakinninjai/1.0');
-        $_req->header('Content-Type'  => 'application/json');
-        $_req->header('Authorization' => $self->__oauth_authorization_header($request));
+        $_req->header('User-Agent'   => 'imafreakinninjai/1.0');
+        $_req->header('Content-Type' => 'application/json');
+        $_req->header(
+            'Authorization' => $self->__oauth_authorization_header($request));
         $_req->content(encode_json($params));
         my $res = $self->ua->request($_req);
+
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
         # during final)
@@ -143,26 +127,19 @@ protected_method get => sub {
 };
 
 protected_method post => sub {
-  my ($self, $resource, $params) = @_;
-  $self->_request($resource, $params, 'POST');
+    my ($self, $resource, $params) = @_;
+    $self->_request($resource, $params, 'POST');
 };
 
 protected_method update => sub {
-  my ($self, $resource, $params) = @_;
-  $self->_request($resource, $params, 'PATCH');
+    my ($self, $resource, $params) = @_;
+    $self->_request($resource, $params, 'PATCH');
 };
 
 ###########################################################################
 # Public methods
 ###########################################################################
 
-#################################
-# Project Getters
-#################################
-sub project {
-    my ($self, $project) = @_;
-    $self->get($project);
-}
 
 #################################
 # Bug Getters
@@ -184,7 +161,7 @@ sub bug_set_tags {
     # -<tag> in order to remove a tag.
     # FIXME: Incomplete
     my $join_ref = [@$resource->{tags}, @$tags];
-    my @filtered_lists = grep {!/^\-/} @$join_ref;
+    my @filtered_lists = grep { !/^\-/ } @$join_ref;
     $self->update($resource->{self_link}, {'tags' => \@filtered_lists});
 }
 
@@ -210,8 +187,8 @@ sub bug_set_importance {
 # Resource Link getter
 #################################
 sub resource {
-  my ($self, $resource_link) = @_;
-  $self->get($resource_link);
+    my ($self, $resource_link) = @_;
+    $self->get($resource_link);
 }
 
 #################################

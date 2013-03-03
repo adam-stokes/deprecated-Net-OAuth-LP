@@ -18,7 +18,7 @@ use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.001005';
+our $VERSION = '0.001006';
 
 has cfg => (
     traits   => ['Hash'],
@@ -26,12 +26,6 @@ has cfg => (
     isa      => 'HashRef',
     default  => sub { LoadFile catfile($ENV{HOME}, ".lp-auth.yml") },
     required => 1,
-);
-
-has consumer_key => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => 'net-oauth-lp-consumer',
 );
 
 has request_token_url => (
@@ -52,7 +46,28 @@ has authorize_token_url => (
     default => 'https://staging.launchpad.net/+authorize-token',
 );
 
+###########################################################################
+# Protected
+###########################################################################
 protected_method ua => sub { LWP::UserAgent->new };
+
+###########################################################################
+# Public
+###########################################################################
+sub token {
+    my $self = shift;
+    $self->cfg->{access_token};
+}
+
+sub token_secret {
+    my $self = shift;
+    $self->cfg->{access_token_secret};
+}
+
+sub consumery_key {
+    my $self = shift;
+    $self->cfg->{consumer_key};
+}
 
 sub login_with_creds {
     my $self    = shift;
