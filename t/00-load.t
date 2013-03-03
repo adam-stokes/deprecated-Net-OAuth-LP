@@ -22,8 +22,11 @@ BEGIN {
         ok(ref($cfg) eq "HASH", "Config read works");
         use_ok('Net::OAuth::LP::Client') || print "Bail out!\n";
 
-        my $lpc = Net::OAuth::LP::Client->new($cfg->{consumer_key},
-            $cfg->{access_token}, $cfg->{access_token_secret});
+        my $lpc = Net::OAuth::LP::Client->new(
+            consumer_key => $cfg->{consumer_key},
+            token        => $cfg->{access_token},
+            token_secret => $cfg->{access_token_secret}
+        );
 
         ok(defined($lpc), 'Client new() works');
 
@@ -31,7 +34,7 @@ BEGIN {
         ok(ref($prj) eq "HASH",  "got HASH project works");
         ok(exists $prj->{title}, "got project title");
 
-        (my $person, $err, $ret) = $lpc->me('adam-stokes');
+        (my $person, $err, $ret) = $lpc->person('adam-stokes');
         ok(ref($person) eq "HASH", "got HASH Person");
         ok(exists $person->{name}, "got person name");
         is($person->{name}, 'adam-stokes', "got correct name");

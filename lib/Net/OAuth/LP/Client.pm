@@ -4,6 +4,7 @@ use Modern::Perl '2013';
 use autodie;
 use Moose;
 use MooseX::StrictConstructor;
+use MooseX::Privacy;
 use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Request::Common;
@@ -15,6 +16,8 @@ use URI::QueryParam;
 use URI::Encode;
 use Data::Dumper;
 use Carp;
+
+extends 'Net::OAuth::LP';
 
 has consumer_key => (
     is       => 'rw',
@@ -41,12 +44,11 @@ has api_url => (
     default  => q[https://api.staging.launchpad.net/1.0]
 );
 
-sub ua { LWP::UserAgent->new }
+###########################################################################
+# Private
+###########################################################################
 
-###########################################################################
-# Protected
-###########################################################################
-sub __query_from_hash {
+private_method __query_from_hash => sub {
     my $self     = shift;
     my ($params) = @_;
     my $uri      = URI->new;
@@ -54,19 +56,19 @@ sub __query_from_hash {
         $uri->query_param_append($param, $params->{$param});
     }
     $uri->query;
-}
+};
 
 # construct path, if a resource link just provide as is.
-sub __path_cons {
+private_method __path_cons => sub {
     my $self = shift;
     my $path = shift;
     if ($path =~ /api/) {
         return URI->new("$path", 'https');
     }
     URI->new($self->api_url . "/$path", 'https');
-}
+};
 
-sub __oauth_authorization_header {
+private_method __oauth_authorization_header => sub {
     my ($self, $request) = @_;
     my $enc = URI::Encode->new({encode_reserved => 1});
 
@@ -79,9 +81,12 @@ sub __oauth_authorization_header {
         'oauth_timestamp="' . $request->timestamp . '"',
         'oauth_nonce="' . $request->nonce . '"',
         'oauth_version="' . $request->version . '"');
-}
+};
 
-sub _request {
+###########################################################################
+# protected
+###########################################################################
+protected_method _request => sub {
     my ($self, $resource, $params, $method) = @_;
     my $uri     = $self->__path_cons($resource);
     my $request = Net::OAuth->request('protected resource')->new(
@@ -114,7 +119,6 @@ sub _request {
         $_req->header('Authorization' => $self->__oauth_authorization_header($request));
         $_req->content(encode_json($params));
         my $res = $self->ua->request($_req);
-
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
         # during final)
@@ -131,25 +135,26 @@ sub _request {
         }
     }
     carp "Failed to pull resource";
-}
+};
+
+protected_method get => sub {
+    my ($self, $resource) = @_;
+    $self->_request($resource, undef, 'GET');
+};
+
+protected_method post => sub {
+  my ($self, $resource, $params) = @_;
+  $self->_request($resource, $params, 'POST');
+};
+
+protected_method update => sub {
+  my ($self, $resource, $params) = @_;
+  $self->_request($resource, $params, 'PATCH');
+};
 
 ###########################################################################
 # Public methods
 ###########################################################################
-sub get {
-    my ($self, $resource) = @_;
-    $self->_request($resource, undef, 'GET');
-}
-
-sub post {
-  my ($self, $resource, $params) = @_;
-  $self->_request($resource, $params, 'POST');
-}
-
-sub update {
-  my ($self, $resource, $params) = @_;
-  $self->_request($resource, $params, 'PATCH');
-}
 
 #################################
 # Project Getters
@@ -167,6 +172,19 @@ sub person {
     $self->get('~' . $login);
 }
 
+sub person_ppas {
+  my ($self, $resource) = @_;
+  $self->get($resource->{ppas_collection_link});
+}
+
+#################################
+# Person setter
+#################################
+sub person_set {
+  my ($self, $resource, $attr) = @_;
+  $self->update($resource->{self_link}, $attr);
+}
+
 #################################
 # Bug Getters
 #################################
@@ -180,21 +198,33 @@ sub bug {
 #################################
 # Bug Setters
 #################################
-
 sub bug_set_tags {
-    my ($self, $resource, $existing_tags, $tags) = @_;
+    my ($self, $resource, $tags) = @_;
 
     # Merge new tags into existing and process a
     # -<tag> in order to remove a tag.
     # FIXME: Incomplete
-    my $join_ref = [@$existing_tags, @$tags];
+    my $join_ref = [@$resource->{tags}, @$tags];
     my @filtered_lists = grep {!/^\-/} @$join_ref;
-    $self->update($resource, {'tags' => \@filtered_lists});
+    $self->update($resource->{self_link}, {'tags' => \@filtered_lists});
 }
 
 sub bug_set_title {
     my ($self, $resource, $title) = @_;
-    $self->update($resource, {'title' => $title});
+    $self->update($resource->{self_link}, {'title' => $title});
+}
+
+sub bug_set_assignee {
+    my ($self, $resource, $assignee) = @_;
+    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
+    $self->update($bug_task->{self_link},
+        {'assignee_link' => $assignee->{self_link}});
+}
+
+sub bug_set_importance {
+    my ($self, $resource, $importance) = @_;
+    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
+    $self->update($bug_task->{self_link}, {'importance' => $importance});
 }
 
 #################################
@@ -223,38 +253,56 @@ Net::OAuth::LP::Client - Launchpad.net Client routines
 
 Client for performing query tasks.
 
-    my $lp = Net::OAuth::LP::Client->new('consumer-key', 'access-token', 'access-token-secret');
+    my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
+                                         token => 'accesstoken',
+                                         token_secret => 'accesstokensecret');
 
     # Use your launchpad.net name in place of adam-stokes. You can figure that out by visiting
     # https://launchpad.net/~ and look at Launchpad Id.
 
-    my ($person, $err, $ret) = $lp->me('adam-stokes');
+    my $person = $lp->person('adam-stokes');
 
 =head1 METHODS
 
 =head2 C<new>
 
-    my $lp = Net::OAuth::LP::Client->new('consumerkey','accesstoken','accesstokensecret');
+    my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
+                                         token => 'accesstoken',
+                                         token_secret => 'accesstokensecret');
 
-=head2 C<me>
+=head2 C<person>
 
-    $lp->me('<lp name>');
+    $lp->person('<lp name>');
+
+=head2 C<person_ppas>
+
+    $lp->person_ppas;
+
+=head2 C<person_set>
+
+    $lp->person_set($person, {'description' => 'A new description of this person'});
 
 =head2 C<bug>
 
     $lp->bug(1);
 
-=head2 C<bug_msgs>
+=head2 C<bug_set_tags>
 
-    my $bug = $lp->bug(1);
-    $lp->bug_msgs($bug->{messages_collection_link});
+    $lp->bug_set_tags($bug, ['tagA', 'tagB']);
 
-=head2 C<bug_activity>
+=head2 C<bug_set_title>
 
-Return a log of modifications to bug
+Set title of bug
 
-    my $bug = $lp->bug(1);
-    $lp->bug_activity($bug->{activity_collection_link});
+    $lp->bug_set_title($bug, 'A new title');
+
+=head2 C<bug_set_importance>
+
+    $lp->bug_set_importance($bug, 'Critical');
+
+=head2 C<bug_set_assignee>
+
+    $lp->bug_set_assignee($bug, $person_object);
 
 =head2 C<project>
 
@@ -266,7 +314,11 @@ Return a log of modifications to bug
                             'ws.size' => '10',
                             'status' => 'New' });
 
+=head2 C<resource>
+
+    $lp->resource('launchpad_resource_link');
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
 1;    # End of Net::OAuth::LP::Client

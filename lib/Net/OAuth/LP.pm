@@ -5,6 +5,7 @@ use autodie;
 use Moose;
 use Moose::Util::TypeConstraints;
 use MooseX::StrictConstructor;
+use MooseX::Privacy;
 use namespace::autoclean;
 use File::Spec::Functions;
 use Log::Log4perl qw[:easy];
@@ -17,7 +18,7 @@ use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.001004';
+our $VERSION = '0.001005';
 
 has cfg => (
     is       => 'rw',
@@ -50,7 +51,7 @@ has authorize_token_url => (
     default => 'https://staging.launchpad.net/+authorize-token',
 );
 
-sub ua { LWP::UserAgent->new }
+protected_method ua => sub { LWP::UserAgent->new };
 
 sub login_with_creds {
     my $self = shift;
