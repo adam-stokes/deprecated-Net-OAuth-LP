@@ -53,7 +53,6 @@ private_method __path_cons => sub {
 private_method __oauth_authorization_header => sub {
     my ($self, $request) = @_;
     my $enc = URI::Encode->new({encode_reserved => 1});
-
     join(",",
         'OAuth realm="https://api.staging.launchpad.net"',
         'oauth_consumer_key="' . $request->consumer_key . '"',
@@ -65,9 +64,9 @@ private_method __oauth_authorization_header => sub {
         'oauth_version="' . $request->version . '"');
 };
 
-###########################################################################
+###############################################################################
 # protected
-###########################################################################
+###############################################################################
 protected_method _request => sub {
     my ($self, $resource, $params, $method) = @_;
     my $uri     = $self->__path_cons($resource);
@@ -136,14 +135,14 @@ protected_method update => sub {
     $self->_request($resource, $params, 'PATCH');
 };
 
-###########################################################################
+###############################################################################
 # Public methods
-###########################################################################
+###############################################################################
 
 
-#################################
+###################################
 # Bug Getters
-#################################
+###################################
 sub bug {
     my $self          = shift;
     my $bug_id        = shift;
@@ -151,9 +150,9 @@ sub bug {
     $self->get($resource_link);
 }
 
-#################################
+###################################
 # Bug Setters
-#################################
+###################################
 sub bug_set_tags {
     my ($self, $resource, $tags) = @_;
 
@@ -183,17 +182,17 @@ sub bug_set_importance {
     $self->update($bug_task->{self_link}, {'importance' => $importance});
 }
 
-#################################
+###################################
 # Resource Link getter
-#################################
+###################################
 sub resource {
     my ($self, $resource_link) = @_;
     $self->get($resource_link);
 }
 
-#################################
+###################################
 # Search
-#################################
+###################################
 sub search {
     my ($self, $path, $segments) = @_;
     my $query = $self->__query_from_hash($segments);
@@ -213,7 +212,8 @@ Client for performing query tasks.
                                          token => 'accesstoken',
                                          token_secret => 'accesstokensecret');
 
-    # Use your launchpad.net name in place of adam-stokes. You can figure that out by visiting
+    # Use your launchpad.net name in place of adam-stokes. 
+    # You can figure that out by visiting
     # https://launchpad.net/~ and look at Launchpad Id.
 
     my $person = $lp->person('adam-stokes');

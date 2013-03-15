@@ -17,9 +17,9 @@ has 'details' => (
     isa    => 'HashRef',
 );
 
-###########################################################################
+###############################################################################
 # Public methods
-###########################################################################
+###############################################################################
 sub info {
   my ($self, $name) = @_;
   $self->details($self->get('~'.$name));
@@ -37,9 +37,9 @@ Person representation
 
 =head1 METHODS
 
-    Nothing public but the accessors.
+    info
 
 =cut
 
 __PACKAGE__->meta->make_immutable;
-1;    # End of Net::OAuth::LP::Person
+1;                                              # End of Net::OAuth::LP::Person
