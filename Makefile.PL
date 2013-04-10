@@ -33,6 +33,7 @@ requires(
     'MooseX::Privacy'           => 0,
     'Modern::Perl'              => 0,
     'LWP::UserAgent'            => 0,
+    'LWP::Protocol::https'      => 0,
     'namespace::autoclean'      => 0,
     'Net::OAuth'                => 0,
     'HTTP::Request'             => 0,

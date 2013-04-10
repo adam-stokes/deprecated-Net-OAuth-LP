@@ -64,7 +64,7 @@ sub token_secret {
     $self->cfg->{access_token_secret};
 }
 
-sub consumery_key {
+sub consumer_key {
     my $self = shift;
     $self->cfg->{consumer_key};
 }
@@ -84,6 +84,7 @@ sub login_with_creds {
     $request->sign;
     my $res = $self->ua->request(POST $request->to_url,
         Content => $request->to_post_body);
+
     my $token;
     my $token_secret;
     if ($res->is_success) {
@@ -98,8 +99,7 @@ sub login_with_creds {
         croak("Unable to get request token or secret");
     }
 
-    print "Waiting for 20 seconds to authorize.\n";
-    sleep(20);
+    say "Pulling authorization credentials.";
 
     $request = Net::OAuth->request('access token')->new(
         consumer_key     => $self->consumer_key,
@@ -117,12 +117,11 @@ sub login_with_creds {
 
     $res = $self->ua->request(POST $request->to_url,
         Content => $request->to_post_body);
-
     if ($res->is_success) {
         my $response =
           Net::OAuth->response('access token')->from_post_body($res->content);
         umask 0177;
-        DumpFile $self->cfg,
+        DumpFile catfile($ENV{HOME}, '.lp-auth.yml'),
           { consumer_key        => $self->consumer_key,
             access_token        => $response->token,
             access_token_secret => $response->token_secret,
@@ -157,7 +156,7 @@ OAuth 1.0a authorization and client for Launchpad.net
 
     use Net::OAuth::LP;
 
-    my $lp = Net::OAuth::LP;
+    my $lp = Net::OAuth::LP->new;
     $lp->consumer_key('my-lp-app');
 
     # Authorize yourself

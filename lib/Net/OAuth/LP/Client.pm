@@ -146,7 +146,13 @@ protected_method update => sub {
 sub bug {
     my $self          = shift;
     my $bug_id        = shift;
-    my $resource_link = $self->__path_cons("/bugs/$bug_id");
+    my $resource_link = $self->__path_cons("bugs/$bug_id");
+    $self->get($resource_link);
+}
+
+sub bug_activity {
+    my $self          = shift;
+    my $resource_link = shift;
     $self->get($resource_link);
 }
 
