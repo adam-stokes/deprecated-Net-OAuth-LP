@@ -13,8 +13,6 @@ BEGIN {
     use_ok('Net::OAuth::LP') || print "Bail out!\n";
     my $lp = Net::OAuth::LP->new;
     ok(defined($lp), 'new() works');
-    ok($lp->consumer_key('mykey') && $lp->consumer_key eq 'mykey',
-        'consumer_key attr set/get ok');
 
     # Only handle authenticated tests if we have proper credentials
     if (-e catfile($ENV{HOME}, "/.lp-auth.yml")) {
@@ -22,22 +20,10 @@ BEGIN {
         ok(ref($cfg) eq "HASH", "Config read works");
         use_ok('Net::OAuth::LP::Client') || print "Bail out!\n";
 
-        my $lpc = Net::OAuth::LP::Client->new(
-            consumer_key => $cfg->{consumer_key},
-            token        => $cfg->{access_token},
-            token_secret => $cfg->{access_token_secret}
-        );
+        my $lpc = Net::OAuth::LP::Client->new;
 
         ok(defined($lpc), 'Client new() works');
 
-        my ($prj, $err, $ret) = $lpc->project('ubuntu');
-        ok(ref($prj) eq "HASH",  "got HASH project works");
-        ok(exists $prj->{title}, "got project title");
-
-        (my $person, $err, $ret) = $lpc->person('adam-stokes');
-        ok(ref($person) eq "HASH", "got HASH Person");
-        ok(exists $person->{name}, "got person name");
-        is($person->{name}, 'adam-stokes', "got correct name");
     }
 }
 
