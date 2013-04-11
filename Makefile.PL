@@ -6,8 +6,8 @@ name 'Net-OAuth-LP';
 all_from 'lib/Net/OAuth/LP.pm';
 author q{=Adam Stokes <adam.stokes@ubuntu.com>};
 license 'perl';
-no_index 'directory' => 'exaxmples';
-perl_version 5.008;
+no_index 'directory' => 'examples';
+perl_version 5.014;
 
 tests_recursive('t');
 

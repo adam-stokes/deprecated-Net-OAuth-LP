@@ -18,7 +18,9 @@ use Carp;
 use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.001006';
+BEGIN {
+  our $VERSION = '0.001006';
+}
 
 has cfg => (
     traits   => ['Hash'],
