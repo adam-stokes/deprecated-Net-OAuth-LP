@@ -9,10 +9,6 @@ use Test::More;
 # otherwise just some basic testing
 
 BEGIN {
-    use_ok('Net::OAuth::LP') || print "Bail out!\n";
-    my $lp = Net::OAuth::LP->new;
-    ok(defined($lp), 'new() works');
-
     # Only handle authenticated tests if we have proper credentials
     if (-e catfile($ENV{HOME}, "/.lp-auth.yml")) {
         my $cfg = LoadFile catfile($ENV{HOME}, "/.lp-auth.yml");
@@ -20,9 +16,11 @@ BEGIN {
         use_ok('Net::OAuth::LP::Client') || print "Bail out!\n";
 
         my $lpc = Net::OAuth::LP::Client->new;
-
         ok(defined($lpc), 'Client new() works');
 
+        use_ok('Net::OAuth::LP::Archive') || print "failed!\n";
+        my $q = Net::OAuth::LP::Archive->new;
+        ok(defined($q->archive->{dependencies_collection_link}));
     }
 }
 

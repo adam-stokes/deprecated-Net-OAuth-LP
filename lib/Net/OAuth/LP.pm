@@ -33,19 +33,19 @@ has cfg => (
 has request_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://staging.launchpad.net/+request-token',
+    default => 'https://launchpad.net/+request-token',
 );
 
 has access_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://staging.launchpad.net/+access-token',
+    default => 'https://launchpad.net/+access-token',
 );
 
 has authorize_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://staging.launchpad.net/+authorize-token',
+    default => 'https://launchpad.net/+authorize-token',
 );
 
 ###########################################################################

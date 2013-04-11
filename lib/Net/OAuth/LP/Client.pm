@@ -3,20 +3,20 @@ package Net::OAuth::LP::Client;
 use Modern::Perl '2013';
 use autodie;
 use namespace::autoclean;
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Privacy;
-use LWP::UserAgent;
-use HTTP::Request;
-use HTTP::Request::Common;
-use File::Spec::Functions;
-use Net::OAuth::LP;
-use JSON;
-use URI;
-use URI::QueryParam;
-use URI::Encode;
-use Data::Dumper;
 use Carp;
+use Data::Dumper;
+use File::Spec::Functions;
+use HTTP::Request::Common;
+use HTTP::Request;
+use JSON;
+use LWP::UserAgent;
+use Moose;
+use MooseX::Privacy;
+use MooseX::StrictConstructor;
+use Net::OAuth::LP;
+use URI::Encode;
+use URI::QueryParam;
+use URI;
 
 extends 'Net::OAuth::LP';
 
@@ -24,7 +24,7 @@ has api_url => (
     is       => 'rw',
     isa      => 'Str',
     required => 1,
-    default  => q[https://api.staging.launchpad.net/1.0]
+    default  => q[https://api.launchpad.net/1.0]
 );
 
 ###########################################################################
@@ -203,6 +203,7 @@ sub search {
     my ($self, $path, $segments) = @_;
     my $query = $self->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
+    say Dumper($uri);
     $self->get($uri);
 }
 

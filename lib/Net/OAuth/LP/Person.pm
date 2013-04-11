@@ -11,18 +11,12 @@ use Data::Dumper;
 
 extends 'Net::OAuth::LP::Client';
 
-has 'details' => (
-    traits => ['Hash'],
-    is     => 'rw',
-    isa    => 'HashRef',
-);
-
 ###############################################################################
 # Public methods
 ###############################################################################
 sub info {
   my ($self, $name) = @_;
-  $self->details($self->get('~'.$name));
+  $self->get($name);
 }
 
 =head1 NAME
