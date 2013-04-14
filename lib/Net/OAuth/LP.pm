@@ -1,21 +1,19 @@
 package Net::OAuth::LP;
 
-use Modern::Perl '2013';
-use autodie;
-use Moose;
-use Moose::Util::TypeConstraints;
-use MooseX::StrictConstructor;
-use MooseX::Privacy;
-use namespace::autoclean;
+use perl5i::2;
+use Browser::Open qw[open_browser];
+use Data::Dumper;
 use File::Spec::Functions;
+use HTTP::Request::Common;
 use Log::Log4perl qw[:easy];
 use LWP::UserAgent;
-use HTTP::Request::Common;
-use Browser::Open qw[open_browser];
+use Moose;
+use Moose::Util::TypeConstraints;
+use MooseX::Privacy;
+use MooseX::StrictConstructor;
+use namespace::autoclean;
 use Net::OAuth;
 use YAML qw[LoadFile DumpFile];
-use Carp;
-use Data::Dumper;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 BEGIN {

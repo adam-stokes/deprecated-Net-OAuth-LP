@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use YAML qw[LoadFile];
 use File::Spec::Functions;
-use Test::More;
+use Test::Most;
 
 # Some tests run if we've already authenticated again launchpad.net
 # otherwise just some basic testing

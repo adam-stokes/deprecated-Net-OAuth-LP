@@ -23,5 +23,6 @@ on configure => sub {
 
 on test => sub {
     requires 'Test::More';
+    requires 'Test::Most';
     requires 'perl', '5.006';
 };
