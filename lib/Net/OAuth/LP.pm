@@ -1,11 +1,11 @@
 package Net::OAuth::LP;
 
-use perl5i::2;
+use Modern::Perl '2013';
+use true;
 use Browser::Open qw[open_browser];
 use Data::Dumper;
 use File::Spec::Functions;
 use HTTP::Request::Common;
-use Log::Log4perl qw[:easy];
 use LWP::UserAgent;
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -216,4 +216,3 @@ See L<http://dev.perl.org/licenses/> for more information.
 =cut
 
 __PACKAGE__->meta->make_immutable;
-1;    # End of Net::OAuth::LP
