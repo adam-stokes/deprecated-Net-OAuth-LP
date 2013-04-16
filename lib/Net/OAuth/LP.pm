@@ -13,6 +13,7 @@ use MooseX::Privacy;
 use MooseX::StrictConstructor;
 use namespace::autoclean;
 use Net::OAuth;
+use Carp;
 use YAML qw[LoadFile DumpFile];
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 

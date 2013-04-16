@@ -3,6 +3,7 @@ requires 'HTTP::Request';
 requires 'HTTP::Request::Common';
 requires 'JSON';
 requires 'LWP::UserAgent';
+requires 'LWP::Protocol::https';
 requires 'Log::Log4perl';
 requires 'Modern::Perl';
 requires 'Moose';

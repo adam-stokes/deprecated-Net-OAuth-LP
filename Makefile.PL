@@ -47,5 +47,6 @@ requires(
 );
 
 install_as_cpan;
+auto_manifest;
 auto_install;
 WriteAll;
