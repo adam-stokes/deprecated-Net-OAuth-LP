@@ -1,0 +1,17 @@
+Source: libnet-oauth-lp-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 8)
+Build-Depends-Indep: perl (>= 5.10.1), libnet-oauth-perl
+Maintainer: Adam Stokes <adam.stokes@ubuntu.com>
+Standards-Version: 3.9.2
+Homepage: https://github.com/battlemidget/Net-OAuth-LP
+Vcs-Git: https://github.com/battlemidget/Net-OAuth-LP.git
+Vcs-Browser: https://github.com/battlemidget/Net-OAuth-LP
+
+Package: libnet-oauth-lp-perl
+Architecture: all
+Depends: ${perl:Depends}, ${misc:Depends}, perl (>= 5.10.1), libnet-oauth-perl
+Description: Launchpad.net authorization and client
+ Net::OAuth::LP implements an easy way to authorize yourself against
+ Launchpad.net and access its API RESTfully.
