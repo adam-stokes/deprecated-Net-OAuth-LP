@@ -2,7 +2,7 @@ Source: libnet-oauth-lp-perl
 Section: perl
 Priority: optional
 Build-Depends: debhelper (>= 8)
-Build-Depends-Indep: perl (>= 5.10.1), libnet-oauth-perl
+Build-Depends-Indep: perl (>= 5.10.1), libnet-oauth-perl, libtest-most-perl, libyaml-perl, libmoose-perl, libmoosex-strictconstructor-perl, libmodern-perl-perl
 Maintainer: Adam Stokes <adam.stokes@ubuntu.com>
 Standards-Version: 3.9.2
 Homepage: https://github.com/battlemidget/Net-OAuth-LP
