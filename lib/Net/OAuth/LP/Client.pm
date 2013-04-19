@@ -113,6 +113,7 @@ protected_method _request => sub {
     }
     else {
         my $res = $self->ua->request(GET $request->to_url);
+        say "\n\n" . Dumper($res) . "\n\n";
         if ($res->is_success) {
             return decode_json($res->content);
         }
@@ -208,7 +209,7 @@ sub search {
     my ($self, $path, $segments) = @_;
     my $query = $self->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
-    say Dumper($uri);
+    carp($uri);
     $self->get($uri);
 }
 
