@@ -150,6 +150,11 @@ sub bug {
     $self->get($resource_link);
 }
 
+sub bug_task {
+  my ($self, $resource_link) = @_;
+  $self->get($resource_link);
+}
+
 sub bug_activity {
     my $self          = shift;
     my $resource_link = shift;
