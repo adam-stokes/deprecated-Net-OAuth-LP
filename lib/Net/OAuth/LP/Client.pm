@@ -44,7 +44,7 @@ private_method __query_from_hash => sub {
 private_method __path_cons => sub {
     my $self = shift;
     my $path = shift;
-    if ($path =~ /api/) {
+    if ($path =~ /^http.*api/) {
         return URI->new("$path", 'https');
     }
     URI->new($self->api_url . "/$path", 'https');
@@ -54,7 +54,7 @@ private_method __oauth_authorization_header => sub {
     my ($self, $request) = @_;
     my $enc = URI::Encode->new({encode_reserved => 1});
     join(",",
-        'OAuth realm="https://api.staging.launchpad.net"',
+        'OAuth realm="https://api.launchpad.net"',
         'oauth_consumer_key="' . $request->consumer_key . '"',
         'oauth_token="' . $request->token . '"',
         'oauth_signature_method="PLAINTEXT"',
@@ -113,7 +113,6 @@ protected_method _request => sub {
     }
     else {
         my $res = $self->ua->request(GET $request->to_url);
-        say "\n\n" . Dumper($res) . "\n\n";
         if ($res->is_success) {
             return decode_json($res->content);
         }
@@ -209,7 +208,6 @@ sub search {
     my ($self, $path, $segments) = @_;
     my $query = $self->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
-    carp($uri);
     $self->get($uri);
 }
 
