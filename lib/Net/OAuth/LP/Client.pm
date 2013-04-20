@@ -198,7 +198,7 @@ sub bug_set_importance {
 ###################################
 sub person {
   my ($self, $person) = @_;
-  $self->get($name);
+  $self->get($person);
 }
 
 ###################################
