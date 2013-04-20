@@ -194,6 +194,14 @@ sub bug_set_importance {
 }
 
 ###################################
+# Person
+###################################
+sub person {
+  my ($self, $person) = @_;
+  $self->get($name);
+}
+
+###################################
 # Resource Link getter
 ###################################
 sub resource {
