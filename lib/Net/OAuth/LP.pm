@@ -1,7 +1,6 @@
 package Net::OAuth::LP;
 
 use Modern::Perl '2013';
-use true;
 use Browser::Open qw[open_browser];
 use Data::Dumper;
 use File::Spec::Functions;
@@ -146,6 +145,8 @@ sub _nonce {
 
     $nonce;
 }
+__PACKAGE__->meta->make_immutable;
+1;
 
 =head1 NAME
 
@@ -216,4 +217,4 @@ See L<http://dev.perl.org/licenses/> for more information.
 
 =cut
 
-__PACKAGE__->meta->make_immutable;
+
