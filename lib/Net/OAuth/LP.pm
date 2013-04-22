@@ -174,6 +174,14 @@ Holds the string that identifies your application.
 
     $lp->consumer_key('my-app-name');
 
+=head2 C<token>
+
+Token received from authorized request
+
+=head2 C<token_secret>
+
+Token secret received from authorized request
+
 =head1 METHODS
 
 =head2 C<new>

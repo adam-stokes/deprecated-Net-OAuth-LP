@@ -259,6 +259,18 @@ Set title of bug
 
     $lp->bug_set_title($bug, 'A new title');
 
+=head2 C<bug_activity>
+
+view bug activity
+
+    $lp->bug_activity($resource);
+
+=head2 C<bug_task>
+
+view bug tasks
+
+    $lp->bug_task($resource);
+
 =head2 C<bug_set_importance>
 
     $lp->bug_set_importance($bug, 'Critical');
@@ -267,9 +279,9 @@ Set title of bug
 
     $lp->bug_set_assignee($bug, $person_object);
 
-=head2 C<project>
+=head2 C<person>
 
-    $lp->project('ubuntu');
+    $lp->person('lp-login');
 
 =head2 C<search>
 
