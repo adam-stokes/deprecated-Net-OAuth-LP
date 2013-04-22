@@ -151,8 +151,8 @@ sub bug {
 }
 
 sub bug_task {
-  my ($self, $resource_link) = @_;
-  $self->get($resource_link);
+    my ($self, $resource_link) = @_;
+    $self->get($resource_link);
 }
 
 sub bug_activity {
@@ -197,8 +197,8 @@ sub bug_set_importance {
 # Person
 ###################################
 sub person {
-  my ($self, $person) = @_;
-  $self->get($person);
+    my ($self, $person) = @_;
+    $self->get($person);
 }
 
 ###################################
@@ -218,6 +218,10 @@ sub search {
     my $uri = join("?", $path, $query);
     $self->get($uri);
 }
+
+
+__PACKAGE__->meta->make_immutable;
+1;    # End of Net::OAuth::LP::Client
 
 =head1 NAME
 
@@ -295,5 +299,3 @@ view bug tasks
 
 =cut
 
-__PACKAGE__->meta->make_immutable;
-1;    # End of Net::OAuth::LP::Client
