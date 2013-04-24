@@ -16,9 +16,7 @@ use Carp;
 use YAML qw[LoadFile DumpFile];
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-BEGIN {
-  our $VERSION = '0.001006';
-}
+our $VERSION = '0.01';
 
 has cfg => (
     traits   => ['Hash'],

@@ -9,6 +9,8 @@ use Test::Most;
 # otherwise just some basic testing
 
 BEGIN {
+    use_ok('Net::OAuth::LP') || print "Bail\n";
+
     # Only handle authenticated tests if we have proper credentials
     if (-e catfile($ENV{HOME}, "/.lp-auth.yml")) {
         my $cfg = LoadFile catfile($ENV{HOME}, "/.lp-auth.yml");
