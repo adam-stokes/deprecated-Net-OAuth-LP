@@ -6,10 +6,7 @@ INSTALLATION
 
 To install this module, run the following commands:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+	dzil install
 
 SUPPORT AND DOCUMENTATION
 
