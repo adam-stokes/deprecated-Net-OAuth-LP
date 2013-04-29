@@ -1,5 +1,7 @@
 Net-OAuth-LP
 
+[![Build Status](https://travis-ci.org/battlemidget/Net-OAuth-LP.png?branch=develop)](https://travis-ci.org/battlemidget/Net-OAuth-LP)
+
 Launchpad.net authorization and client utilities over OAuth 1.0
 
 INSTALLATION
