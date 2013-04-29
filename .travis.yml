@@ -12,3 +12,7 @@ install:
   - "dzil listdeps | cpanm --notest"
 script:
   - "dzil test"
+matrix:
+  allow_failures:
+    - perl: "5.10"
+    - perl: "5.12"
