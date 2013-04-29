@@ -1,31 +1,24 @@
 package Net::OAuth::LP::Client;
 
-use Modern::Perl '2013';
-use autodie;
 use namespace::autoclean;
+
+use Moose;
+use MooseX::Privacy;
+use MooseX::StrictConstructor;
+
 use Carp;
 use Data::Dumper;
 use File::Spec::Functions;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;
-use LWP::UserAgent;
-use Moose;
-use MooseX::Privacy;
-use MooseX::StrictConstructor;
-use Net::OAuth::LP;
+use autodie;
+
 use URI::Encode;
 use URI::QueryParam;
 use URI;
 
 extends 'Net::OAuth::LP';
-
-has api_url => (
-    is       => 'rw',
-    isa      => 'Str',
-    required => 1,
-    default  => q[https://api.launchpad.net/1.0]
-);
 
 ###########################################################################
 # Private
@@ -84,7 +77,7 @@ protected_method _request => sub {
     $request->sign;
 
     if ($method eq "POST") {
-        my $res = $self->ua->request(POST $request->to_url,
+        my $res = $self->request(POST $request->to_url,
             Content => $self->__query_from_hash($params));
         if ($res->is_success) {
             return decode_json($res->content);
@@ -100,7 +93,7 @@ protected_method _request => sub {
         $_req->header(
             'Authorization' => $self->__oauth_authorization_header($request));
         $_req->content(encode_json($params));
-        my $res = $self->ua->request($_req);
+        my $res = $self->request($_req);
 
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
@@ -112,7 +105,7 @@ protected_method _request => sub {
         }
     }
     else {
-        my $res = $self->ua->request(GET $request->to_url);
+        my $res = $self->request(GET $request->to_url);
         if ($res->is_success) {
             return decode_json($res->content);
         }
@@ -138,7 +131,6 @@ protected_method update => sub {
 ###############################################################################
 # Public methods
 ###############################################################################
-
 
 ###################################
 # Bug Getters

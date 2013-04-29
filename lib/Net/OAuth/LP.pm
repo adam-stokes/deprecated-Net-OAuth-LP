@@ -1,53 +1,82 @@
 package Net::OAuth::LP;
 
-use Modern::Perl '2013';
-use Browser::Open qw[open_browser];
-use Data::Dumper;
-use File::Spec::Functions;
-use HTTP::Request::Common;
-use LWP::UserAgent;
+use namespace::autoclean;
+
 use Moose;
 use Moose::Util::TypeConstraints;
 use MooseX::Privacy;
 use MooseX::StrictConstructor;
-use namespace::autoclean;
-use Net::OAuth;
+
+use Browser::Open qw[open_browser];
 use Carp;
+use Data::Dumper;
+use File::Spec::Functions;
+use HTTP::Request::Common;
 use YAML qw[LoadFile DumpFile];
+use LWP::UserAgent;
+
+use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.01';
+BEGIN {
+  use version; our $VERSION = version->declare("v0.0.1");
+}
 
 has cfg => (
     traits   => ['Hash'],
     is       => 'ro',
     isa      => 'HashRef',
     default  => sub { LoadFile catfile($ENV{HOME}, ".lp-auth.yml") },
-    required => 1,
+    lazy => 1,
 );
 
 has request_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+request-token',
+    lazy    => 1,
 );
 
 has access_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+access-token',
+    lazy    => 1,
 );
 
 has authorize_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+authorize-token',
+    lazy    => 1,
+);
+
+has ua => (
+    is      => 'ro',
+    isa     => 'LWP::UserAgent',
+    handles => [qw(request)],
+    default => sub { LWP::UserAgent->new() },
+);
+
+has api_url => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => q[https://api.launchpad.net/1.0]
 );
 
 ###########################################################################
 # Protected
 ###########################################################################
-protected_method ua => sub { LWP::UserAgent->new };
+protected_method _nonce => sub {
+    my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
+    my $nonce = '';
+    for (0 .. 31) {
+        $nonce .= $a[rand(scalar(@a))];
+    }
+
+    $nonce;
+};
 
 ###########################################################################
 # Public
@@ -80,7 +109,7 @@ sub login_with_creds {
     );
 
     $request->sign;
-    my $res = $self->ua->request(POST $request->to_url,
+    my $res = $self->request(POST $request->to_url,
         Content => $request->to_post_body);
 
     my $token;
@@ -97,7 +126,7 @@ sub login_with_creds {
         croak("Unable to get request token or secret");
     }
 
-    say "Pulling authorization credentials.";
+    print "Pulling authorization credentials.\n";
 
     $request = Net::OAuth->request('access token')->new(
         consumer_key     => $self->consumer_key,
@@ -113,7 +142,7 @@ sub login_with_creds {
 
     $request->sign;
 
-    $res = $self->ua->request(POST $request->to_url,
+    $res = $self->request(POST $request->to_url,
         Content => $request->to_post_body);
     if ($res->is_success) {
         my $response =
@@ -131,18 +160,6 @@ sub login_with_creds {
 }
 
 
-# unexported helpers
-
-# return nonce for signed request
-sub _nonce {
-    my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
-    my $nonce = '';
-    for (0 .. 31) {
-        $nonce .= $a[rand(scalar(@a))];
-    }
-
-    $nonce;
-}
 __PACKAGE__->meta->make_immutable;
 1;
 
