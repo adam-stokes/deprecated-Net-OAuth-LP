@@ -1,15 +1,23 @@
 Net-OAuth-LP
 
+[![Build Status](https://travis-ci.org/battlemidget/Net-OAuth-LP.png?branch=develop)](https://travis-ci.org/battlemidget/Net-OAuth-LP)
+
 Launchpad.net authorization and client utilities over OAuth 1.0
 
+REQUIREMENTS
+
+	perl v5.14.x or v.5.16.x
+	perlbrew (optional)
+	cpanm
+	Dist::Zilla
+	
 INSTALLATION
 
 To install this module, run the following commands:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+	dzil authordeps | cpanm --notest
+	dzil listdeps | cpanm --notest
+	dzil install
 
 SUPPORT AND DOCUMENTATION
 
