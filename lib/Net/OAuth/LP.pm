@@ -41,22 +41,43 @@ has access_token_secret => (
 has request_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+request-token',
-    lazy    => 1,
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+request-token';
+        }
+        else {
+            'https://launchpad.net/+request-token';
+        }
+    },
+    lazy => 1,
 );
 
 has access_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+access-token',
-    lazy    => 1,
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+access-token';
+        }
+        else {
+            'https://launchpad.net/+access-token';
+        }
+    },
+    lazy => 1,
 );
 
 has authorize_token_url => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'https://launchpad.net/+authorize-token',
-    lazy    => 1,
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+authorize-token';
+        }
+        else {
+            'https://launchpad.net/+authorize-token';
+        }
+    },
+    lazy => 1,
 );
 
 has ua => (
@@ -70,7 +91,20 @@ has api_url => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => q[https://api.launchpad.net/1.0]
+    default => method {
+        if ($self->staging) {
+            'https://api.staging.launchpad.net/1.0';
+        }
+        else {
+            'https://api.launchpad.net/1.0';
+        }
+    },
+);
+
+has staging => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
 );
 
 ###########################################################################

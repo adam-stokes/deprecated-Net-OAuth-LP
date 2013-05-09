@@ -71,12 +71,13 @@ method _request ($resource, $params, $method) {
     $request->sign;
 
     if ($method eq "POST") {
-        my $res = $self->lwp_req(POST $request->to_url,
-            Content => $self->__query_from_hash($params));
-	print Dumper($res);
-        if ($res->is_success) {
-            return decode_json($res->content);
-        }
+        my $_req =
+          HTTP::Request->new(POST => $request->normalized_request_url);
+        $_req->header(
+            'Authorization' => $self->__oauth_authorization_header($request));
+        $_req->content($self->__query_from_hash($params));
+        my $res = $self->lwp_req($_req);
+        die "Failed to POST: ".$res->{_msg} unless ($res->{_rc} == 201);
     }
     elsif ($method eq "PATCH") {
 
@@ -144,7 +145,8 @@ method bug_activity ($resource_link) {
 ###################################
 # Bug Setters
 ###################################
-method bug_set_tags ($resource, $tags){
+method bug_set_tags ($resource, $tags) {
+
     # Merge new tags into existing and process a
     # -<tag> in order to remove a tag.
     # FIXME: Incomplete
@@ -157,13 +159,13 @@ method bug_set_title ($resource, $title) {
     $self->update($resource->{self_link}, {'title' => $title});
 }
 
-method bug_set_assignee($resource, $assignee) {
+method bug_set_assignee ($resource, $assignee) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link},
         {'assignee_link' => $assignee->{self_link}});
 }
 
-method bug_set_importance($resource, $importance) {
+method bug_set_importance ($resource, $importance) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link}, {'importance' => $importance});
 }
@@ -202,7 +204,7 @@ method search ($path, $segments) {
 
 
 __PACKAGE__->meta->make_immutable;
-1;                       # End of Net::OAuth::LP::Client
+1;                          # End of Net::OAuth::LP::Client
 
 
 =head1 NAME

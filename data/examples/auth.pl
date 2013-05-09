@@ -10,6 +10,7 @@ use File::Spec::Functions;
 
 my $client = Net::OAuth::LP->new(consumer_key => 'fwapfwap');
 
+$client->staging(1);
 $client->login_with_creds;
 
 print $client->dump;

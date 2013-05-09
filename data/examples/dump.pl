@@ -17,4 +17,9 @@ my $client = Net::OAuth::LP::Client->new(
     access_token_secret => $creds->{access_token_secret}
 );
 
-print Dumper($client->bug('1'));
+# Use staging setup for now.
+$client->staging(1);
+
+my $bug = $client->bug('859600');
+
+$client->bug_new_message($bug->{self_link}, 'the cow flies at noon!');
