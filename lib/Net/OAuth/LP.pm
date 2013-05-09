@@ -134,8 +134,8 @@ method login_with_creds {
     die "Failed to get response" unless $res->is_success;
     $response =
       Net::OAuth->response('access token')->from_post_body($res->content);
-    $self->access_token        = $response->token;
-    $self->access_token_secret = $response->token_secret;
+    $self->access_token($response->token);
+    $self->access_token_secret($response->token_secret);
 }
 
 
