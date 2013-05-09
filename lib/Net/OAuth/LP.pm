@@ -6,28 +6,38 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use MooseX::Privacy;
 use MooseX::StrictConstructor;
+use MooseX::Method::Signatures;
 
 use Browser::Open qw[open_browser];
-use Carp;
-use Data::Dumper;
-use File::Spec::Functions;
 use HTTP::Request::Common;
-use YAML qw[LoadFile DumpFile];
 use LWP::UserAgent;
 
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 BEGIN {
-  use version; our $VERSION = version->declare("v0.0.1");
+    use version; our $VERSION = version->declare("v0.1.0");
 }
 
-has cfg => (
-    traits   => ['Hash'],
-    is       => 'ro',
-    isa      => 'HashRef',
-    default  => sub { LoadFile catfile($ENV{HOME}, ".lp-auth.yml") },
-    lazy => 1,
+has consumer_key => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => 'you-dont-know-me',
+);
+
+has access_token => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+    lazy    => 1,
+);
+
+has access_token_secret => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+    lazy    => 1,
 );
 
 has request_token_url => (
@@ -54,7 +64,7 @@ has authorize_token_url => (
 has ua => (
     is      => 'ro',
     isa     => 'LWP::UserAgent',
-    handles => [qw(request)],
+    handles => {lwp_req => 'request',},
     default => sub { LWP::UserAgent->new() },
 );
 
@@ -81,23 +91,7 @@ protected_method _nonce => sub {
 ###########################################################################
 # Public
 ###########################################################################
-sub token {
-    my $self = shift;
-    $self->cfg->{access_token};
-}
-
-sub token_secret {
-    my $self = shift;
-    $self->cfg->{access_token_secret};
-}
-
-sub consumer_key {
-    my $self = shift;
-    $self->cfg->{consumer_key};
-}
-
-sub login_with_creds {
-    my $self    = shift;
+method login_with_creds {
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
@@ -109,30 +103,23 @@ sub login_with_creds {
     );
 
     $request->sign;
-    my $res = $self->request(POST $request->to_url,
+    my $res = $self->lwp_req(POST $request->to_url,
         Content => $request->to_post_body);
 
-    my $token;
-    my $token_secret;
-    if ($res->is_success) {
-        my $response =
-          Net::OAuth->response('request token')
-          ->from_post_body($res->content);
-        $token        = $response->token;
-        $token_secret = $response->token_secret;
-        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
-    }
-    else {
-        croak("Unable to get request token or secret");
-    }
+    die "Failed to get response" unless $res->is_success;
+    my $response =
+      Net::OAuth->response('request token')->from_post_body($res->content);
+    my $_token        = $response->token;
+    my $_token_secret = $response->token_secret;
+    open_browser($self->authorize_token_url . "?oauth_token=" . $_token);
 
     print "Pulling authorization credentials.\n";
 
     $request = Net::OAuth->request('access token')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        token            => $token,
-        token_secret     => $token_secret,
+        token            => $_token,
+        token_secret     => $_token_secret,
         request_url      => $self->access_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
@@ -142,21 +129,13 @@ sub login_with_creds {
 
     $request->sign;
 
-    $res = $self->request(POST $request->to_url,
+    $res = $self->lwp_req(POST $request->to_url,
         Content => $request->to_post_body);
-    if ($res->is_success) {
-        my $response =
-          Net::OAuth->response('access token')->from_post_body($res->content);
-        umask 0177;
-        DumpFile catfile($ENV{HOME}, '.lp-auth.yml'),
-          { consumer_key        => $self->consumer_key,
-            access_token        => $response->token,
-            access_token_secret => $response->token_secret,
-          };
-    }
-    else {
-        croak("Unable to obtain access token and secret");
-    }
+    die "Failed to get response" unless $res->is_success;
+    $response =
+      Net::OAuth->response('access token')->from_post_body($res->content);
+    $self->access_token        = $response->token;
+    $self->access_token_secret = $response->token_secret;
 }
 
 

@@ -5,6 +5,7 @@ use namespace::autoclean;
 use Moose;
 use MooseX::Privacy;
 use MooseX::StrictConstructor;
+use MooseX::Method::Signatures;
 
 use Carp;
 use Data::Dumper;
@@ -66,8 +67,8 @@ protected_method _request => sub {
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        token            => $self->token,
-        token_secret     => $self->token_secret,
+        token            => $self->access_token,
+        token_secret     => $self->access_token_secret,
         request_url      => $uri->as_string,
         request_method   => $method,
         signature_method => 'PLAINTEXT',
@@ -105,12 +106,13 @@ protected_method _request => sub {
         }
     }
     else {
-        my $res = $self->request(GET $request->to_url);
+        my $res = $self->lwp_req(GET $request->to_url);
+        print Dumper($res);
+
         if ($res->is_success) {
             return decode_json($res->content);
         }
     }
-    carp "Failed to pull resource";
 };
 
 protected_method get => sub {
@@ -135,21 +137,16 @@ protected_method update => sub {
 ###################################
 # Bug Getters
 ###################################
-sub bug {
-    my $self          = shift;
-    my $bug_id        = shift;
+method bug ($bug_id) {
     my $resource_link = $self->__path_cons("bugs/$bug_id");
     $self->get($resource_link);
 }
 
-sub bug_task {
-    my ($self, $resource_link) = @_;
+method bug_task ($resource_link) {
     $self->get($resource_link);
 }
 
-sub bug_activity {
-    my $self          = shift;
-    my $resource_link = shift;
+method bug_activity ($resource_link) {
     $self->get($resource_link);
 }
 
@@ -188,24 +185,21 @@ sub bug_set_importance {
 ###################################
 # Person
 ###################################
-sub person {
-    my ($self, $person) = @_;
-    $self->get($person);
+method person ($name) {
+    $self->get($name);
 }
 
 ###################################
 # Resource Link getter
 ###################################
-sub resource {
-    my ($self, $resource_link) = @_;
+method resource ($resource_link) {
     $self->get($resource_link);
 }
 
 ###################################
 # Search
 ###################################
-sub search {
-    my ($self, $path, $segments) = @_;
+method search ($path, $segments) {
     my $query = $self->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
     $self->get($uri);
@@ -213,7 +207,8 @@ sub search {
 
 
 __PACKAGE__->meta->make_immutable;
-1;    # End of Net::OAuth::LP::Client
+1;                # End of Net::OAuth::LP::Client
+
 
 =head1 NAME
 
@@ -224,22 +219,22 @@ Net::OAuth::LP::Client - Launchpad.net Client routines
 Client for performing query tasks.
 
     my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
-                                         token => 'accesstoken',
-                                         token_secret => 'accesstokensecret');
+                                         access_token => 'accesstoken',
+                                         access_token_secret => 'accesstokensecret');
 
     # Use your launchpad.net name in place of adam-stokes. 
     # You can figure that out by visiting
-    # https://launchpad.net/~ and look at Launchpad Id.
+    # https://launchpad.net/~/ and look at Launchpad Id.
 
-    my $person = $lp->person('adam-stokes');
+    my $person = $lp->person('~adam-stokes');
 
 =head1 METHODS
 
 =head2 C<new>
 
     my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
-                                         token => 'accesstoken',
-                                         token_secret => 'accesstokensecret');
+                                         access_token => 'accesstoken',
+                                         access_token_secret => 'accesstokensecret');
 
 =head2 C<bug>
 
