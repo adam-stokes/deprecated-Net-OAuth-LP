@@ -111,8 +111,12 @@ method get ($resource) {
     $self->_request($resource, undef, 'GET');
 }
 
+
 method post ($resource, $params) {
-    $self->_request($resource, $params, 'POST');
+    my $query = $self->__query_from_hash($params);
+    my $uri = join("?", $resource, $query);
+
+    $self->_request($uri, $params, 'POST');
 }
 
 method update ($resource, $params) {
@@ -142,9 +146,7 @@ method bug_activity ($resource_link) {
 ###################################
 # Bug Setters
 ###################################
-sub bug_set_tags {
-    my ($self, $resource, $tags) = @_;
-
+method bug_set_tags ($resource, $tags){
     # Merge new tags into existing and process a
     # -<tag> in order to remove a tag.
     # FIXME: Incomplete
@@ -153,22 +155,28 @@ sub bug_set_tags {
     $self->update($resource->{self_link}, {'tags' => \@filtered_lists});
 }
 
-sub bug_set_title {
-    my ($self, $resource, $title) = @_;
+method bug_set_title ($resource, $title) {
     $self->update($resource->{self_link}, {'title' => $title});
 }
 
-sub bug_set_assignee {
-    my ($self, $resource, $assignee) = @_;
+method bug_set_assignee($resource, $assignee) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link},
         {'assignee_link' => $assignee->{self_link}});
 }
 
-sub bug_set_importance {
-    my ($self, $resource, $importance) = @_;
+method bug_set_importance($resource, $importance) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link}, {'importance' => $importance});
+}
+
+method bug_new_message ($resource_link, $msg) {
+    $self->post(
+        $resource_link,
+        {   'ws.op'   => 'newMessage',
+            'content' => $msg
+        }
+    );
 }
 
 ###################################
@@ -196,7 +204,7 @@ method search ($path, $segments) {
 
 
 __PACKAGE__->meta->make_immutable;
-1;                # End of Net::OAuth::LP::Client
+1;                       # End of Net::OAuth::LP::Client
 
 
 =head1 NAME
@@ -225,6 +233,16 @@ Client for performing query tasks.
                                          access_token => 'accesstoken',
                                          access_token_secret => 'accesstokensecret');
 
+=head2 C<post>
+
+    Takes resource link and params, and performs
+    POST on uri
+
+    $lp->post('lp.net/bugs/1', { 'ws.op' => 'newMessage',
+                                 'content' => "This is a message"});
+
+=cut
+
 =head2 C<bug>
 
     $lp->bug(1);
@@ -238,6 +256,12 @@ Client for performing query tasks.
 Set title of bug
 
     $lp->bug_set_title($bug, 'A new title');
+
+=head2 C<bug_new_message>
+
+Add new message to bug
+
+    $lp->bug_new_message($bug->{self_link}, "This is a comment");
 
 =head2 C<bug_activity>
 
