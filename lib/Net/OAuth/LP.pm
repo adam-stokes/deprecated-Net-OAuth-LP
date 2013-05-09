@@ -3,8 +3,6 @@ package Net::OAuth::LP;
 use namespace::autoclean;
 
 use Moose;
-use Moose::Util::TypeConstraints;
-use MooseX::Privacy;
 use MooseX::StrictConstructor;
 use MooseX::Method::Signatures;
 
@@ -78,7 +76,7 @@ has api_url => (
 ###########################################################################
 # Protected
 ###########################################################################
-protected_method _nonce => sub {
+method _nonce {
     my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
     my $nonce = '';
     for (0 .. 31) {
@@ -86,7 +84,7 @@ protected_method _nonce => sub {
     }
 
     $nonce;
-};
+}
 
 ###########################################################################
 # Public
