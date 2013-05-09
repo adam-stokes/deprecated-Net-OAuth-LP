@@ -71,8 +71,9 @@ method _request ($resource, $params, $method) {
     $request->sign;
 
     if ($method eq "POST") {
-        my $res = $self->request(POST $request->to_url,
+        my $res = $self->lwp_req(POST $request->to_url,
             Content => $self->__query_from_hash($params));
+	print Dumper($res);
         if ($res->is_success) {
             return decode_json($res->content);
         }
@@ -87,7 +88,7 @@ method _request ($resource, $params, $method) {
         $_req->header(
             'Authorization' => $self->__oauth_authorization_header($request));
         $_req->content(encode_json($params));
-        my $res = $self->request($_req);
+        my $res = $self->lwp_req($_req);
 
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
@@ -113,10 +114,7 @@ method get ($resource) {
 
 
 method post ($resource, $params) {
-    my $query = $self->__query_from_hash($params);
-    my $uri = join("?", $resource, $query);
-
-    $self->_request($uri, $params, 'POST');
+    $self->_request($resource, $params, 'POST');
 }
 
 method update ($resource, $params) {
