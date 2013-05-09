@@ -1,74 +1,95 @@
 package Net::OAuth::LP;
 
-use Modern::Perl '2013';
+use namespace::autoclean;
+
+use Moose;
+use MooseX::StrictConstructor;
+use MooseX::Method::Signatures;
+
 use Browser::Open qw[open_browser];
-use Data::Dumper;
-use File::Spec::Functions;
 use HTTP::Request::Common;
 use LWP::UserAgent;
-use Moose;
-use Moose::Util::TypeConstraints;
-use MooseX::Privacy;
-use MooseX::StrictConstructor;
-use namespace::autoclean;
+
 use Net::OAuth;
-use Carp;
-use YAML qw[LoadFile DumpFile];
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.01';
+BEGIN {
+    use version; our $VERSION = version->declare("v0.1.0");
+}
 
-has cfg => (
-    traits   => ['Hash'],
-    is       => 'ro',
-    isa      => 'HashRef',
-    default  => sub { LoadFile catfile($ENV{HOME}, ".lp-auth.yml") },
-    required => 1,
+has consumer_key => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => 'you-dont-know-me',
+);
+
+has access_token => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+    lazy    => 1,
+);
+
+has access_token_secret => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+    lazy    => 1,
 );
 
 has request_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+request-token',
+    lazy    => 1,
 );
 
 has access_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+access-token',
+    lazy    => 1,
 );
 
 has authorize_token_url => (
     is      => 'ro',
     isa     => 'Str',
     default => 'https://launchpad.net/+authorize-token',
+    lazy    => 1,
+);
+
+has ua => (
+    is      => 'ro',
+    isa     => 'LWP::UserAgent',
+    handles => {lwp_req => 'request',},
+    default => sub { LWP::UserAgent->new() },
+);
+
+has api_url => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => q[https://api.launchpad.net/1.0]
 );
 
 ###########################################################################
 # Protected
 ###########################################################################
-protected_method ua => sub { LWP::UserAgent->new };
+method _nonce {
+    my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
+    my $nonce = '';
+    for (0 .. 31) {
+        $nonce .= $a[rand(scalar(@a))];
+    }
+
+    $nonce;
+}
 
 ###########################################################################
 # Public
 ###########################################################################
-sub token {
-    my $self = shift;
-    $self->cfg->{access_token};
-}
-
-sub token_secret {
-    my $self = shift;
-    $self->cfg->{access_token_secret};
-}
-
-sub consumer_key {
-    my $self = shift;
-    $self->cfg->{consumer_key};
-}
-
-sub login_with_creds {
-    my $self    = shift;
+method login_with_creds {
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
@@ -80,30 +101,23 @@ sub login_with_creds {
     );
 
     $request->sign;
-    my $res = $self->ua->request(POST $request->to_url,
+    my $res = $self->lwp_req(POST $request->to_url,
         Content => $request->to_post_body);
 
-    my $token;
-    my $token_secret;
-    if ($res->is_success) {
-        my $response =
-          Net::OAuth->response('request token')
-          ->from_post_body($res->content);
-        $token        = $response->token;
-        $token_secret = $response->token_secret;
-        open_browser($self->authorize_token_url . "?oauth_token=" . $token);
-    }
-    else {
-        croak("Unable to get request token or secret");
-    }
+    die "Failed to get response" unless $res->is_success;
+    my $response =
+      Net::OAuth->response('request token')->from_post_body($res->content);
+    my $_token        = $response->token;
+    my $_token_secret = $response->token_secret;
+    open_browser($self->authorize_token_url . "?oauth_token=" . $_token);
 
-    say "Pulling authorization credentials.";
+    print "Pulling authorization credentials.\n";
 
     $request = Net::OAuth->request('access token')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
-        token            => $token,
-        token_secret     => $token_secret,
+        token            => $_token,
+        token_secret     => $_token_secret,
         request_url      => $self->access_token_url,
         request_method   => 'POST',
         signature_method => 'PLAINTEXT',
@@ -113,36 +127,16 @@ sub login_with_creds {
 
     $request->sign;
 
-    $res = $self->ua->request(POST $request->to_url,
+    $res = $self->lwp_req(POST $request->to_url,
         Content => $request->to_post_body);
-    if ($res->is_success) {
-        my $response =
-          Net::OAuth->response('access token')->from_post_body($res->content);
-        umask 0177;
-        DumpFile catfile($ENV{HOME}, '.lp-auth.yml'),
-          { consumer_key        => $self->consumer_key,
-            access_token        => $response->token,
-            access_token_secret => $response->token_secret,
-          };
-    }
-    else {
-        croak("Unable to obtain access token and secret");
-    }
+    die "Failed to get response" unless $res->is_success;
+    $response =
+      Net::OAuth->response('access token')->from_post_body($res->content);
+    $self->access_token($response->token);
+    $self->access_token_secret($response->token_secret);
 }
 
 
-# unexported helpers
-
-# return nonce for signed request
-sub _nonce {
-    my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
-    my $nonce = '';
-    for (0 .. 31) {
-        $nonce .= $a[rand(scalar(@a))];
-    }
-
-    $nonce;
-}
 __PACKAGE__->meta->make_immutable;
 1;
 
