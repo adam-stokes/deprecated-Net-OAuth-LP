@@ -1,22 +1,19 @@
 package Net::OAuth::LP::Client;
-
 use namespace::autoclean;
-
 use Moose;
 use MooseX::StrictConstructor;
 use MooseX::Method::Signatures;
 
-use Carp;
-use Data::Dumper;
 use File::Spec::Functions;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;
-use autodie;
 
 use URI::Encode;
 use URI::QueryParam;
 use URI;
+use Util::Any -all;
+use List::Compare;
 
 extends 'Net::OAuth::LP';
 
@@ -77,7 +74,7 @@ method _request ($resource, $params, $method) {
             'Authorization' => $self->__oauth_authorization_header($request));
         $_req->content($self->__query_from_hash($params));
         my $res = $self->lwp_req($_req);
-        die "Failed to POST: ".$res->{_msg} unless ($res->{_rc} == 201);
+        die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
     }
     elsif ($method eq "PATCH") {
 
@@ -96,16 +93,14 @@ method _request ($resource, $params, $method) {
         # during final)
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
-        if ($res->{_rc} == 209) {
-            return decode_json($res->content);
-        }
+        die $res->{_content} unless $res->{_rc} == 209;
+        decode_json($res->content);
     }
     else {
         my $res = $self->lwp_req(GET $request->to_url);
 
-        if ($res->is_success) {
-            return decode_json($res->content);
-        }
+        die $res->{_content} unless $res->is_success;
+        decode_json($res->content);
     }
 }
 
@@ -146,13 +141,10 @@ method bug_activity ($resource_link) {
 # Bug Setters
 ###################################
 method bug_set_tags ($resource, $tags) {
+  my @new_tags = grep {$_ ne any { defined($_) } @{$tags} } @{$resource->{tags}};
+  print Dumper(@new_tags);
 
-    # Merge new tags into existing and process a
-    # -<tag> in order to remove a tag.
-    # FIXME: Incomplete
-    my $join_ref = [@$resource->{tags}, @$tags];
-    my @filtered_lists = grep { !/^\-/ } @$join_ref;
-    $self->update($resource->{self_link}, {'tags' => \@filtered_lists});
+#    $self->update($resource->{self_link}, {'tags' => \@uniq_tags});
 }
 
 method bug_set_title ($resource, $title) {
@@ -170,9 +162,9 @@ method bug_set_importance ($resource, $importance) {
     $self->update($bug_task->{self_link}, {'importance' => $importance});
 }
 
-method bug_new_message ($resource_link, $msg) {
+method bug_new_message ($resource, $msg) {
     $self->post(
-        $resource_link,
+        $resource->{self_link},
         {   'ws.op'   => 'newMessage',
             'content' => $msg
         }

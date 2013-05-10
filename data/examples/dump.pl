@@ -20,6 +20,8 @@ my $client = Net::OAuth::LP::Client->new(
 # Use staging setup for now.
 $client->staging(1);
 
-my $bug = $client->bug('859600');
+my $bug  = $client->bug('859600');
+my @tags = qw[ardar precise test];
 
-$client->bug_new_message($bug->{self_link}, 'the cow flies at noon!');
+eval { $client->bug_set_tags($bug, \@tags); };
+warn $@ if $@;
