@@ -21,7 +21,7 @@ my $client = Net::OAuth::LP::Client->new(
 $client->staging(1);
 
 my $bug  = $client->bug('859600');
-my @tags = qw[ardar precise test];
+my @tags = qw[bark othertag];
 
 eval { $client->bug_set_tags($bug, \@tags); };
 warn $@ if $@;

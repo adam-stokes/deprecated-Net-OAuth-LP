@@ -141,10 +141,12 @@ method bug_activity ($resource_link) {
 # Bug Setters
 ###################################
 method bug_set_tags ($resource, $tags) {
-  my @new_tags = grep {$_ ne any { defined($_) } @{$tags} } @{$resource->{tags}};
-  print Dumper(@new_tags);
+    my @idx = indexes {$_} @{$resource->{tags}};
+    foreach my $index (@idx) {
+        $resource->{tags}[$index];
+    }
 
-#    $self->update($resource->{self_link}, {'tags' => \@uniq_tags});
+#    $self->update($resource->{self_link}, {'tags' => @{$clone_tags}});
 }
 
 method bug_set_title ($resource, $title) {
