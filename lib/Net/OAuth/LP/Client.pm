@@ -98,7 +98,6 @@ method _request ($resource, $params, $method) {
     }
     else {
         my $res = $self->lwp_req(GET $request->to_url);
-
         die $res->{_content} unless $res->is_success;
         decode_json($res->content);
     }
@@ -141,12 +140,7 @@ method bug_activity ($resource_link) {
 # Bug Setters
 ###################################
 method bug_set_tags ($resource, $tags) {
-    my @idx = indexes {$_} @{$resource->{tags}};
-    foreach my $index (@idx) {
-        $resource->{tags}[$index];
-    }
-
-#    $self->update($resource->{self_link}, {'tags' => @{$clone_tags}});
+    $self->update($resource->{self_link}, {'tags' => $tags});
 }
 
 method bug_set_title ($resource, $title) {
