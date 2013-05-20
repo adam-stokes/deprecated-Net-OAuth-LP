@@ -1,60 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Net-oauth-lp by battlemidget</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Net-oauth-lp : Perl interface for Launchpad.net oauth 1.0a and client utilities" />
 
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Net-oauth-lp</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/battlemidget/Net-OAuth-LP">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
 
-    <div class="wrapper">
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/battlemidget/Net-OAuth-LP">View on GitHub</a>
 
-      <section>
-        <div id="title">
-          <h1>Net-oauth-lp</h1>
-          <p>Perl interface for Launchpad.net oauth 1.0a and client utilities</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/battlemidget">battlemidget</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
+          <h1 id="project_title">Net-oauth-lp</h1>
+          <h2 id="project_tagline">Perl interface for Launchpad.net oauth 1.0a and client utilities</h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <p>Net-OAuth-LP</p>
 
 <p><a href="https://travis-ci.org/battlemidget/Net-OAuth-LP"><img src="https://travis-ci.org/battlemidget/Net-OAuth-LP.png?branch=develop" alt="Build Status"></a></p>
 
 <p>Launchpad.net authorization and client utilities over OAuth 1.0</p>
 
-<p>REQUIREMENTS</p>
-
-<pre><code>perl v5.14.x or v.5.16.x
-perlbrew (optional)
-cpanm
-Dist::Zilla
-</code></pre>
-
 <p>INSTALLATION</p>
 
-<p>To install this module, run the following commands:</p>
+<p>From cpan:</p>
+
+<pre><code>    cpanm Net::OAuth::LP
+</code></pre>
+
+<p>Manually:</p>
 
 <pre><code>dzil authordeps | cpanm --notest
 dzil listdeps | cpanm --notest
@@ -85,9 +75,17 @@ by the Free Software Foundation; or the Artistic License.</p>
 
 <p>See <a href="http://dev.perl.org/licenses/">http://dev.perl.org/licenses/</a> for more information.</p>
       </section>
-
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Net-oauth-lp maintained by <a href="https://github.com/battlemidget">battlemidget</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
