@@ -1,4 +1,7 @@
 package Net::OAuth::LP::Client;
+
+# VERSION
+
 use namespace::autoclean;
 use Moose;
 use MooseX::StrictConstructor;
