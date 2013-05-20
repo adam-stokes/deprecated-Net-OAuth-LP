@@ -1,60 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
     <title>Net-oauth-lp by battlemidget</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Net-oauth-lp</h1>
-        <h2>Perl interface for Launchpad.net oauth authorization and client utilities</h2>
-        <a href="https://github.com/battlemidget/Net-OAuth-LP" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/battlemidget/Net-OAuth-LP">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h3>About</h3>
-	  <p>
-	  I like writing in perl every now and then so I put this together so I could access certain information within Launchpad.net via a perl bot I use.</p>
-	  <p>If you want a more full featured client and don't mind python I highly suggest using <a href="https://launchpad.net/launchpadlib">launchpadlib</a>.
-	    </p>
-<h3>Authors and Contributors</h3>
-<p>Author: Adam Stokes <adam.stokes at ubuntu.com></p>
+    <div class="wrapper">
 
-<h3>Filing bugs</h3>
-<a href="https://github.com/battlemidget/Net-OAuth-LP/issues">Issues</a>
-        </section>
+      <section>
+        <div id="title">
+          <h1>Net-oauth-lp</h1>
+          <p>Perl interface for Launchpad.net oauth 1.0a and client utilities</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/battlemidget">battlemidget</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
 
-        <aside id="sidebar">
-          <a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+        <p>Net-OAuth-LP</p>
 
-          <p class="repo-owner"><a href="https://github.com/battlemidget/Net-OAuth-LP"></a> is maintained by <a href="https://github.com/battlemidget">battleMidget</a>.</p>
-        </aside>
-      </div>
+<p><a href="https://travis-ci.org/battlemidget/Net-OAuth-LP"><img src="https://travis-ci.org/battlemidget/Net-OAuth-LP.png?branch=develop" alt="Build Status"></a></p>
+
+<p>Launchpad.net authorization and client utilities over OAuth 1.0</p>
+
+<p>REQUIREMENTS</p>
+
+<pre><code>perl v5.14.x or v.5.16.x
+perlbrew (optional)
+cpanm
+Dist::Zilla
+</code></pre>
+
+<p>INSTALLATION</p>
+
+<p>To install this module, run the following commands:</p>
+
+<pre><code>dzil authordeps | cpanm --notest
+dzil listdeps | cpanm --notest
+dzil install
+</code></pre>
+
+<p>SUPPORT AND DOCUMENTATION</p>
+
+<p>After installing, you can find documentation for this module with the
+perldoc command.</p>
+
+<pre><code>perldoc Net::OAuth::LP
+</code></pre>
+
+<p>You can also look for information at:</p>
+
+<pre><code>Github
+    https://github.com/battlemidget/Net-OAuth-LP
+</code></pre>
+
+<p>LICENSE AND COPYRIGHT</p>
+
+<p>Copyright (C) 2013 Adam Stokes</p>
+
+<p>This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.</p>
+
+<p>See <a href="http://dev.perl.org/licenses/">http://dev.perl.org/licenses/</a> for more information.</p>
+      </section>
+
     </div>
-
-  
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
   </body>
 </html>
