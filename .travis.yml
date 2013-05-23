@@ -1,18 +1,32 @@
+---
 language: perl
 perl:
-  - "5.10"
-  - "5.12"
-  - "5.14"
-  - "5.16"
+- '5.16'
+- '5.18'
 notifications:
   email: false
 install:
-  - "cpanm --notest Dist::Zilla"
-  - "dzil authordeps | cpanm --notest"
-  - "dzil listdeps | cpanm --notest"
+- cpanm --notest Dist::Zilla
+- dzil authordeps | cpanm --notest
+- dzil listdeps | cpanm --notest
 script:
-  - "dzil test"
+- dzil test
 matrix:
   allow_failures:
-    - perl: "5.10"
-    - perl: "5.12"
+  - perl: '5.18'
+env:
+- secure: ! 'h1G81nhV2P7uC+UFVglvpJP1rSCV20cVn0nstg1QKOAToUmnqMBFxI2izQFH
+
+    qM44rZe3G870TqXk9hJ4Olb4qNVY6r5XInp6QbNnQrhfTTgTcHOnumMoXtHZ
+
+    3ULTGi7zCVqH7S2+o7atoJQfkrCkFdsekQ35HN4NYclfRZVKNFc='
+- secure: ! 'HukDmbmdStjmw2Agrr306VTRtyQbuaboonHL2GxrY7DfwcF+BhHmNY8NRhYA
+
+    0Q3Sms58WihKfUCCcEIB677OX8gIKrYWuIMAXCC/Kr/bHTWs+6071/VjqQkT
+
+    4nqznZiflc8WCSeOIQFHpnw5xsbzKOp69gcW2o/GZLPVOkWB0Lc='
+- secure: ! 'DCE06uhMPSVDajKfSi4OSrKEwbM7MtysI7jd0rsNjJREziegHT6PvVJGPcCL
+
+    9eJzKkwrrwDW09E88Nf7CJTw2b59+OFhdvyC/LAgxfIRqdyFFx1bblThwf0t
+
+    8/xoQ6FiqIKGUJJ2MNkW5mdXE0w0H/IOJ/lFO69QZm7y+Kj8HxQ='
