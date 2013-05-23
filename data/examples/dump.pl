@@ -21,6 +21,10 @@ my $client = Net::OAuth::LP::Client->new(
 $client->staging(1);
 
 my $bug  = $client->bug('859600');
-pp($bug);
+$client->bug_set_title($bug, "weeeeeeee haiiiiiiiii");
+pp($bug->{title});
 
-pp($client->resource($bug->{resource_type_link}));
+my $client_n = Net::OAuth::LP::Client->new;
+my $bug_n = $client->bug('859600');
+
+pp($bug_n->{title});

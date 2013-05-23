@@ -9,9 +9,9 @@ perl:
 notifications:
   email: false
 install:
-- sudo cpanm --notest Dist::Zilla
-- sudo dzil authordeps | cpanm --notest
-- sudo dzil listdeps | cpanm --notest
+- cpanm --notest Dist::Zilla
+- dzil authordeps | cpanm --notest
+- dzil listdeps | cpanm --notest
 script:
 - dzil test
 matrix:

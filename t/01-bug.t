@@ -9,39 +9,40 @@ diag("Testing LP Bug retrieval");
 
 use_ok 'Net::OAuth::LP::Client';
 
-SKIP: {
-    skip "No credentials for this block", 10
-      unless (defined($ENV{LP_ACCESS_TOKEN})
-      && defined($ENV{LP_CONSUMER_KEY})
-      && defined($ENV{LP_ACCESS_TOKEN_SECRET}));
-    diag("Lets party!");
-    ok(defined($ENV{LP_CONSUMER_KEY}), 'found consumer key')
-      || BAIL_OUT("consumer key is required.");
-    ok(defined($ENV{LP_ACCESS_TOKEN}), 'found access token')
-      || BAIL_OUT("access token is required.");
-    ok(defined($ENV{LP_ACCESS_TOKEN_SECRET}), 'found access token secret')
-      || BAIL_OUT("access token secret required.");
+my $client;
 
-    my $client = Net::OAuth::LP::Client->new(
-          consumer_key        => $ENV{LP_CONSUMER_KEY},
-          access_token        => $ENV{LP_ACCESS_TOKEN},
-          access_token_secret => $ENV{LP_ACCESS_TOKEN_SECRET},
+if (   defined($ENV{LP_CONSUMER_KEY})
+    && defined($ENV{LP_ACCESS_TOKEN})
+    && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
+{
+    $client = Net::OAuth::LP::Client->new(
+        consumer_key        => $ENV{LP_CONSUMER_KEY},
+        access_token        => $ENV{LP_ACCESS_TOKEN},
+        access_token_secret => $ENV{LP_ACCESS_TOKEN_SECRET},
     );
+}
+else {
+    $client = Net::OAuth::LP::Client->new;
+}
 
-    $client->staging(1);
-    my $bug = $client->bug('859600');
+$client->staging(1);
+my $bug = $client->bug('859600');
 
-    ok($bug->{id} eq '859600');
-    ok(defined($bug->{title}));
-    ok(defined($bug->{description}));
-    ok(defined($bug->{owner_link}));
-    ok(defined($bug->{tags}));
-    ok(defined($bug->{heat}) && $bug->{heat} >= 0);
+ok($bug->{id} eq '859600');
+ok(defined($bug->{title}) && ($bug->{title} =~ m/a title/i), 'verify title');
+ok(defined($bug->{description}));
+ok(defined($bug->{owner_link}));
+ok(defined($bug->{tags}));
+ok(defined($bug->{heat}) && $bug->{heat} >= 0);
 
+SKIP: {
+    skip "No credentials so no POSTing", 1
+      unless defined($ENV{LP_ACCESS_TOKEN});
+    diag("Testing protected sources");
     my $temptitle = "a title " . time . rand();
     $client->bug_set_title($bug, $temptitle);
     $bug = $client->bug('859600');
-    ok($bug->{title} eq $temptitle);
+    ok($bug->{title} eq $temptitle, 'verify title setter');
 }
-done_testing;
 
+done_testing;

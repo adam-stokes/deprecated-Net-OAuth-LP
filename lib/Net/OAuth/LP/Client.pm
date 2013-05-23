@@ -9,6 +9,7 @@ use File::Spec::Functions;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;
+use Data::Dump qw(pp);
 
 use URI::Encode;
 use URI::QueryParam;
@@ -48,8 +49,20 @@ method __oauth_authorization_header ($request) {
 }
 
 method _request ($resource, $params, $method) {
-    my $ua      = LWP::UserAgent->new();
-    my $uri     = $self->__path_cons($resource);
+    my $ua  = LWP::UserAgent->new();
+    my $uri = $self->__path_cons($resource);
+
+    # If no credentials we assume data is public and
+    # bail out afterwards
+    pp($self);
+    if (!defined($self->consumer_key) || !defined($self->access_token) || !defined($self->access_token_secret)) {
+        my $res = $ua->request(GET $uri->as_string);
+        die $res->{_content} unless $res->is_success;
+        return decode_json($res->content);
+    }
+
+    # If we are here then it is assumed we've passed the
+    # necessary credentials to access protected data
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
