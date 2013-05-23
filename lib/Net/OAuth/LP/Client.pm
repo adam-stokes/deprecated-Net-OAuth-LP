@@ -54,7 +54,6 @@ method _request ($resource, $params, $method) {
 
     # If no credentials we assume data is public and
     # bail out afterwards
-    pp($self);
     if (!defined($self->consumer_key) || !defined($self->access_token) || !defined($self->access_token_secret)) {
         my $res = $ua->request(GET $uri->as_string);
         die $res->{_content} unless $res->is_success;
