@@ -1,10 +1,7 @@
 package Net::OAuth::LP;
 
-use namespace::autoclean;
-
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Method::Signatures;
+use Moo;
+use Method::Signatures;
 
 use Browser::Open qw[open_browser];
 use HTTP::Request::Common;
@@ -13,64 +10,89 @@ use LWP::UserAgent;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-BEGIN {
-    use version; our $VERSION = version->declare("v0.1.0");
-}
+# VERSION
 
 has consumer_key => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => method {},
     lazy    => 1,
-    default => 'you-dont-know-me',
+    default => 'im-a-key',
 );
 
 has access_token => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => method {},
     default => '',
     lazy    => 1,
 );
 
 has access_token_secret => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => method {},
     default => '',
     lazy    => 1,
 );
 
 has request_token_url => (
     is      => 'ro',
-    isa     => 'Str',
-    default => 'https://launchpad.net/+request-token',
-    lazy    => 1,
+    isa     => method {},
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+request-token';
+        }
+        else {
+            'https://launchpad.net/+request-token';
+        }
+    },
+    lazy => 1,
 );
 
 has access_token_url => (
     is      => 'ro',
-    isa     => 'Str',
-    default => 'https://launchpad.net/+access-token',
-    lazy    => 1,
+    isa     => method {},
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+access-token';
+        }
+        else {
+            'https://launchpad.net/+access-token';
+        }
+    },
+    lazy => 1,
 );
 
 has authorize_token_url => (
     is      => 'ro',
-    isa     => 'Str',
-    default => 'https://launchpad.net/+authorize-token',
-    lazy    => 1,
-);
-
-has ua => (
-    is      => 'ro',
-    isa     => 'LWP::UserAgent',
-    handles => {lwp_req => 'request',},
-    default => sub { LWP::UserAgent->new() },
+    isa     => method {},
+    default => method {
+        if ($self->staging) {
+            'https://staging.launchpad.net/+authorize-token';
+        }
+        else {
+            'https://launchpad.net/+authorize-token';
+        }
+    },
+    lazy => 1,
 );
 
 has api_url => (
     is      => 'ro',
-    isa     => 'Str',
+    isa     => method {},
     lazy    => 1,
-    default => q[https://api.launchpad.net/1.0]
+    default => method {
+        if ($self->staging) {
+            'https://api.staging.launchpad.net/1.0';
+        }
+        else {
+            'https://api.launchpad.net/1.0';
+        }
+    },
+);
+
+has staging => (
+    is      => 'rw',
+    isa     => method {},
+    default => 0,
 );
 
 ###########################################################################
@@ -90,6 +112,7 @@ method _nonce {
 # Public
 ###########################################################################
 method login_with_creds {
+    my $ua      = LWP::UserAgent->new();
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
@@ -101,8 +124,8 @@ method login_with_creds {
     );
 
     $request->sign;
-    my $res = $self->lwp_req(POST $request->to_url,
-        Content => $request->to_post_body);
+    my $res =
+      $ua->request(POST $request->to_url, Content => $request->to_post_body);
 
     die "Failed to get response" unless $res->is_success;
     my $response =
@@ -127,8 +150,8 @@ method login_with_creds {
 
     $request->sign;
 
-    $res = $self->lwp_req(POST $request->to_url,
-        Content => $request->to_post_body);
+    $res =
+      $ua->request(POST $request->to_url, Content => $request->to_post_body);
     die "Failed to get response" unless $res->is_success;
     $response =
       Net::OAuth->response('access token')->from_post_body($res->content);
@@ -136,8 +159,6 @@ method login_with_creds {
     $self->access_token_secret($response->token_secret);
 }
 
-
-__PACKAGE__->meta->make_immutable;
 1;
 
 =head1 NAME

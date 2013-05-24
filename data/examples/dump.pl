@@ -5,7 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Client;
-use Data::Dumper;
+use Data::Dump qw(pp);
 use File::Spec::Functions;
 use YAML qw[LoadFile];
 
@@ -17,4 +17,14 @@ my $client = Net::OAuth::LP::Client->new(
     access_token_secret => $creds->{access_token_secret}
 );
 
-print Dumper($client->bug('1'));
+# Use staging setup for now.
+$client->staging(1);
+
+my $bug  = $client->bug('859600');
+$client->bug_set_title($bug, "weeeeeeee haiiiiiiiii");
+pp($bug->{title});
+
+my $client_n = Net::OAuth::LP::Client->new;
+my $bug_n = $client->bug('859600');
+
+pp($bug_n->{title});

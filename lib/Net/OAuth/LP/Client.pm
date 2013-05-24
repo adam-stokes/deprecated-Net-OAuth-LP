@@ -1,28 +1,24 @@
 package Net::OAuth::LP::Client;
 
-use namespace::autoclean;
+# VERSION
 
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Method::Signatures;
+use Moo;
+use Method::Signatures;
 
-use Carp;
-use Data::Dumper;
 use File::Spec::Functions;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;
-use autodie;
+use Data::Dump qw(pp);
 
 use URI::Encode;
 use URI::QueryParam;
 use URI;
+use Util::Any -all;
+use LWP::UserAgent;
 
 extends 'Net::OAuth::LP';
 
-###########################################################################
-# Private
-###########################################################################
 method __query_from_hash ($params) {
     my $uri = URI->new;
     for my $param (keys $params) {
@@ -52,11 +48,20 @@ method __oauth_authorization_header ($request) {
         'oauth_version="' . $request->version . '"');
 }
 
-###############################################################################
-# protected
-###############################################################################
 method _request ($resource, $params, $method) {
-    my $uri     = $self->__path_cons($resource);
+    my $ua  = LWP::UserAgent->new();
+    my $uri = $self->__path_cons($resource);
+
+    # If no credentials we assume data is public and
+    # bail out afterwards
+    if (!defined($self->consumer_key) || !defined($self->access_token) || !defined($self->access_token_secret)) {
+        my $res = $ua->request(GET $uri->as_string);
+        die $res->{_content} unless $res->is_success;
+        return decode_json($res->content);
+    }
+
+    # If we are here then it is assumed we've passed the
+    # necessary credentials to access protected data
     my $request = Net::OAuth->request('protected resource')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
@@ -71,11 +76,13 @@ method _request ($resource, $params, $method) {
     $request->sign;
 
     if ($method eq "POST") {
-        my $res = $self->request(POST $request->to_url,
-            Content => $self->__query_from_hash($params));
-        if ($res->is_success) {
-            return decode_json($res->content);
-        }
+        my $_req =
+          HTTP::Request->new(POST => $request->normalized_request_url);
+        $_req->header(
+            'Authorization' => $self->__oauth_authorization_header($request));
+        $_req->content($self->__query_from_hash($params));
+        my $res = $ua->request($_req);
+        die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
     }
     elsif ($method eq "PATCH") {
 
@@ -87,29 +94,27 @@ method _request ($resource, $params, $method) {
         $_req->header(
             'Authorization' => $self->__oauth_authorization_header($request));
         $_req->content(encode_json($params));
-        my $res = $self->request($_req);
+        my $res = $ua->request($_req);
 
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
         # during final)
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
-        if ($res->{_rc} == 209) {
-            return decode_json($res->content);
-        }
+        die $res->{_content} unless $res->{_rc} == 209;
+        decode_json($res->content);
     }
     else {
-        my $res = $self->lwp_req(GET $request->to_url);
-
-        if ($res->is_success) {
-            return decode_json($res->content);
-        }
+        my $res = $ua->request(GET $request->to_url);
+        die $res->{_content} unless $res->is_success;
+        decode_json($res->content);
     }
 }
 
 method get ($resource) {
     $self->_request($resource, undef, 'GET');
 }
+
 
 method post ($resource, $params) {
     $self->_request($resource, $params, 'POST');
@@ -118,10 +123,6 @@ method post ($resource, $params) {
 method update ($resource, $params) {
     $self->_request($resource, $params, 'PATCH');
 }
-
-###############################################################################
-# Public methods
-###############################################################################
 
 ###################################
 # Bug Getters
@@ -142,33 +143,32 @@ method bug_activity ($resource_link) {
 ###################################
 # Bug Setters
 ###################################
-sub bug_set_tags {
-    my ($self, $resource, $tags) = @_;
-
-    # Merge new tags into existing and process a
-    # -<tag> in order to remove a tag.
-    # FIXME: Incomplete
-    my $join_ref = [@$resource->{tags}, @$tags];
-    my @filtered_lists = grep { !/^\-/ } @$join_ref;
-    $self->update($resource->{self_link}, {'tags' => \@filtered_lists});
+method bug_set_tags ($resource, $tags) {
+    $self->update($resource->{self_link}, {'tags' => $tags});
 }
 
-sub bug_set_title {
-    my ($self, $resource, $title) = @_;
+method bug_set_title ($resource, $title) {
     $self->update($resource->{self_link}, {'title' => $title});
 }
 
-sub bug_set_assignee {
-    my ($self, $resource, $assignee) = @_;
+method bug_set_assignee ($resource, $assignee) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link},
         {'assignee_link' => $assignee->{self_link}});
 }
 
-sub bug_set_importance {
-    my ($self, $resource, $importance) = @_;
+method bug_set_importance ($resource, $importance) {
     my $bug_task = $self->get($resource->{bug_tasks_collection_link});
     $self->update($bug_task->{self_link}, {'importance' => $importance});
+}
+
+method bug_new_message ($resource, $msg) {
+    $self->post(
+        $resource->{self_link},
+        {   'ws.op'   => 'newMessage',
+            'content' => $msg
+        }
+    );
 }
 
 ###################################
@@ -194,9 +194,7 @@ method search ($path, $segments) {
     $self->get($uri);
 }
 
-
-__PACKAGE__->meta->make_immutable;
-1;                # End of Net::OAuth::LP::Client
+1;                          # End of Net::OAuth::LP::Client
 
 
 =head1 NAME
@@ -225,6 +223,16 @@ Client for performing query tasks.
                                          access_token => 'accesstoken',
                                          access_token_secret => 'accesstokensecret');
 
+=head2 C<post>
+
+    Takes resource link and params, and performs
+    POST on uri
+
+    $lp->post('lp.net/bugs/1', { 'ws.op' => 'newMessage',
+                                 'content' => "This is a message"});
+
+=cut
+
 =head2 C<bug>
 
     $lp->bug(1);
@@ -238,6 +246,12 @@ Client for performing query tasks.
 Set title of bug
 
     $lp->bug_set_title($bug, 'A new title');
+
+=head2 C<bug_new_message>
+
+Add new message to bug
+
+    $lp->bug_new_message($bug->{self_link}, "This is a comment");
 
 =head2 C<bug_activity>
 
