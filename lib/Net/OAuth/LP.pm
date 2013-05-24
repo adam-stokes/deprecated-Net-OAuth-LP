@@ -1,6 +1,6 @@
 package Net::OAuth::LP;
 
-use Moo;
+use Moo::Role;
 use Method::Signatures;
 
 use Browser::Open qw[open_browser];
@@ -95,9 +95,6 @@ has staging => (
     default => 0,
 );
 
-###########################################################################
-# Protected
-###########################################################################
 method _nonce {
     my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
     my $nonce = '';
@@ -108,9 +105,6 @@ method _nonce {
     $nonce;
 }
 
-###########################################################################
-# Public
-###########################################################################
 method login_with_creds {
     my $ua      = LWP::UserAgent->new();
     my $request = Net::OAuth->request('consumer')->new(
@@ -181,27 +175,27 @@ OAuth 1.0a authorization and client for Launchpad.net
 
 L<Net::OAuth::LP> implements the following attributes:
 
-=head2 C<consumer_key>
+=head2 B<consumer_key>
 
 Holds the string that identifies your application.
 
     $lp->consumer_key('my-app-name');
 
-=head2 C<token>
+=head2 B<token>
 
 Token received from authorized request
 
-=head2 C<token_secret>
+=head2 B<token_secret>
 
 Token secret received from authorized request
 
 =head1 METHODS
 
-=head2 C<new>
+=head2 B<new>
 
     my $lp = Net::OAuth::LP->new;
 
-=head2 C<login_with_creds>
+=head2 B<login_with_creds>
 
     $lp->login_with_creds;
 
@@ -224,6 +218,14 @@ Report bugs to https://github.com/battlemidget/Net-OAuth-LP/issues.
 You can find documentation for this module with the perldoc command.
 
     perldoc Net::OAuth::LP
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<https://launchpad.net/launchpadlib>, "Python implementation"
+
+=back
 
 =head1 LICENSE AND COPYRIGHT
 

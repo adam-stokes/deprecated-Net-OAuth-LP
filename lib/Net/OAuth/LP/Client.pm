@@ -2,7 +2,7 @@ package Net::OAuth::LP::Client;
 
 # VERSION
 
-use Moo;
+use Moo::Role;
 use Method::Signatures;
 
 use File::Spec::Functions;
@@ -14,10 +14,9 @@ use Data::Dump qw(pp);
 use URI::Encode;
 use URI::QueryParam;
 use URI;
-use Util::Any -all;
 use LWP::UserAgent;
 
-extends 'Net::OAuth::LP';
+with('Net::OAuth::LP');
 
 method __query_from_hash ($params) {
     my $uri = URI->new;
@@ -54,7 +53,10 @@ method _request ($resource, $params, $method) {
 
     # If no credentials we assume data is public and
     # bail out afterwards
-    if (!defined($self->consumer_key) || !defined($self->access_token) || !defined($self->access_token_secret)) {
+    if (   !defined($self->consumer_key)
+        || !defined($self->access_token)
+        || !defined($self->access_token_secret))
+    {
         my $res = $ua->request(GET $uri->as_string);
         die $res->{_content} unless $res->is_success;
         return decode_json($res->content);
@@ -124,59 +126,6 @@ method update ($resource, $params) {
     $self->_request($resource, $params, 'PATCH');
 }
 
-###################################
-# Bug Getters
-###################################
-method bug ($bug_id) {
-    my $resource_link = $self->__path_cons("bugs/$bug_id");
-    $self->get($resource_link);
-}
-
-method bug_task ($resource_link) {
-    $self->get($resource_link);
-}
-
-method bug_activity ($resource_link) {
-    $self->get($resource_link);
-}
-
-###################################
-# Bug Setters
-###################################
-method bug_set_tags ($resource, $tags) {
-    $self->update($resource->{self_link}, {'tags' => $tags});
-}
-
-method bug_set_title ($resource, $title) {
-    $self->update($resource->{self_link}, {'title' => $title});
-}
-
-method bug_set_assignee ($resource, $assignee) {
-    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
-    $self->update($bug_task->{self_link},
-        {'assignee_link' => $assignee->{self_link}});
-}
-
-method bug_set_importance ($resource, $importance) {
-    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
-    $self->update($bug_task->{self_link}, {'importance' => $importance});
-}
-
-method bug_new_message ($resource, $msg) {
-    $self->post(
-        $resource->{self_link},
-        {   'ws.op'   => 'newMessage',
-            'content' => $msg
-        }
-    );
-}
-
-###################################
-# Person
-###################################
-method person ($name) {
-    $self->get($name);
-}
 
 ###################################
 # Resource Link getter
@@ -194,8 +143,9 @@ method search ($path, $segments) {
     $self->get($uri);
 }
 
-1;                          # End of Net::OAuth::LP::Client
+1; # End of Net::OAuth::LP::Client
 
+__END__
 
 =head1 NAME
 
@@ -203,11 +153,15 @@ Net::OAuth::LP::Client - Launchpad.net Client routines
 
 =head1 SYNOPSIS
 
-Client for performing query tasks.
+If making authenticated requests (GET/POST/PATCH)
 
     my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
                                          access_token => 'accesstoken',
                                          access_token_secret => 'accesstokensecret');
+
+If just querying publicly accessible Launchpad information (GET)
+
+    my $lp = Net::OAuth::LP::Client->new;
 
     # Use your launchpad.net name in place of adam-stokes. 
     # You can figure that out by visiting
@@ -217,75 +171,56 @@ Client for performing query tasks.
 
 =head1 METHODS
 
-=head2 C<new>
+=head2 B<new>
 
     my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
                                          access_token => 'accesstoken',
                                          access_token_secret => 'accesstokensecret');
 
-=head2 C<post>
+If called without OAuth credentials only publicly accessible content may be retrieved.
 
-    Takes resource link and params, and performs
-    POST on uri
+=head2 B<post>
+
+Takes resource link and params, and performs an update to that endpoint.
 
     $lp->post('lp.net/bugs/1', { 'ws.op' => 'newMessage',
                                  'content' => "This is a message"});
+=head2 B<search>
 
-=cut
-
-=head2 C<bug>
-
-    $lp->bug(1);
-
-=head2 C<bug_set_tags>
-
-    $lp->bug_set_tags($bug, ['tagA', 'tagB']);
-
-=head2 C<bug_set_title>
-
-Set title of bug
-
-    $lp->bug_set_title($bug, 'A new title');
-
-=head2 C<bug_new_message>
-
-Add new message to bug
-
-    $lp->bug_new_message($bug->{self_link}, "This is a comment");
-
-=head2 C<bug_activity>
-
-view bug activity
-
-    $lp->bug_activity($resource);
-
-=head2 C<bug_task>
-
-view bug tasks
-
-    $lp->bug_task($resource);
-
-=head2 C<bug_set_importance>
-
-    $lp->bug_set_importance($bug, 'Critical');
-
-=head2 C<bug_set_assignee>
-
-    $lp->bug_set_assignee($bug, $person_object);
-
-=head2 C<person>
-
-    $lp->person('lp-login');
-
-=head2 C<search>
+Performs a search request against the target distribution.
 
     $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
                             'ws.size' => '10',
                             'status' => 'New' });
 
-=head2 C<resource>
+=head2 B<resource>
+
+Access resource endpoints directly, however, once API is feature complete
+this method shouldn't need to be referenced.
 
     $lp->resource('launchpad_resource_link');
+
+=head1 DEVELOPMENT
+
+=head2 Repository
+
+    http://github.com/battlemidget/Net-OAuth-LP
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Net::OAuth::LP::Client
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2013 Adam Stokes.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See L<http://dev.perl.org/licenses/> for more information.
 
 =cut
 

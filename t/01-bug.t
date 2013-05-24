@@ -7,7 +7,7 @@ use Test::More;
 # otherwise just some basic testing
 diag("Testing LP Bug retrieval");
 
-use_ok 'Net::OAuth::LP::Client';
+use_ok 'Net::OAuth::LP::Models::Bug';
 
 my $client;
 
@@ -15,18 +15,18 @@ if (   defined($ENV{LP_CONSUMER_KEY})
     && defined($ENV{LP_ACCESS_TOKEN})
     && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
 {
-    $client = Net::OAuth::LP::Client->new(
+    $client = Net::OAuth::LP::Models::Bug->new(
         consumer_key        => $ENV{LP_CONSUMER_KEY},
         access_token        => $ENV{LP_ACCESS_TOKEN},
         access_token_secret => $ENV{LP_ACCESS_TOKEN_SECRET},
     );
 }
 else {
-    $client = Net::OAuth::LP::Client->new;
+    $client = Net::OAuth::LP::Models::Bug->new;
 }
 
 $client->staging(1);
-my $bug = $client->bug('859600');
+my $bug = $client->find('859600');
 
 ok($bug->{id} eq '859600');
 ok(defined($bug->{title}) && ($bug->{title} =~ m/a title/i), 'verify title');
@@ -40,8 +40,8 @@ SKIP: {
       unless defined($ENV{LP_ACCESS_TOKEN});
     diag("Testing protected sources");
     my $temptitle = "a title " . time . rand();
-    $client->bug_set_title($bug, $temptitle);
-    $bug = $client->bug('859600');
+    skip "Timeout", 1 if $client->bug_set_title($bug, $temptitle) > 0;
+    $bug = $client->find('859600');
     ok($bug->{title} eq $temptitle, 'verify title setter');
 }
 
