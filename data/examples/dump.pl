@@ -5,18 +5,18 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Models::Person;
+use Net::OAuth::LP::Models::Bug;
 use Data::Dump qw(pp);
-use Data::Dumper;
 use File::Spec::Functions;
 use YAML qw[LoadFile];
 
-my $creds = LoadFile catfile($ENV{HOME}, '.lp-auth.yml');
+# my $creds = LoadFile catfile($ENV{HOME}, '.lp-auth.yml');
 
-my $client = Net::OAuth::LP::Models::Person->new(
-    consumer_key        => $creds->{consumer_key},
-    access_token        => $creds->{access_token},
-    access_token_secret => $creds->{access_token_secret}
-);
+# my $client = Net::OAuth::LP::Models::Person->new(
+#     consumer_key        => $creds->{consumer_key},
+#     access_token        => $creds->{access_token},
+#     access_token_secret => $creds->{access_token_secret}
+# );
 
 # Use staging setup for now.
 # $client->staging(1);
@@ -24,8 +24,13 @@ my $client = Net::OAuth::LP::Models::Person->new(
 #my $bug  = $client->bug('859600');
 
 my $p = Net::OAuth::LP::Models::Person->new;
-$p->staging(1);
-$p->find('~adam-stokes');
+#$p->staging(1);
+#$p->find('~adam-stokes');
+
+my $bug = Net::OAuth::LP::Models::Bug->new;
+$bug->staging(1);
+$bug->find('859600');
+pp($bug->tags);
 
 
 

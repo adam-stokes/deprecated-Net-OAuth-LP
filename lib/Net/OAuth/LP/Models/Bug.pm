@@ -7,20 +7,75 @@ use Method::Signatures;
 
 with('Net::OAuth::LP::Models');
 
+has 'bug' => (
+    is => 'rw',
+    isa => method {},
+    lazy => 1,
+    default => method {{}},
+);
+
 ###################################
 # Bug Getters
 ###################################
 method find ($bug_id) {
     my $resource_link = $self->__path_cons("bugs/$bug_id");
-    $self->get($resource_link);
+    $self->bug($self->get($resource_link));
 }
 
-method bug_task ($resource_link) {
-    $self->get($resource_link);
+method tasks {
+    $self->get($self->bug->{bug_tasks_collection_link});
 }
 
-method bug_activity ($resource_link) {
-    $self->get($resource_link);
+method activity {
+    $self->get($self->bug->{activity_collection_link});
+}
+
+method attachments {
+    $self->get($self->bug->{attachments_collection_link});
+}
+
+method watches {
+    $self->get($self->bug->{bug_watches_collection_link});
+}
+
+method can_expire {
+    $self->bug->{can_expire};
+}
+
+method cves {
+    $self->get($self->bug->{cvs_collection_link});
+}
+
+method description {
+    $self->bug->{description};
+}
+
+method heat {
+    $self->bug->{heat};
+}
+
+method information_type {
+    $self->bug->{information_type};
+}
+
+method branches {
+    $self->get($self->bug->{linked_branches_collection_link});
+}
+
+method owner {
+    $self->get($self->bug->{owner_link});
+}
+
+method title {
+    $self->bug->{title};
+}
+
+method tags {
+    $self->bug->{tags};
+}
+
+method id {
+    $self->bug->{id};
 }
 
 ###################################

@@ -26,14 +26,15 @@ else {
 }
 
 $client->staging(1);
-my $bug = $client->find('859600');
+my $bug = $client;
+$bug->find('859600');
 
-ok($bug->{id} eq '859600');
-ok(defined($bug->{title}) && ($bug->{title} =~ m/a title/i), 'verify title');
-ok(defined($bug->{description}));
-ok(defined($bug->{owner_link}));
-ok(defined($bug->{tags}));
-ok(defined($bug->{heat}) && $bug->{heat} >= 0);
+ok($bug->id eq '859600');
+ok(defined($bug->title) && ($bug->title =~ m/a title/i), 'verify title');
+ok(defined($bug->description));
+ok(defined($bug->owner));
+ok(defined($bug->tags) && ref($bug->tags) eq "ARRAY");
+ok(defined($bug->heat) && $bug->heat >= 0);
 
 SKIP: {
     skip "No credentials so no POSTing", 1
