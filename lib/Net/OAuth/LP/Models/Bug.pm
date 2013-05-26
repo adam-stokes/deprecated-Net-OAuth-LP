@@ -7,47 +7,173 @@ use Method::Signatures;
 
 with('Net::OAuth::LP::Models');
 
-###################################
-# Bug Getters
-###################################
+has 'bug' => (
+    is      => 'rw',
+    isa     => method {},
+    lazy    => 1,
+    default => method { {} },
+);
+
+has 'tasks' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{bug_tasks_collection_link});
+    }
+);
+
+has 'activity' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{activity_collection_link});
+    },
+);
+
+has 'attachments' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{attachments_collection_link});
+    },
+);
+
+has 'watches' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{bug_watches_collection_link});
+    },
+);
+
+has 'can_expire' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{can_expire};
+    },
+);
+
+has 'cves' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{cves_collection_link});
+    },
+);
+
+has 'description' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{description};
+    },
+);
+
+has 'heat' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{heat};
+    },
+);
+
+has 'information_type' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{information_type};
+    },
+);
+
+has 'branches' => (
+    is => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        self->get($self->bug->{linked_branches_collection_link});
+    },
+);
+
+has 'owner' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->bug->{owner_link});
+    },
+);
+
+has 'title' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{title};
+    },
+);
+
+has 'tags' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{tags};
+    },
+);
+
+has 'id' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{id};
+    },
+);
+
+has 'web_link' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->bug->{web_link};
+    },
+);
+
 method find ($bug_id) {
     my $resource_link = $self->__path_cons("bugs/$bug_id");
-    $self->get($resource_link);
+    $self->bug($self->get($resource_link));
 }
 
-method bug_task ($resource_link) {
-    $self->get($resource_link);
+method set_tags ($tags) {
+    $self->update($self->bug->{self_link}, {'tags' => $tags});
 }
 
-method bug_activity ($resource_link) {
-    $self->get($resource_link);
+method set_title ($title) {
+    $self->update($self->bug->{self_link}, {'title' => $title});
 }
 
-###################################
-# Bug Setters
-###################################
-method bug_set_tags ($resource, $tags) {
-    $self->update($resource->{self_link}, {'tags' => $tags});
-}
-
-method bug_set_title ($resource, $title) {
-    $self->update($resource->{self_link}, {'title' => $title});
-}
-
-method bug_set_assignee ($resource, $assignee) {
-    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
-    $self->update($bug_task->{self_link},
+method set_assignee ($assignee) {
+    $self->update($self->bug->tasks->{self_link},
         {'assignee_link' => $assignee->{self_link}});
 }
 
-method bug_set_importance ($resource, $importance) {
-    my $bug_task = $self->get($resource->{bug_tasks_collection_link});
-    $self->update($bug_task->{self_link}, {'importance' => $importance});
+method set_importance ($importance) {
+    $self->update($self->bug->tasks->{self_link}, {'importance' => $importance});
 }
 
-method bug_new_message ($resource, $msg) {
+method new_message ($msg) {
     $self->post(
-        $resource->{self_link},
+        $self->bug->{self_link},
         {   'ws.op'   => 'newMessage',
             'content' => $msg
         }
