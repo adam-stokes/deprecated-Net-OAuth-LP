@@ -25,12 +25,12 @@ else {
     $client = Net::OAuth::LP::Models::Person->new;
 }
 
-$client->staging(1);
-my $person = $client->find('~adam-stokes');
+my $person = $client;
+$person->staging(1);
+$person->find('~adam-stokes');
 
-ok($person->{name} eq 'adam-stokes');
-ok($person->{karma} >= '1');
-ok($person->{is_ubuntu_coc_signer});
-ok($person->{is_valid});
+ok($person->name eq 'adam-stokes');
+ok($person->karma >= '1');
+ok($person->display_name);
 
 done_testing;

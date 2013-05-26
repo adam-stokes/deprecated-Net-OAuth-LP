@@ -24,13 +24,14 @@ use YAML qw[LoadFile];
 #my $bug  = $client->bug('859600');
 
 my $p = Net::OAuth::LP::Models::Person->new;
-#$p->staging(1);
-#$p->find('~adam-stokes');
+$p->staging(1);
+$p->find('~adam-stokes');
+pp($p->description);
 
-my $bug = Net::OAuth::LP::Models::Bug->new;
-$bug->staging(1);
-$bug->find('859600');
-pp($bug->tags);
+#my $bug = Net::OAuth::LP::Models::Bug->new;
+#$bug->staging(1);
+#$bug->find('859600');
+#pp($bug->tags);
 
 
 
