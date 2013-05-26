@@ -78,6 +78,10 @@ method id {
     $self->bug->{id};
 }
 
+method web_link {
+  $self->bug->{web_link};
+}
+
 ###################################
 # Bug Setters
 ###################################
