@@ -92,7 +92,7 @@ has api_url => (
 has staging => (
     is      => 'rw',
     isa     => method {},
-    default => 0,
+    default => method { 0 },
 );
 
 method _nonce {

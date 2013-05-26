@@ -9,23 +9,22 @@ diag("Testing LP Person/Team retrieval");
 
 use_ok 'Net::OAuth::LP::Models::Person';
 
-my $client;
+my $person;
 
 if (   defined($ENV{LP_CONSUMER_KEY})
     && defined($ENV{LP_ACCESS_TOKEN})
     && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
 {
-    $client = Net::OAuth::LP::Models::Person->new(
+    $person = Net::OAuth::LP::Models::Person->new(
         consumer_key        => $ENV{LP_CONSUMER_KEY},
         access_token        => $ENV{LP_ACCESS_TOKEN},
         access_token_secret => $ENV{LP_ACCESS_TOKEN_SECRET},
     );
 }
 else {
-    $client = Net::OAuth::LP::Models::Person->new;
+    $person = Net::OAuth::LP::Models::Person->new;
 }
 
-my $person = $client;
 $person->staging(1);
 $person->find('~adam-stokes');
 

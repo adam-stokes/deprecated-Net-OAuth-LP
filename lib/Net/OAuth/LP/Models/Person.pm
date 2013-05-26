@@ -14,40 +14,82 @@ has 'person' => (
     default => method { {} },
 );
 
+has 'display_name' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{display_name};
+    },
+);
+
+has 'description' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{description};
+    },
+);
+
+has 'emails' => (
+    is      => 'rw',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get(
+            $self->person->{confirmed_email_addresses_collection_link});
+    },
+);
+
+has 'karma' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{karma};
+    },
+);
+
+has 'ircnick' => (
+    is      => 'rw',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->person->{irc_nicknames_collection_link});
+    },
+);
+
+has 'name' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{name};
+    },
+);
+
+has 'recipes' => (
+    is      => 'rw',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->get($self->person->{recipes_collection_link});
+    },
+);
+
+has 'tz' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{time_zone};
+    },
+);
+
+
 method find ($name) {
     $self->person($self->get($name));
-}
-
-method display_name {
-    $self->person->{display_name};
-}
-
-method description {
-    $self->person->{description};
-}
-
-method emails {
-    $self->get($self->person->{confirmed_email_addresses_collection_link});
-}
-
-method karma {
-    $self->person->{karma};
-}
-
-method ircnick {
-    $self->get($self->person->{irc_nicknames_collection_link});
-}
-
-method name {
-    $self->person->{name};
-}
-
-method recipes {
-    $self->get($self->person->{recipes_collection_link});
-}
-
-method tz {
-    $self->person->{time_zone};
 }
 
 1;
