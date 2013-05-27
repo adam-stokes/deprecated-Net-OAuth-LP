@@ -115,7 +115,7 @@ has 'owner' => (
 );
 
 has 'title' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => Str,
     lazy    => 1,
     default => method {
@@ -157,6 +157,27 @@ has 'self_link' => (
     default => method {
         $self->bug->{self_link};
     },
+);
+
+has 'target_name' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
+);
+
+has 'status' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
+);
+
+has 'importance' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
 );
 
 method find ($bug_id) {
