@@ -15,9 +15,10 @@ use File::Spec::Functions;
 use JSON;
 
 pp(JSON->backend);
-my $p = Net::OAuth::LP::Models::Bug->new;
+my $p = Net::OAuth::LP::Models::Person->new;
 $p->staging(1);
-$p->find('859600');
-pp(JSON::is_bool($p->can_expire));
+$p->find('~adam-stokes');
+pp($p->karma);
+pp(defined($p->karma));
 
 
