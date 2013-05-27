@@ -126,23 +126,6 @@ method update ($resource, $params) {
     $self->_request($resource, $params, 'PATCH');
 }
 
-
-###################################
-# Resource Link getter
-###################################
-method resource ($resource_link) {
-    $self->get($resource_link);
-}
-
-###################################
-# Search
-###################################
-method search ($path, $segments) {
-    my $query = $self->__query_from_hash($segments);
-    my $uri = join("?", $path, $query);
-    $self->get($uri);
-}
-
 1; # End of Net::OAuth::LP::Client
 
 __END__
@@ -151,55 +134,9 @@ __END__
 
 Net::OAuth::LP::Client - Launchpad.net Client routines
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-If making authenticated requests (GET/POST/PATCH)
-
-    my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
-                                         access_token => 'accesstoken',
-                                         access_token_secret => 'accesstokensecret');
-
-If just querying publicly accessible Launchpad information (GET)
-
-    my $lp = Net::OAuth::LP::Client->new;
-
-    # Use your launchpad.net name in place of adam-stokes. 
-    # You can figure that out by visiting
-    # https://launchpad.net/~/ and look at Launchpad Id.
-
-    my $person = $lp->person('~adam-stokes');
-
-=head1 METHODS
-
-=head2 B<new>
-
-    my $lp = Net::OAuth::LP::Client->new(consumer_key => 'consumerkey',
-                                         access_token => 'accesstoken',
-                                         access_token_secret => 'accesstokensecret');
-
-If called without OAuth credentials only publicly accessible content may be retrieved.
-
-=head2 B<post>
-
-Takes resource link and params, and performs an update to that endpoint.
-
-    $lp->post('lp.net/bugs/1', { 'ws.op' => 'newMessage',
-                                 'content' => "This is a message"});
-
-=head2 B<search>
-
-Performs a search request against the target distribution.
-
-    $lp->search('ubuntu', { 'ws.op' => 'searchTasks',
-                            'ws.size' => '10',
-                            'status' => 'New' });
-
-=head2 B<resource>
-
-Access resource endpoints directly, however, once API is feature complete
-this method shouldn't need to be referenced.
-
-    $lp->resource('launchpad_resource_link');
+This isn't meant to be called directly but inherited from exposed Net::OAuth::LP::Models.
 
 =head1 DEVELOPMENT
 

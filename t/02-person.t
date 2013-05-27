@@ -30,7 +30,7 @@ $person->staging(1);
 $person->find('~adam-stokes');
 
 ok($person->name eq 'adam-stokes');
-ok($person->karma >= '1');
+ok(defined($person->karma) && $person->karma >= '0');
 ok($person->display_name);
 
 SKIP: {

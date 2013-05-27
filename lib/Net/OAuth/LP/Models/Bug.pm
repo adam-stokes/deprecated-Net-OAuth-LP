@@ -164,6 +164,10 @@ method find ($bug_id) {
     $self->bug($self->get($resource_link));
 }
 
+method find_by_link ($resource_link) {
+    $self->bug($self->get($resource_link));
+}
+
 method set_tags ($tags) {
     $self->update($self->self_link, {'tags' => $tags});
 }
