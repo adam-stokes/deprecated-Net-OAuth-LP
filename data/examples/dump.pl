@@ -1,37 +1,23 @@
 #!/usr/bin/env perl
+#
+# for quick tests only, should not be depended upon for
+# proper examples of current api.
 
 use strict;
 use warnings;
+use v5.10;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Models::Person;
 use Net::OAuth::LP::Models::Bug;
 use Data::Dump qw(pp);
 use File::Spec::Functions;
-use YAML qw[LoadFile];
+use JSON;
 
-# my $creds = LoadFile catfile($ENV{HOME}, '.lp-auth.yml');
-
-# my $client = Net::OAuth::LP::Models::Person->new(
-#     consumer_key        => $creds->{consumer_key},
-#     access_token        => $creds->{access_token},
-#     access_token_secret => $creds->{access_token_secret}
-# );
-
-# Use staging setup for now.
-# $client->staging(1);
-
-#my $bug  = $client->bug('859600');
-
-my $p = Net::OAuth::LP::Models::Person->new;
+pp(JSON->backend);
+my $p = Net::OAuth::LP::Models::Bug->new;
 $p->staging(1);
-$p->find('~adam-stokes');
-pp($p->description);
-
-#my $bug = Net::OAuth::LP::Models::Bug->new;
-#$bug->staging(1);
-#$bug->find('859600');
-#pp($bug->tags);
-
+$p->find('859600');
+pp(JSON::is_bool($p->can_expire));
 
 

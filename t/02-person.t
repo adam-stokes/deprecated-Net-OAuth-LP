@@ -14,6 +14,7 @@ my $person;
 if (   defined($ENV{LP_CONSUMER_KEY})
     && defined($ENV{LP_ACCESS_TOKEN})
     && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
+
 {
     $person = Net::OAuth::LP::Models::Person->new(
         consumer_key        => $ENV{LP_CONSUMER_KEY},
@@ -31,5 +32,15 @@ $person->find('~adam-stokes');
 ok($person->name eq 'adam-stokes');
 ok($person->karma >= '1');
 ok($person->display_name);
+
+SKIP: {
+    skip "No credentials so no POSTing", 2
+      unless defined($ENV{LP_ACCESS_TOKEN});
+    diag("Testing protected sources");
+    my $randomname = "me-".rand();
+    ok($person->set_display_name($randomname));
+    ok($person->set_description('woooooooooooo'.rand()));
+}
+
 
 done_testing;

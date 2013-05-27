@@ -4,6 +4,7 @@ package Net::OAuth::LP::Models::Person;
 
 use Moo;
 use Method::Signatures;
+use Data::Dump qw(pp);
 
 with('Net::OAuth::LP::Models');
 
@@ -15,7 +16,7 @@ has 'person' => (
 );
 
 has 'display_name' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => method {},
     lazy    => 1,
     default => method {
@@ -24,7 +25,7 @@ has 'display_name' => (
 );
 
 has 'description' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => method {},
     lazy    => 1,
     default => method {
@@ -33,7 +34,7 @@ has 'description' => (
 );
 
 has 'emails' => (
-    is      => 'rw',
+    is      => 'ro',
     isa     => method {},
     lazy    => 1,
     default => method {
@@ -61,7 +62,7 @@ has 'ircnick' => (
 );
 
 has 'name' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => method {},
     lazy    => 1,
     default => method {
@@ -70,7 +71,7 @@ has 'name' => (
 );
 
 has 'recipes' => (
-    is      => 'rw',
+    is      => 'ro',
     isa     => method {},
     lazy    => 1,
     default => method {
@@ -79,11 +80,20 @@ has 'recipes' => (
 );
 
 has 'tz' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => method {},
     lazy    => 1,
     default => method {
         $self->person->{time_zone};
+    },
+);
+
+has 'self_link' => (
+    is      => 'ro',
+    isa     => method {},
+    lazy    => 1,
+    default => method {
+        $self->person->{self_link};
     },
 );
 
@@ -92,29 +102,37 @@ method find ($name) {
     $self->person($self->get($name));
 }
 
+method set_name ($name) {
+    $self->update($self->self_link, {'name' => $name});
+}
+
+method set_description($desc) {
+  $self->update($self->self_link, {'description' => $desc});
+}
+
+method set_display_name($desc) {
+  $self->update($self->self_link, {'display_name' => $desc});
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-Net::OAuth::LP::Models::Person
+Net::OAuth::LP::Models::Person - Person interface
 
 =head1 DESCRIPTION
 
-Person Model
+Model interface for retrieving/setting person/team information.
 
-=head1 METHODS
-
-=head2 B<new>
+=head1 SYNOPSIS
 
     my $p = Net::OAuth::LP::Models::Person->new;
+    $p->find('~adam-stokes');
+    say $p->display_name;
 
-=head2 B<find>
-
-Queries a person or team resource.
-
-    $p->find('~launchpad-user-or-team');
+=head1 ATTRIBUTES
 
 =head2 B<display_name>
 
@@ -147,5 +165,35 @@ Return source recipes
 =head2 B<tz>
 
 Returns time_zone
+
+=head1 METHODS
+
+=head2 B<new>
+
+    my $p = Net::OAuth::LP::Models::Person->new;
+
+=head2 B<find>
+
+Queries a person or team resource.
+
+    $p->find('~launchpad-user-or-team');
+
+=head2 B<set_name>
+
+Set launchpad name
+
+    $p->set_name('new-name');
+
+=head2 B<set_description>
+
+Set description
+
+    $p->set_description('Im a real boy!');
+
+=head2 B<set_display_name>
+
+Sets display name
+
+    $p->set_display_name('A Name');
 
 =cut
