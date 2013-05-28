@@ -30,8 +30,13 @@ Interface to setting/retrieving bug tasks information
 
 =head1 SYNOPSIS
 
-    my $tasks = Net::OAuth::LP::Models::Tasks->new(tasks => $b->tasks);
-    say $tasks->all;
+    my $c = Net::OAuth::LP::Client->new(consumer_key => 'blah',
+                                        access_token => 'fdsafsda',
+                                        access_token_secret => 'fdsafsda');
+
+    my $b = Net::OAuth::LP::Models::Bug->new(c => $c);
+    $b->find(1);
+    say $b->tasks->all;
 
 =head1 METHODS
 

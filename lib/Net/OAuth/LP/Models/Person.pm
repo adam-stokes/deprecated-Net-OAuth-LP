@@ -143,7 +143,11 @@ Model interface for retrieving/setting person/team information.
 
 =head1 SYNOPSIS
 
-    my $p = Net::OAuth::LP::Models::Person->new;
+    my $c = Net::OAuth::LP::Client->new(consumer_key => 'blah',
+                                        access_token => 'fdsafsda',
+                                        access_token_secret => 'fdsafsda');
+
+    my $p = Net::OAuth::LP::Models::Person->new(c => $c);
     $p->find('~adam-stokes');
     say $p->display_name;
 
