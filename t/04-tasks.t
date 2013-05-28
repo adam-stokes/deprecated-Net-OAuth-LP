@@ -32,5 +32,8 @@ $c->staging(1);
 my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
 ok(scalar $bug->tasks->all >= 1);
+foreach (@{$bug->tasks->all}) {
+  ok ($_->{title} =~ /Debian|Ubuntu/, "Check distro in title");
+}
 
 done_testing;

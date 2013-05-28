@@ -5,15 +5,15 @@ package Net::OAuth::LP::Models::Tasks;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
+use List::Objects::WithUtils;
+use Data::Dump qw(pp);
 
 with('Net::OAuth::LP::Models');
 
-has 'tasks' => (
-    is      => 'rw',
-);
+has 'tasks' => (is => 'rw',);
 
-method all {
-  $self->tasks->{entries};
+method entries {
+  hash(array($self->tasks->{entries})->shift);
 }
 
 1;

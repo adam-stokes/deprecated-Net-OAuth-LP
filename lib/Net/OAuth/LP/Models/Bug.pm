@@ -7,6 +7,7 @@ use Net::OAuth::LP::Models::Tasks;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
+
 with('Net::OAuth::LP::Models');
 
 has 'bug' => (
@@ -21,7 +22,9 @@ has 'tasks' => (
     lazy    => 1,
     default => method {
         Net::OAuth::LP::Models::Tasks->new(
-            tasks => $self->c->get($self->bug->{bug_tasks_collection_link}));
+            c     => $self->c,
+            tasks => $self->c->get($self->bug->{bug_tasks_collection_link})
+        );
     }
 );
 

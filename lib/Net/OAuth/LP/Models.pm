@@ -9,6 +9,7 @@ has 'c' => (is => 'rw',);
 
 method find         { }
 method find_by_link { }
+method filter       { }
 
 method search ($path, $segments) {
     my $query = $self->c->__query_from_hash($segments);
