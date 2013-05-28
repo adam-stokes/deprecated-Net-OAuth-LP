@@ -7,25 +7,27 @@ use Test::More;
 # otherwise just some basic testing
 diag("Testing LP Bug retrieval");
 
+use_ok 'Net::OAuth::LP::Client';
 use_ok 'Net::OAuth::LP::Models::Bug';
 
-my $bug;
+my $c;
 
 if (   defined($ENV{LP_CONSUMER_KEY})
     && defined($ENV{LP_ACCESS_TOKEN})
     && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
 {
-    $bug = Net::OAuth::LP::Models::Bug->new(
+    $c = Net::OAuth::LP::Client->new(
         consumer_key        => $ENV{LP_CONSUMER_KEY},
         access_token        => $ENV{LP_ACCESS_TOKEN},
         access_token_secret => $ENV{LP_ACCESS_TOKEN_SECRET},
     );
 }
 else {
-    $bug = Net::OAuth::LP::Models::Bug->new;
+    $c = Net::OAuth::LP::Client->new;
 }
 
-$bug->staging(1);
+$c->staging(1);
+my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
 
 ok($bug->id eq '859600');
@@ -35,7 +37,6 @@ ok(defined($bug->owner));
 ok(defined($bug->tags) && ref($bug->tags) eq "ARRAY");
 ok(defined($bug->heat) && $bug->heat >= 0);
 ok(ref($bug->attachments) eq "HASH");
-ok(ref($bug->tasks) eq "HASH");
 ok(ref($bug->activity) eq "HASH");
 ok(ref($bug->watches) eq "HASH");
 ok(JSON::is_bool($bug->can_expire));

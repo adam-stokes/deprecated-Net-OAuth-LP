@@ -2,10 +2,9 @@ package Net::OAuth::LP::Client;
 
 # VERSION
 
-use Moo::Role;
+use Moo;
 use Method::Signatures;
 
-use File::Spec::Functions;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;

@@ -5,19 +5,19 @@ package Net::OAuth::LP::Models;
 use Moo::Role;
 use Method::Signatures;
 
-with('Net::OAuth::LP::Client');
+has 'c' => (is => 'rw',);
 
 method find         { }
 method find_by_link { }
 
 method search ($path, $segments) {
-    my $query = $self->__query_from_hash($segments);
+    my $query = $self->c->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
-    $self->get($uri);
+    $self->c->get($uri);
 }
 
 method resource ($resource_link) {
-    $self->get($resource_link);
+    $self->c->get($resource_link);
 }
 
 1;
@@ -31,6 +31,12 @@ Net::OAuth::LP::Models - Base class for models
 =head1 DESCRIPTION
 
 Base Model Role
+
+=head1 ATTRIBUTES
+
+=head2 B<c>
+
+Client attribute to perform authenticated requests.
 
 =head1 METHODS
 

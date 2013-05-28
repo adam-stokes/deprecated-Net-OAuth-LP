@@ -2,10 +2,11 @@ package Net::OAuth::LP::Models::Bug;
 
 # VERSION
 
+use Net::OAuth::LP::Models::Tasks;
+
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
-
 with('Net::OAuth::LP::Models');
 
 has 'bug' => (
@@ -17,10 +18,10 @@ has 'bug' => (
 
 has 'tasks' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{bug_tasks_collection_link});
+        Net::OAuth::LP::Models::Tasks->new(
+            tasks => $self->c->get($self->bug->{bug_tasks_collection_link}));
     }
 );
 
@@ -29,7 +30,7 @@ has 'activity' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{activity_collection_link});
+        $self->c->get($self->bug->{activity_collection_link});
     },
 );
 
@@ -38,7 +39,7 @@ has 'attachments' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{attachments_collection_link});
+        $self->c->get($self->bug->{attachments_collection_link});
     },
 );
 
@@ -47,7 +48,7 @@ has 'watches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{bug_watches_collection_link});
+        $self->c->get($self->bug->{bug_watches_collection_link});
     },
 );
 
@@ -65,7 +66,7 @@ has 'cves' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{cves_collection_link});
+        $self->c->get($self->bug->{cves_collection_link});
     },
 );
 
@@ -101,7 +102,7 @@ has 'branches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        self->get($self->bug->{linked_branches_collection_link});
+        self->c->get($self->bug->{linked_branches_collection_link});
     },
 );
 
@@ -110,7 +111,7 @@ has 'owner' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{owner_link});
+        $self->c->get($self->bug->{owner_link});
     },
 );
 
@@ -181,34 +182,34 @@ has 'importance' => (
 );
 
 method find ($bug_id) {
-    my $resource_link = $self->__path_cons("bugs/$bug_id");
-    $self->bug($self->get($resource_link));
+    my $resource_link = $self->c->__path_cons("bugs/$bug_id");
+    $self->bug($self->c->get($resource_link));
 }
 
 method find_by_link ($resource_link) {
-    $self->bug($self->get($resource_link));
+    $self->bug($self->c->get($resource_link));
 }
 
 method set_tags ($tags) {
-    $self->update($self->self_link, {'tags' => $tags});
+    $self->c->update($self->self_link, {'tags' => $tags});
 }
 
 method set_title ($title) {
-    $self->update($self->self_link, {'title' => $title});
+    $self->c->update($self->self_link, {'title' => $title});
 }
 
 method set_assignee ($assignee) {
-    $self->update($self->bug->tasks->{self_link},
+    $self->c->update($self->bug->tasks->{self_link},
         {'assignee_link' => $assignee->self_link});
 }
 
 method set_importance ($importance) {
-    $self->update($self->bug->tasks->{self_link},
+    $self->c->update($self->bug->tasks->{self_link},
         {'importance' => $importance});
 }
 
 method new_message ($msg) {
-    $self->post(
+    $self->c->post(
         $self->self_link,
         {   'ws.op'   => 'newMessage',
             'content' => $msg
