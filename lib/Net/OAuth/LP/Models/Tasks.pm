@@ -13,7 +13,7 @@ with('Net::OAuth::LP::Models');
 has 'tasks' => (is => 'rw',);
 
 method entries {
-  hash(array($self->tasks->{entries})->shift);
+  array(@{$self->tasks->{entries}});
 }
 
 1;
