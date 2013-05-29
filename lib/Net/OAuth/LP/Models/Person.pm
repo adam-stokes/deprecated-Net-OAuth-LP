@@ -136,7 +136,7 @@ __END__
 
 =head1 NAME
 
-Net::OAuth::LP::Models::Person - Person interface
+Net::OAuth::LP::Models::Person - Person model
 
 =head1 DESCRIPTION
 

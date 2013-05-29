@@ -18,7 +18,9 @@ $c->staging(1);
 my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
 my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
-pp($newbug);
-
+#pp($newbug);
+foreach ($bug->messages->entries->all) {
+  pp($_->{http_etag});
+}
 
 

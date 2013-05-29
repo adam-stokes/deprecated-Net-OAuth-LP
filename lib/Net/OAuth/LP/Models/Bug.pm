@@ -4,6 +4,7 @@ package Net::OAuth::LP::Models::Bug;
 
 use strictures 1;
 use Net::OAuth::LP::Models::Tasks;
+use Net::OAuth::LP::Models::Messages;
 
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
@@ -27,6 +28,17 @@ has 'tasks' => (
             tasks => $self->c->get($self->bug->{bug_tasks_collection_link})
         );
     }
+);
+
+has 'messages' => (
+    is      => 'ro',
+    lazy    => 1,
+    default => method {
+        Net::OAuth::LP::Models::Messages->new(
+            c        => $self->c,
+            messages => $self->c->get($self->bug->{messages_collection_link})
+        );
+    },
 );
 
 has 'activity' => (
