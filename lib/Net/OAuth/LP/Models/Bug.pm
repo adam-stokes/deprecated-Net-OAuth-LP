@@ -5,6 +5,8 @@ package Net::OAuth::LP::Models::Bug;
 use strictures 1;
 use Net::OAuth::LP::Models::Tasks;
 use Net::OAuth::LP::Models::Messages;
+use Net::OAuth::LP::Models::Activity;
+use Net::OAuth::LP::Models::Attachments;
 
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
@@ -43,19 +45,24 @@ has 'messages' => (
 
 has 'activity' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->bug->{activity_collection_link});
+        Net::OAuth::LP::Models::Activity->new(
+            c        => $self->c,
+            activity => $self->c->get($self->bug->{activity_collection_link})
+        );
     },
 );
 
 has 'attachments' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->bug->{attachments_collection_link});
+        Net::OAuth::LP::Models::Attachments->new(
+            c => $self->c,
+            attachments =>
+              $self->c->get($self->bug->{attachments_collection_link})
+        );
     },
 );
 

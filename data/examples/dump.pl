@@ -19,8 +19,8 @@ my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
 my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
 #pp($newbug);
-foreach ($bug->messages->entries->all) {
-  pp($_->{http_etag});
-}
+#pp($bug->messages->entries->all);
+#pp($bug->activity->entries->all);
+pp($bug->attachments->entries->all);
 
 

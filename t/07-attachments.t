@@ -5,7 +5,7 @@ use Test::More;
 
 # Some tests run if we've already authenticated again launchpad.net
 # otherwise just some basic testing
-diag("Testing LP Messages methods");
+diag("Testing LP Attachments methods");
 
 use_ok 'Net::OAuth::LP::Client';
 use_ok 'Net::OAuth::LP::Models::Bug';
@@ -30,8 +30,8 @@ else {
 $c->staging(1);
 my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
-foreach ($bug->messages->entries->all) {
-    ok(defined($_->{content}));
+foreach ($bug->attachments->entries->all) {
+    ok(defined($_->{type}));
 }
 
 done_testing;

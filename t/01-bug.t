@@ -36,8 +36,9 @@ ok(defined($bug->description));
 ok(defined($bug->owner));
 ok(defined($bug->tags) && ref($bug->tags) eq "ARRAY");
 ok(defined($bug->heat) && $bug->heat >= 0);
-ok(ref($bug->attachments) eq "HASH");
-ok(ref($bug->activity) eq "HASH");
+ok(ref($bug->messages) eq "Net::OAuth::LP::Models::Messages");
+ok(ref($bug->attachments) eq "Net::OAuth::LP::Models::Attachments");
+ok(ref($bug->activity) eq "Net::OAuth::LP::Models::Activity");
 ok(ref($bug->watches) eq "HASH");
 ok(JSON::is_bool($bug->can_expire));
 
