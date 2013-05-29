@@ -2,6 +2,7 @@ package Net::OAuth::LP::Models::Person;
 
 # VERSION
 
+use strictures 1;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
@@ -39,7 +40,7 @@ has 'emails' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get(
+        $self->c->get(
             $self->person->{confirmed_email_addresses_collection_link});
     },
 );
@@ -58,7 +59,7 @@ has 'ircnick' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->person->{irc_nicknames_collection_link});
+        $self->c->get($self->person->{irc_nicknames_collection_link});
     },
 );
 
@@ -76,7 +77,7 @@ has 'recipes' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->person->{recipes_collection_link});
+        $self->c->get($self->person->{recipes_collection_link});
     },
 );
 
@@ -100,23 +101,23 @@ has 'self_link' => (
 
 
 method find ($name) {
-    $self->person($self->get($name));
+    $self->person($self->c->get($name));
 }
 
 method find_by_link ($resource_link) {
-    $self->person($self->get($resource_link));
+    $self->person($self->c->get($resource_link));
 }
 
 method set_name ($name) {
-    $self->update($self->self_link, {'name' => $name});
+    $self->c->update($self->self_link, {'name' => $name});
 }
 
 method set_description ($desc) {
-    $self->update($self->self_link, {'description' => $desc});
+    $self->c->update($self->self_link, {'description' => $desc});
 }
 
 method set_display_name ($desc) {
-    $self->update($self->self_link, {'display_name' => $desc});
+    $self->c->update($self->self_link, {'display_name' => $desc});
 }
 
 method get_assigned_bugs {
@@ -143,7 +144,11 @@ Model interface for retrieving/setting person/team information.
 
 =head1 SYNOPSIS
 
-    my $p = Net::OAuth::LP::Models::Person->new;
+    my $c = Net::OAuth::LP::Client->new(consumer_key => 'blah',
+                                        access_token => 'fdsafsda',
+                                        access_token_secret => 'fdsafsda');
+
+    my $p = Net::OAuth::LP::Models::Person->new(c => $c);
     $p->find('~adam-stokes');
     say $p->display_name;
 

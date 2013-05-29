@@ -2,6 +2,9 @@ package Net::OAuth::LP::Models::Bug;
 
 # VERSION
 
+use strictures 1;
+use Net::OAuth::LP::Models::Tasks;
+
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
@@ -17,10 +20,12 @@ has 'bug' => (
 
 has 'tasks' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{bug_tasks_collection_link});
+        Net::OAuth::LP::Models::Tasks->new(
+            c     => $self->c,
+            tasks => $self->c->get($self->bug->{bug_tasks_collection_link})
+        );
     }
 );
 
@@ -29,7 +34,7 @@ has 'activity' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{activity_collection_link});
+        $self->c->get($self->bug->{activity_collection_link});
     },
 );
 
@@ -38,7 +43,7 @@ has 'attachments' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{attachments_collection_link});
+        $self->c->get($self->bug->{attachments_collection_link});
     },
 );
 
@@ -47,7 +52,7 @@ has 'watches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{bug_watches_collection_link});
+        $self->c->get($self->bug->{bug_watches_collection_link});
     },
 );
 
@@ -65,7 +70,7 @@ has 'cves' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{cves_collection_link});
+        $self->c->get($self->bug->{cves_collection_link});
     },
 );
 
@@ -101,7 +106,7 @@ has 'branches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        self->get($self->bug->{linked_branches_collection_link});
+        self->c->get($self->bug->{linked_branches_collection_link});
     },
 );
 
@@ -110,12 +115,12 @@ has 'owner' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->get($self->bug->{owner_link});
+        $self->c->get($self->bug->{owner_link});
     },
 );
 
 has 'title' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => Str,
     lazy    => 1,
     default => method {
@@ -159,35 +164,56 @@ has 'self_link' => (
     },
 );
 
+has 'target_name' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
+);
+
+has 'status' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
+);
+
+has 'importance' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => method {},
+);
+
 method find ($bug_id) {
-    my $resource_link = $self->__path_cons("bugs/$bug_id");
-    $self->bug($self->get($resource_link));
+    my $resource_link = $self->c->__path_cons("bugs/$bug_id");
+    $self->bug($self->c->get($resource_link));
 }
 
 method find_by_link ($resource_link) {
-    $self->bug($self->get($resource_link));
+    $self->bug($self->c->get($resource_link));
 }
 
 method set_tags ($tags) {
-    $self->update($self->self_link, {'tags' => $tags});
+    $self->c->update($self->self_link, {'tags' => $tags});
 }
 
 method set_title ($title) {
-    $self->update($self->self_link, {'title' => $title});
+    $self->c->update($self->self_link, {'title' => $title});
 }
 
 method set_assignee ($assignee) {
-    $self->update($self->bug->tasks->{self_link},
+    $self->c->update($self->bug->tasks->{self_link},
         {'assignee_link' => $assignee->self_link});
 }
 
 method set_importance ($importance) {
-    $self->update($self->bug->tasks->{self_link},
+    $self->c->update($self->bug->tasks->{self_link},
         {'importance' => $importance});
 }
 
 method new_message ($msg) {
-    $self->post(
+    $self->c->post(
         $self->self_link,
         {   'ws.op'   => 'newMessage',
             'content' => $msg
@@ -209,9 +235,12 @@ Interface to setting/retrieving bug information
 
 =head1 SYNOPSIS
 
-    my $b = Net::OAuth::LP::Models::Bug->new;
+    my $c = Net::OAuth::LP::Client->new(consumer_key => 'blah',
+                                        access_token => 'fdsafsda',
+                                        access_token_secret => 'fdsafsda');
+    my $b = Net::OAuth::LP::Models::Bug->new(c => $c);
     $b->find(1);
-    say $b->description;
+    say $b->title;
 
 =head1 ATTRIBUTES
 

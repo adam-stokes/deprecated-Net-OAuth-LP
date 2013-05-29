@@ -1,5 +1,6 @@
 package Net::OAuth::LP;
 
+use strictures 1;
 use Moo::Role;
 use Method::Signatures;
 
@@ -105,54 +106,6 @@ method _nonce {
     $nonce;
 }
 
-method login_with_creds {
-    my $ua      = LWP::UserAgent->new();
-    my $request = Net::OAuth->request('consumer')->new(
-        consumer_key     => $self->consumer_key,
-        consumer_secret  => '',
-        request_url      => $self->request_token_url,
-        request_method   => 'POST',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => $self->_nonce,
-    );
-
-    $request->sign;
-    my $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
-
-    die "Failed to get response" unless $res->is_success;
-    my $response =
-      Net::OAuth->response('request token')->from_post_body($res->content);
-    my $_token        = $response->token;
-    my $_token_secret = $response->token_secret;
-    open_browser($self->authorize_token_url . "?oauth_token=" . $_token);
-
-    print "Pulling authorization credentials.\n";
-
-    $request = Net::OAuth->request('access token')->new(
-        consumer_key     => $self->consumer_key,
-        consumer_secret  => '',
-        token            => $_token,
-        token_secret     => $_token_secret,
-        request_url      => $self->access_token_url,
-        request_method   => 'POST',
-        signature_method => 'PLAINTEXT',
-        timestamp        => time,
-        nonce            => $self->_nonce
-    );
-
-    $request->sign;
-
-    $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
-    die "Failed to get response" unless $res->is_success;
-    $response =
-      Net::OAuth->response('access token')->from_post_body($res->content);
-    $self->access_token($response->token);
-    $self->access_token_secret($response->token_secret);
-}
-
 1;
 
 =head1 NAME
@@ -162,14 +115,6 @@ Net::OAuth::LP - Launchpad.net OAuth 1.0
 =head1 SYNOPSIS
 
 OAuth 1.0a authorization and client for Launchpad.net
-
-    use Net::OAuth::LP;
-
-    my $lp = Net::OAuth::LP->new;
-    $lp->consumer_key('my-lp-app');
-
-    # Authorize yourself
-    $lp->login_with_creds;
 
 =head1 ATTRIBUTES
 
@@ -189,19 +134,9 @@ Token received from authorized request
 
 Token secret received from authorized request
 
-=head1 METHODS
-
-=head2 B<new>
-
-    my $lp = Net::OAuth::LP->new;
-
-=head2 B<login_with_creds>
-
-    $lp->login_with_creds;
-
 =head1 AUTHOR
 
-Adam 'battlemidget' Stokes, C<< <adam.stokes at ubuntu.com> >>
+Adam 'battlemidget' Stokes, C<< <adamjs at cpan.org> >>
 
 =head1 BUGS
 
