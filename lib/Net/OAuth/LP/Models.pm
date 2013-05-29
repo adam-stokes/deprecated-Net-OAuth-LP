@@ -2,6 +2,7 @@ package Net::OAuth::LP::Models;
 
 # VERSION
 
+use strictures 1;
 use Moo::Role;
 use Method::Signatures;
 

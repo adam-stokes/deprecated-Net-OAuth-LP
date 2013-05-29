@@ -3,8 +3,7 @@
 # for quick tests only, should not be depended upon for
 # proper examples of current api.
 
-use strict;
-use warnings;
+use strictures 1;
 use v5.10;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";

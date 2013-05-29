@@ -2,6 +2,7 @@ package Net::OAuth::LP::Models::Person;
 
 # VERSION
 
+use strictures 1;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;

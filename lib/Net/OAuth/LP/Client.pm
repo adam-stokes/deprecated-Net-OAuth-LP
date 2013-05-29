@@ -2,6 +2,7 @@ package Net::OAuth::LP::Client;
 
 # VERSION
 
+use strictures 1;
 use Moo;
 use Method::Signatures;
 

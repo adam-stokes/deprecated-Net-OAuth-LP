@@ -1,5 +1,6 @@
 package Net::OAuth::LP;
 
+use strictures 1;
 use Moo::Role;
 use Method::Signatures;
 

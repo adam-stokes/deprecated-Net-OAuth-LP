@@ -2,6 +2,7 @@ package Net::OAuth::LP::Models::Bug;
 
 # VERSION
 
+use strictures 1;
 use Net::OAuth::LP::Models::Tasks;
 
 use Moo;
