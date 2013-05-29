@@ -21,6 +21,6 @@ my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu
 #pp($newbug);
 #pp($bug->messages->entries->all);
 #pp($bug->activity->entries->all);
-pp($bug->attachments->entries->all);
+pp(ref($bug->attachments->entries->shift));
 
 

@@ -3,10 +3,16 @@ package Net::OAuth::LP::Models::Bug;
 # VERSION
 
 use strictures 1;
-use Net::OAuth::LP::Models::Tasks;
-use Net::OAuth::LP::Models::Messages;
+
+# MODELS
 use Net::OAuth::LP::Models::Activity;
 use Net::OAuth::LP::Models::Attachments;
+use Net::OAuth::LP::Models::CVE;
+use Net::OAuth::LP::Models::Linkedbranches;
+use Net::OAuth::LP::Models::Messages;
+use Net::OAuth::LP::Models::Person;
+use Net::OAuth::LP::Models::Tasks;
+use Net::OAuth::LP::Models::Watches;
 
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
@@ -71,7 +77,11 @@ has 'watches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->bug->{bug_watches_collection_link});
+        Net::OAuth::LP::Models::Watches->new(
+            c => $self->c,
+            watches =>
+              $self->c->get($self->bug->{bug_watches_collection_link})
+        );
     },
 );
 
@@ -89,7 +99,10 @@ has 'cves' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->bug->{cves_collection_link});
+        Net::OAuth::LP::Models::CVE->new(
+            c    => $self->c,
+            cves => $self->c->get($self->bug->{cves_collection_link})
+        );
     },
 );
 
@@ -125,7 +138,11 @@ has 'branches' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        self->c->get($self->bug->{linked_branches_collection_link});
+        Net::OAuth::LP::Models::Linkedbranches->new(
+            c => $self->c,
+            linkedbranches =>
+              self->c->get($self->bug->{linked_branches_collection_link})
+        );
     },
 );
 
@@ -134,7 +151,8 @@ has 'owner' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->bug->{owner_link});
+        my $p = Net::OAuth::LP::Models::Person->new(c => $self->c);
+        $p->find_by_link($self->bug->{owner_link});
     },
 );
 
