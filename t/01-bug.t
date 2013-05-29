@@ -27,31 +27,31 @@ else {
 }
 
 $c->staging(1);
-my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
-$bug->find('859600');
+my $o = Net::OAuth::LP::Models::Bug->new(c => $c);
+$o->find('859600');
 
-ok($bug->id eq '859600');
-ok(defined($bug->title) && ($bug->title =~ m/a title/i), 'verify title');
-ok(defined($bug->description));
-ok(defined($bug->owner));
-ok(defined($bug->tags) && ref($bug->tags) eq "ARRAY");
-ok(defined($bug->heat) && $bug->heat >= 0);
-ok(ref($bug->messages) eq "Net::OAuth::LP::Models::Messages");
-ok(ref($bug->attachments) eq "Net::OAuth::LP::Models::Attachments");
-ok(ref($bug->activity) eq "Net::OAuth::LP::Models::Activity");
-ok(ref($bug->watches) eq "Net::OAuth::LP::Models::Watches");
-ok(ref($bug->linkedbranches) eq "Net::OAuth::LP::Models::Linkedbranches");
-ok(ref($bug->cves) eq "Net::OAuth::LP::Models::CVE");
-ok(JSON::is_bool($bug->can_expire));
+ok($o->bug->id eq '859600');
+ok(defined($o->bug->title) && ($o->bug->title =~ m/a title/i), 'verify title');
+ok(defined($o->bug->description));
+ok(defined($o->owner));
+ok(defined($o->bug->tags) && ref($o->bug->tags) eq "ARRAY");
+ok(defined($o->bug->heat) && $o->bug->heat >= 0);
+ok(ref($o->messages) eq "Net::OAuth::LP::Models::Messages");
+ok(ref($o->attachments) eq "Net::OAuth::LP::Models::Attachments");
+ok(ref($o->activity) eq "Net::OAuth::LP::Models::Activity");
+ok(ref($o->watches) eq "Net::OAuth::LP::Models::Watches");
+ok(ref($o->linkedbranches) eq "Net::OAuth::LP::Models::Linkedbranches");
+ok(ref($o->cves) eq "Net::OAuth::LP::Models::CVE");
+ok(JSON::is_bool($o->bug->can_expire));
 
 SKIP: {
     skip "No credentials so no POSTing", 1
       unless defined($ENV{LP_ACCESS_TOKEN});
     diag("Testing protected sources");
     my $temptitle = "a title " . time . rand();
-    skip "Timeout", 1 if $bug->set_title($temptitle) > 0;
-    $bug->find('859600');
-    ok($bug->title eq $temptitle, 'verify title setter');
+    skip "Timeout", 1 if $o->bug->set_title($temptitle) > 0;
+    $o->bug->find('859600');
+    ok($o->bug->title eq $temptitle, 'verify title setter');
 }
 
 done_testing;

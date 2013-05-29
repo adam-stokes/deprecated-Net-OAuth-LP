@@ -15,12 +15,12 @@ use Data::Dump qw(pp);
 my $c = Net::OAuth::LP::Client->new;
 $c->staging(1);
 
-my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
-$bug->find('859600');
-#my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
-#pp($newbug);
-#pp($bug->messages->entries->all);
-#pp($bug->activity->entries->all);
-pp($bug->watches->entries->all);
+my $model = Net::OAuth::LP::Models::Bug->new(c => $c);
+$model->find('859600');
+say $model->bug->title;
+my $newbug = $model->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
+pp($newbug);
+
+#pp($bug->watches->entries->all);
 
 

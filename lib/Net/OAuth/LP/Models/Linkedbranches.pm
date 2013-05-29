@@ -14,7 +14,7 @@ with('Net::OAuth::LP::Models');
 has 'linkedbranches' => (is => 'rw',);
 
 method entries {
-  array(@{$self->linkedbranches->{entries}});
+  array(@{$self->linkedbranches->entries});
 }
 
 1;

@@ -14,7 +14,7 @@ with('Net::OAuth::LP::Models');
 has 'watches' => (is => 'rw',);
 
 method entries {
-  array(@{$self->watches->{entries}});
+  array(@{$self->watches->entries});
 }
 
 1;

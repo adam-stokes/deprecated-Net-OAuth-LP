@@ -28,20 +28,20 @@ else {
 }
 
 $c->staging(1);
-my $person = Net::OAuth::LP::Models::Person->new(c => $c);
-$person->find('~adam-stokes');
+my $model = Net::OAuth::LP::Models::Person->new(c => $c);
+$model->find('~adam-stokes');
 
-ok($person->name eq 'adam-stokes');
-ok(defined($person->karma) && $person->karma >= '0');
-ok($person->display_name);
+ok($model->person->name eq 'adam-stokes');
+ok(defined($model->person->karma) && $model->person->karma >= '0');
+ok($model->person->display_name);
 
 SKIP: {
     skip "No credentials so no POSTing", 2
       unless defined($ENV{LP_ACCESS_TOKEN});
     diag("Testing protected sources");
     my $randomname = "me-".rand();
-    ok($person->set_display_name($randomname));
-    ok($person->set_description('woooooooooooo'.rand()));
+    ok($model->set_display_name($randomname));
+    ok($model->set_description('woooooooooooo'.rand()));
 }
 
 

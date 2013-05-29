@@ -14,7 +14,7 @@ with('Net::OAuth::LP::Models');
 has 'cves' => (is => 'rw',);
 
 method entries {
-  array(@{$self->cves->{entries}});
+  array(@{$self->cves->entries});
 }
 
 1;

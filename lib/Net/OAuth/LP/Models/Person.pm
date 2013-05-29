@@ -6,34 +6,12 @@ use strictures 1;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
+use Hash::AsObject;
 use Data::Dump qw(pp);
 
 with('Net::OAuth::LP::Models');
 
-has 'person' => (
-    is      => 'rw',
-    isa     => HashRef,
-    lazy    => 1,
-    default => method { {} },
-);
-
-has 'display_name' => (
-    is      => 'rw',
-    isa     => Str,
-    lazy    => 1,
-    default => method {
-        $self->person->{display_name};
-    },
-);
-
-has 'description' => (
-    is      => 'rw',
-    isa     => Str,
-    lazy    => 1,
-    default => method {
-        $self->person->{description};
-    },
-);
+has 'person' => (is => 'rw',);
 
 has 'emails' => (
     is      => 'ro',
@@ -41,16 +19,7 @@ has 'emails' => (
     lazy    => 1,
     default => method {
         $self->c->get(
-            $self->person->{confirmed_email_addresses_collection_link});
-    },
-);
-
-has 'karma' => (
-    is      => 'ro',
-    isa     => Int,
-    lazy    => 1,
-    default => method {
-        $self->person->{karma};
+            $self->person->confirmed_email_addresses_collection_link);
     },
 );
 
@@ -59,16 +28,7 @@ has 'ircnick' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->person->{irc_nicknames_collection_link});
-    },
-);
-
-has 'name' => (
-    is      => 'rw',
-    isa     => Str,
-    lazy    => 1,
-    default => method {
-        $self->person->{name};
+        $self->c->get($self->person->irc_nicknames_collection_link);
     },
 );
 
@@ -77,28 +37,9 @@ has 'recipes' => (
     isa     => HashRef,
     lazy    => 1,
     default => method {
-        $self->c->get($self->person->{recipes_collection_link});
+        $self->c->get($self->person->recipes_collection_link);
     },
 );
-
-has 'tz' => (
-    is      => 'rw',
-    isa     => Str,
-    lazy    => 1,
-    default => method {
-        $self->person->{time_zone};
-    },
-);
-
-has 'self_link' => (
-    is      => 'ro',
-    isa     => Str,
-    lazy    => 1,
-    default => method {
-        $self->person->{self_link};
-    },
-);
-
 
 method find ($name) {
     $self->person($self->c->get($name));
@@ -109,15 +50,15 @@ method find_by_link ($resource_link) {
 }
 
 method set_name ($name) {
-    $self->c->update($self->self_link, {'name' => $name});
+    $self->c->update($self->person->self_link, {'name' => $name});
 }
 
 method set_description ($desc) {
-    $self->c->update($self->self_link, {'description' => $desc});
+    $self->c->update($self->person->self_link, {'description' => $desc});
 }
 
 method set_display_name ($desc) {
-    $self->c->update($self->self_link, {'display_name' => $desc});
+    $self->c->update($self->person->self_link, {'display_name' => $desc});
 }
 
 method get_assigned_bugs {
@@ -125,7 +66,7 @@ method get_assigned_bugs {
         'ubuntu-advantage',
         {   'ws.op'    => 'searchTasks',
             'ws.size'  => 5,
-            'assignee' => $self->self_link,
+            'assignee' => $self->person->self_link,
         },
     );
 }

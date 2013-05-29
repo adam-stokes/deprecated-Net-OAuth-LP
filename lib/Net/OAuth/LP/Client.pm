@@ -15,6 +15,7 @@ use URI::Encode;
 use URI::QueryParam;
 use URI;
 use LWP::UserAgent;
+use Hash::AsObject;
 
 with('Net::OAuth::LP');
 
@@ -59,7 +60,7 @@ method _request ($resource, $params, $method) {
     {
         my $res = $ua->request(GET $uri->as_string);
         die $res->{_content} unless $res->is_success;
-        return decode_json($res->content);
+        return Hash::AsObject->new(decode_json($res->content));
     }
 
     # If we are here then it is assumed we've passed the
@@ -104,12 +105,12 @@ method _request ($resource, $params, $method) {
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
         die $res->{_content} unless $res->{_rc} == 209;
-        decode_json($res->content);
+        Hash::AsObject->new(decode_json($res->content));
     }
     else {
         my $res = $ua->request(GET $request->to_url);
         die $res->{_content} unless $res->is_success;
-        decode_json($res->content);
+        Hash::AsObject->new(decode_json($res->content));
     }
 }
 

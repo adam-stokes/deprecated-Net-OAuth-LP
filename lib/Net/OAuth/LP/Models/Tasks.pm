@@ -14,7 +14,7 @@ with('Net::OAuth::LP::Models');
 has 'tasks' => (is => 'rw',);
 
 method entries {
-  array(@{$self->tasks->{entries}});
+  array(@{$self->tasks->entries});
 }
 
 1;

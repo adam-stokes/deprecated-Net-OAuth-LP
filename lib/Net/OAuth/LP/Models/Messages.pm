@@ -14,7 +14,7 @@ with('Net::OAuth::LP::Models');
 has 'messages' => (is => 'rw',);
 
 method entries {
-  array(@{$self->messages->{entries}});
+  array(@{$self->messages->entries});
 }
 
 1;
