@@ -41,14 +41,10 @@ Interface to setting/retrieving bug tasks information
 
 =head1 METHODS
 
+In addition to those listed this object inherits methods from List::Objects::WithUtils.
+
 =head2 B<new>
 
     my $tasks = Net::OAuth::LP::Models::Tasks->new(tasks => $bug->tasks);
-
-=head2 B<all>
-
-Returns all tasks results
-
-    say $tasks->all;
 
 =cut

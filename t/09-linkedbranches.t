@@ -5,10 +5,10 @@ use Test::More;
 
 # Some tests run if we've already authenticated again launchpad.net
 # otherwise just some basic testing
-diag("Testing LP Person,Team methods");
+diag("Testing LP Linkedbranches methods");
 
 use_ok 'Net::OAuth::LP::Client';
-use_ok 'Net::OAuth::LP::Models::Person';
+use_ok 'Net::OAuth::LP::Models::Bug';
 
 my $c;
 
@@ -28,21 +28,7 @@ else {
 }
 
 $c->staging(1);
-my $person = Net::OAuth::LP::Models::Person->new(c => $c);
-$person->find('~adam-stokes');
-
-ok($person->name eq 'adam-stokes');
-ok(defined($person->karma) && $person->karma >= '0');
-ok($person->display_name);
-
-SKIP: {
-    skip "No credentials so no POSTing", 2
-      unless defined($ENV{LP_ACCESS_TOKEN});
-    diag("Testing protected sources");
-    my $randomname = "me-".rand();
-    ok($person->set_display_name($randomname));
-    ok($person->set_description('woooooooooooo'.rand()));
-}
-
-
+my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
+$bug->find('859600');
+ok ($bug->linkedbranches->entries->count >= 0);
 done_testing;

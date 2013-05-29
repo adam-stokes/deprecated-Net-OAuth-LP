@@ -41,14 +41,10 @@ Interface to setting/retrieving bug messages information
 
 =head1 METHODS
 
+In addition to those listed this object inherits methods from List::Objects::WithUtils.
+
 =head2 B<new>
 
     my $messages = Net::OAuth::LP::Models::Messages->new(messages => $bug->messages);
-
-=head2 B<all>
-
-Returns all messages results
-
-    say $messages->all;
 
 =cut

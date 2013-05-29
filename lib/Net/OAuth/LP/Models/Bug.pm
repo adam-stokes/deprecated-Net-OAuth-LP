@@ -74,7 +74,6 @@ has 'attachments' => (
 
 has 'watches' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
         Net::OAuth::LP::Models::Watches->new(
@@ -85,24 +84,24 @@ has 'watches' => (
     },
 );
 
+has 'cves' => (
+    is      => 'ro',
+    lazy    => 1,
+    default => method {
+        Net::OAuth::LP::Models::CVE->new(
+            c => $self->c,
+            cves =>
+              $self->c->get($self->bug->{cves_collection_link})
+        );
+    },
+);
+
 has 'can_expire' => (
     is      => 'ro',
     isa     => method {},
     lazy    => 1,
     default => method {
         $self->bug->{can_expire};
-    },
-);
-
-has 'cves' => (
-    is      => 'ro',
-    isa     => HashRef,
-    lazy    => 1,
-    default => method {
-        Net::OAuth::LP::Models::CVE->new(
-            c    => $self->c,
-            cves => $self->c->get($self->bug->{cves_collection_link})
-        );
     },
 );
 
@@ -133,22 +132,20 @@ has 'information_type' => (
     },
 );
 
-has 'branches' => (
+has 'linkedbranches' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
         Net::OAuth::LP::Models::Linkedbranches->new(
             c => $self->c,
             linkedbranches =>
-              self->c->get($self->bug->{linked_branches_collection_link})
+              $self->c->get($self->bug->{linked_branches_collection_link})
         );
     },
 );
 
 has 'owner' => (
     is      => 'ro',
-    isa     => HashRef,
     lazy    => 1,
     default => method {
         my $p = Net::OAuth::LP::Models::Person->new(c => $self->c);
@@ -285,8 +282,6 @@ Interface to setting/retrieving bug information
 
 =head2 B<attachments>
 
-=head2 B<branches>
-
 =head2 B<bug>
 
 =head2 B<display_name>
@@ -296,6 +291,8 @@ Interface to setting/retrieving bug information
 =head2 B<id>
 
 =head2 B<information_type>
+
+=head2 B<linkedbranches>
 
 =head2 B<name>
 

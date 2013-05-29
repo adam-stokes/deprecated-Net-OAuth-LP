@@ -5,7 +5,7 @@ use Test::More;
 
 # Some tests run if we've already authenticated again launchpad.net
 # otherwise just some basic testing
-diag("Testing LP Bug retrieval");
+diag("Testing LP Bug methods");
 
 use_ok 'Net::OAuth::LP::Client';
 use_ok 'Net::OAuth::LP::Models::Bug';
@@ -39,7 +39,9 @@ ok(defined($bug->heat) && $bug->heat >= 0);
 ok(ref($bug->messages) eq "Net::OAuth::LP::Models::Messages");
 ok(ref($bug->attachments) eq "Net::OAuth::LP::Models::Attachments");
 ok(ref($bug->activity) eq "Net::OAuth::LP::Models::Activity");
-ok(ref($bug->watches) eq "HASH");
+ok(ref($bug->watches) eq "Net::OAuth::LP::Models::Watches");
+ok(ref($bug->linkedbranches) eq "Net::OAuth::LP::Models::Linkedbranches");
+ok(ref($bug->cves) eq "Net::OAuth::LP::Models::CVE");
 ok(JSON::is_bool($bug->can_expire));
 
 SKIP: {

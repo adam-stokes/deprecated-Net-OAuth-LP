@@ -41,14 +41,10 @@ Interface to setting/retrieving bug watches information
 
 =head1 METHODS
 
+In addition to those listed this object inherits methods from List::Objects::WithUtils.
+
 =head2 B<new>
 
     my $watches = Net::OAuth::LP::Models::Watches->new(watches => $bug->watches);
-
-=head2 B<all>
-
-Returns all watches results
-
-    say $watches->all;
 
 =cut

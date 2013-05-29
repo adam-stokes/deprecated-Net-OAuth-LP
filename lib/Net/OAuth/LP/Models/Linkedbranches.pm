@@ -41,14 +41,10 @@ Interface to setting/retrieving bug linkedbranches information
 
 =head1 METHODS
 
+In addition to those listed this object inherits methods from List::Objects::WithUtils.
+
 =head2 B<new>
 
     my $linkedbranches = Net::OAuth::LP::Models::Linkedbranches->new(linkedbranches => $bug->linkedbranches);
-
-=head2 B<all>
-
-Returns all linkedbranches results
-
-    say $linkedbranches->all;
 
 =cut

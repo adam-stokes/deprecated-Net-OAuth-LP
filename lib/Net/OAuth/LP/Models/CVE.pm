@@ -41,14 +41,10 @@ Interface to setting/retrieving bug CVE information
 
 =head1 METHODS
 
+In addition to those listed this object inherits methods from List::Objects::WithUtils.
+
 =head2 B<new>
 
     my $cve = Net::OAuth::LP::Models::CVE->new(cves => $bug->CVE);
-
-=head2 B<all>
-
-Returns all CVE results
-
-    say $cve->all;
 
 =cut

@@ -17,10 +17,10 @@ $c->staging(1);
 
 my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
 $bug->find('859600');
-my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
+#my $newbug = $bug->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
 #pp($newbug);
 #pp($bug->messages->entries->all);
 #pp($bug->activity->entries->all);
-pp(ref($bug->attachments->entries->shift));
+pp($bug->watches->entries->all);
 
 
