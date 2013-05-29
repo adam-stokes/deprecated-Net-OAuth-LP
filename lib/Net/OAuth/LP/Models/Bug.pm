@@ -240,7 +240,7 @@ Interface to setting/retrieving bug information
                                         access_token_secret => 'fdsafsda');
     my $b = Net::OAuth::LP::Models::Bug->new(c => $c);
     $b->find(1);
-    say $b->description;
+    say $b->title;
 
 =head1 ATTRIBUTES
 
