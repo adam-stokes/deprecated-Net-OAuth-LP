@@ -28,7 +28,9 @@ else {
 }
 
 $c->staging(1);
-my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
-$bug->find('859600');
+
+my $bug = Net::OAuth::LP::Models::Bug->new(c => $c, resource => 859600);
+$bug->fetch;
+
 ok ($bug->linkedbranches->entries->count >= 0);
 done_testing;

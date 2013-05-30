@@ -28,8 +28,8 @@ else {
 }
 
 $c->staging(1);
-my $bug = Net::OAuth::LP::Models::Bug->new(c => $c);
-$bug->find('859600');
+my $bug = Net::OAuth::LP::Models::Bug->new(c => $c, resource => 859600);
+$bug->fetch;
 foreach ($bug->tasks->entries->all) {
   ok ($_->{title} =~ /Debian|Ubuntu/, "Check distro in title");
 }

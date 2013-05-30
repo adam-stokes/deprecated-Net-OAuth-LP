@@ -11,54 +11,40 @@ use Data::Dump qw(pp);
 
 with('Net::OAuth::LP::Models');
 
-has 'person' => (is => 'rw',);
+has 'resource' => (is => 'ro');
 
-has 'emails' => (
-    is      => 'ro',
-    isa     => HashRef,
-    lazy    => 1,
-    default => method {
-        $self->c->get(
-            $self->person->confirmed_email_addresses_collection_link);
-    },
-);
+has 'attrs' => (is => 'rw');
 
-has 'ircnick' => (
-    is      => 'rw',
-    isa     => HashRef,
-    lazy    => 1,
-    default => method {
-        $self->c->get($self->person->irc_nicknames_collection_link);
-    },
-);
+method emails {
+    $self->c->get($self->attrs->confirmed_email_addresses_collection_link);
+}
 
-has 'recipes' => (
-    is      => 'ro',
-    isa     => HashRef,
-    lazy    => 1,
-    default => method {
-        $self->c->get($self->person->recipes_collection_link);
-    },
-);
+method ircnick {
+    $self->c->get($self->attrs->irc_nicknames_collection_link);
+}
 
-method find ($name) {
-    $self->person($self->c->get($name));
+method recipes {
+    $self->c->get($self->attrs->recipes_collection_link);
+}
+
+method fetch {
+    $self->attrs($self->c->get($self->resource));
 }
 
 method find_by_link ($resource_link) {
-    $self->person($self->c->get($resource_link));
+    $self->c->get($resource_link);
 }
 
 method set_name ($name) {
-    $self->c->update($self->person->self_link, {'name' => $name});
+    $self->c->update($self->attrs->self_link, {'name' => $name});
 }
 
 method set_description ($desc) {
-    $self->c->update($self->person->self_link, {'description' => $desc});
+    $self->c->update($self->attrs->self_link, {'description' => $desc});
 }
 
 method set_display_name ($desc) {
-    $self->c->update($self->person->self_link, {'display_name' => $desc});
+    $self->c->update($self->attrs->self_link, {'display_name' => $desc});
 }
 
 method get_assigned_bugs {
@@ -66,7 +52,7 @@ method get_assigned_bugs {
         'ubuntu-advantage',
         {   'ws.op'    => 'searchTasks',
             'ws.size'  => 5,
-            'assignee' => $self->person->self_link,
+            'assignee' => $self->self_link,
         },
     );
 }
@@ -89,55 +75,22 @@ Model interface for retrieving/setting person/team information.
                                         access_token => 'fdsafsda',
                                         access_token_secret => 'fdsafsda');
 
-    my $p = Net::OAuth::LP::Models::Person->new(c => $c);
-    $p->find('~adam-stokes');
-    say $p->display_name;
+    my $p = Net::OAuth::LP::Models::Person->new(c => $c, resource => '~adam-stokes');
+    $p->fetch;
+    say $p->attrs->display_name;
 
 =head1 ATTRIBUTES
 
-=head2 B<display_name>
+=head2 B<attrs>
 
-Return display name
-
-=head2 B<description>
-
-Return description
-
-=head2 B<emails>
-
-Return confirmed emails
-
-=head2 B<karma>
-
-Return karma
-
-=head2 B<ircnick>
-
-Return irc nickname
-
-=head2 B<name>
-
-Return launchpad name
-
-=head2 B<recipes>
-
-Return source recipes
-
-=head2 B<tz>
-
-Returns time_zone
+Contains hash object of https://api.launchpad.net/1.0.html#person
 
 =head1 METHODS
 
 =head2 B<new>
 
-    my $p = Net::OAuth::LP::Models::Person->new;
-
-=head2 B<find>
-
-Queries a person or team resource.
-
-    $p->find('~launchpad-user-or-team');
+    my $p =
+      Net::OAuth::LP::Models::Person->new(c => $c, resource => 'lp-name');
 
 =head2 B<set_name>
 

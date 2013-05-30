@@ -15,12 +15,8 @@ use Data::Dump qw(pp);
 my $c = Net::OAuth::LP::Client->new;
 $c->staging(1);
 
-my $model = Net::OAuth::LP::Models::Bug->new(c => $c);
-$model->find('859600');
-say $model->bug->title;
-my $newbug = $model->tasks->entries->first(sub { $_->{bug_target_name} =~ /(Ubuntu)/ });
-pp($newbug);
-
-#pp($bug->watches->entries->all);
+my $bug = Net::OAuth::LP::Models::Bug->new(c => $c, resource => '859600');
+my $person = Net::OAuth::LP::Models::Person->new(c => $c, resource => '~adam-stokes');
+pp($person->fetch);
 
 
