@@ -1,6 +1,5 @@
 #!perl -T
-use strict;
-use warnings FATAL => 'all';
+use strictures 1;
 use Test::More;
 
 # Some tests run if we've already authenticated again launchpad.net

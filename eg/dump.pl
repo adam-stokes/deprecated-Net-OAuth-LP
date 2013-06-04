@@ -4,7 +4,7 @@
 # proper examples of current api.
 
 use strictures 1;
-use v5.10;
+use v5.16;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Models::Bug;
