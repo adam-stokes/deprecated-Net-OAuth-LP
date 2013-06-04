@@ -4,7 +4,6 @@ use strictures 1;
 use Moo::Role;
 use Method::Signatures;
 
-use Browser::Open qw[open_browser];
 use HTTP::Request::Common;
 use LWP::UserAgent;
 
