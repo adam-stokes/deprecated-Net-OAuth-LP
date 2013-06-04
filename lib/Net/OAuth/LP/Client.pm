@@ -1,7 +1,7 @@
 package Net::OAuth::LP::Client;
 
 # VERSION
-
+use v5.10;
 use strictures 1;
 use Moo;
 use Method::Signatures;
@@ -9,7 +9,6 @@ use Method::Signatures;
 use HTTP::Request::Common;
 use HTTP::Request;
 use JSON;
-use Data::Dump qw(pp);
 
 use URI::Encode;
 use URI::QueryParam;
@@ -142,15 +141,15 @@ method login_with_creds {
     $request->sign;
     my $res =
       $ua->request(POST $request->to_url, Content => $request->to_post_body);
-
     die "Failed to get response" unless $res->is_success;
     my $response =
       Net::OAuth->response('request token')->from_post_body($res->content);
     my $_token        = $response->token;
     my $_token_secret = $response->token_secret;
-    open_browser($self->authorize_token_url . "?oauth_token=" . $_token);
-
-    print "Pulling authorization credentials.\n";
+    say
+      "Go here in your browser, hit [ENTER] once you've approved on launchpad.net";
+    say $self->authorize_token_url . "?oauth_token=" . $_token;
+    <STDIN>;
 
     $request = Net::OAuth->request('access token')->new(
         consumer_key     => $self->consumer_key,
@@ -165,7 +164,6 @@ method login_with_creds {
     );
 
     $request->sign;
-
     $res =
       $ua->request(POST $request->to_url, Content => $request->to_post_body);
     die "Failed to get response" unless $res->is_success;
@@ -175,7 +173,7 @@ method login_with_creds {
     $self->access_token_secret($response->token_secret);
 }
 
-1; # End of Net::OAuth::LP::Client
+1;    # End of Net::OAuth::LP::Client
 
 __END__
 

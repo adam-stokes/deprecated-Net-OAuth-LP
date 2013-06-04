@@ -8,7 +8,7 @@ use Net::OAuth::LP::Client;
 use Data::Dump qw(pp);
 
 my $client = Net::OAuth::LP::Client->new;
-$client->consumer_key('scr4p3r');
+$client->consumer_key('cts-pika-bot');
 $client->login_with_creds;
 
 pp $client;

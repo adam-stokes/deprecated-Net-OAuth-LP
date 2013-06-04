@@ -7,7 +7,6 @@ use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;
 use List::Objects::WithUtils;
-use Data::Dump qw(pp);
 
 with('Net::OAuth::LP::Models');
 

@@ -13,7 +13,6 @@ use Net::OAuth::LP::Models::Messages;
 use Net::OAuth::LP::Models::Person;
 use Net::OAuth::LP::Models::Tasks;
 use Net::OAuth::LP::Models::Watches;
-use Data::Dump qw[pp];
 
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
