@@ -141,6 +141,8 @@ Interface to setting/retrieving bug information
 
     Contains hash object of https://api.launchpad.net/1.0.html#bug
 
+=head2 B<resource>
+
 =head1 METHODS
 
 =head2 B<new>

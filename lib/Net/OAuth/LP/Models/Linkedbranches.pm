@@ -38,6 +38,10 @@ Interface to setting/retrieving bug linkedbranches information
     $b->find(1);
     say $b->linkedbranches->all;
 
+=head1 ATTRIBUTES
+
+=head2 B<linkedbranches>
+
 =head1 METHODS
 
 In addition to those listed this object inherits methods from List::Objects::WithUtils.

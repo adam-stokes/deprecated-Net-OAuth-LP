@@ -38,6 +38,10 @@ Interface to setting/retrieving bug activity information
     $b->find(1);
     say $b->activity->all;
 
+=head1 ATTRIBUTES
+
+=head2 B<activity>
+
 =head1 METHODS
 
 =head2 B<new>

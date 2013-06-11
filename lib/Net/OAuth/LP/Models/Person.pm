@@ -84,6 +84,8 @@ Model interface for retrieving/setting person/team information.
 
 Contains hash object of https://api.launchpad.net/1.0.html#person
 
+=head2 B<resource>
+
 =head1 METHODS
 
 =head2 B<new>
