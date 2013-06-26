@@ -34,4 +34,4 @@ foreach ($bug->attachments->entries->all) {
     ok(defined($_->{type}));
 }
 
-done_testing;
+done_testing();

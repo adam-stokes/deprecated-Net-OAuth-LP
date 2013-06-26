@@ -33,4 +33,4 @@ $bug->fetch;
 
 ok ($bug->cves->entries->count >= 0);
 
-done_testing;
+done_testing();

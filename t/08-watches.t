@@ -35,4 +35,4 @@ foreach ($bug->watches->entries->all) {
     ok(defined($_->{remote_bug}));
 }
 
-done_testing;
+done_testing();

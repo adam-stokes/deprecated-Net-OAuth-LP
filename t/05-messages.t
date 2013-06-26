@@ -35,4 +35,4 @@ foreach ($bug->messages->entries->all) {
     ok(defined($_->{content}));
 }
 
-done_testing;
+done_testing();

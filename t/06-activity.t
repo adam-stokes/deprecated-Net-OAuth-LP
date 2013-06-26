@@ -32,4 +32,4 @@ $bug->fetch;
 
 ok($bug->activity->entries->count >= 0);
 
-done_testing;
+done_testing();

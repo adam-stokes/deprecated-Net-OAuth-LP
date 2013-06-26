@@ -8,4 +8,4 @@ diag("Testing LP General Client methods");
 
 use_ok 'Net::OAuth::LP::Client';
 
-done_testing;
+done_testing();

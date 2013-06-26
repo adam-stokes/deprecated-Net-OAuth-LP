@@ -32,4 +32,4 @@ my $bug = Net::OAuth::LP::Models::Bug->new(c => $c, resource => 859600);
 $bug->fetch;
 
 ok ($bug->linkedbranches->entries->count >= 0);
-done_testing;
+done_testing();

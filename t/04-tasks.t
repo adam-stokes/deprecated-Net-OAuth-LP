@@ -33,4 +33,4 @@ foreach ($bug->tasks->entries->all) {
   ok ($_->{title} =~ /Debian|Ubuntu/, "Check distro in title");
 }
 
-done_testing;
+done_testing();

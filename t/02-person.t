@@ -43,4 +43,4 @@ SKIP: {
     ok($person->set_description('woooooooooooo'.rand()));
 }
 
-done_testing;
+done_testing();

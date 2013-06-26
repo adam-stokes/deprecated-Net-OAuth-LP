@@ -53,4 +53,4 @@ SKIP: {
     ok($bug->attrs->title eq $temptitle, 'verify title setter');
 }
 
-done_testing;
+done_testing();
