@@ -7,9 +7,7 @@ perl:
 notifications:
   email: false
 install:
-- cpanm --notest Dist::Zilla
-- dzil authordeps | cpanm --notest
-- dzil listdeps | cpanm --notest
+- cpanm --notest Dist::Milla
 script:
-- dzil test
+- milla test
 
