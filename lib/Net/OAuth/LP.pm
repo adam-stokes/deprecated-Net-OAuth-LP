@@ -10,7 +10,7 @@ use LWP::UserAgent;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.015_02';
+our $VERSION = '0.015_03';
 
 has consumer_key => (
     is      => 'rw',

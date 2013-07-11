@@ -1,2 +1,3 @@
 {{$NEXT}}
     - Update to milla build spec
+    - Add additional requirements to cpanfile
