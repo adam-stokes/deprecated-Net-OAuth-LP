@@ -18,3 +18,11 @@ requires 'strictures', '1';
 on build => sub {
     requires 'Test::More';
 };
+
+on test => sub {
+    requires 'indirect';
+    requires 'multidimensional';
+    requires 'bareword::filehandles';
+};
+
+
