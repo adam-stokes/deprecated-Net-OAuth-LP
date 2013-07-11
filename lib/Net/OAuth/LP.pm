@@ -161,9 +161,11 @@ You can find documentation for this module with the perldoc command.
 
 =back
 
-=head1 LICENSE AND COPYRIGHT
+=head1 COPYRIGHT
 
 Copyright 2013 Adam Stokes.
+
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

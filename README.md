@@ -48,9 +48,11 @@ You can find documentation for this module with the perldoc command.
 
 - [https://launchpad.net/launchpadlib](https://launchpad.net/launchpadlib), "Python implementation"
 
-# LICENSE AND COPYRIGHT
+# COPYRIGHT
 
 Copyright 2013 Adam Stokes.
+
+# LICENSE
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
