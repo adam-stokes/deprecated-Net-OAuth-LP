@@ -14,6 +14,7 @@ requires 'URI::Encode';
 requires 'URI::QueryParam';
 requires 'perl', 'v5.10.0';
 requires 'strictures', '1';
+requires 'IO::Socket::SSL';
 
 on build => sub {
     requires 'Test::More';
