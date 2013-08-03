@@ -19,3 +19,4 @@ Net-OAuth-LP-*.tar.gz
 MANIFEST.bak
 .carton
 local/
+_build_params
