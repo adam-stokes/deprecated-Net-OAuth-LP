@@ -7,7 +7,7 @@ perl:
 notifications:
   email: false
 install:
-- cpanm --mirror-only --notest .
+- cpanm --notest .
 script:
 - prove -r t
 
