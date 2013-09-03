@@ -537,6 +537,18 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.006002
+  LWP-Protocol-https-6.04
+    pathname: G/GA/GAAS/LWP-Protocol-https-6.04.tar.gz
+    provides:
+      LWP::Protocol::https 6.04
+      LWP::Protocol::https::Socket 6.04
+    requirements:
+      ExtUtils::MakeMaker 0
+      IO::Socket::SSL 1.54
+      LWP::UserAgent 6.04
+      Mozilla::CA 20110101
+      Net::HTTPS 6
+      perl 5.008001
   Lexical-SealRequireHints-0.007
     pathname: Z/ZE/ZEFRAM/Lexical-SealRequireHints-0.007.tar.gz
     provides:
@@ -923,6 +935,14 @@ DISTRIBUTIONS
       Test::More 0.88
       XSLoader 0.02
       perl 5.006002
+  Mozilla-CA-20130114
+    pathname: A/AB/ABH/Mozilla-CA-20130114.tar.gz
+    provides:
+      Mozilla::CA 20130114
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test 0
+      perl 5.006
   Net-HTTP-6.06
     pathname: G/GA/GAAS/Net-HTTP-6.06.tar.gz
     provides:

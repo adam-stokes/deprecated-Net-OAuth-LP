@@ -15,6 +15,7 @@ requires 'URI::QueryParam';
 requires 'perl', 'v5.10.0';
 requires 'strictures', '1';
 requires 'IO::Socket::SSL';
+requires 'LWP::Protocol::https';
 
 on build => sub {
     requires 'Test::More';

@@ -30,7 +30,7 @@ my $bug = Net::OAuth::LP::Models::Bug->new(c => $c, resource => '859600');
 $bug->fetch;
 
 ok($bug->attrs->id eq '859600');
-ok(defined($bug->attrs->title) && ($bug->attrs->title =~ m/a title/i), 'verify title');
+ok(defined($bug->attrs->title) && ($bug->attrs->title =~ m/Please convert gnome-keyring to multiarch/i), 'verify title');
 ok(defined($bug->attrs->description));
 ok(defined($bug->attrs->tags) && ref($bug->attrs->tags) eq "ARRAY");
 ok(defined($bug->attrs->heat) && $bug->attrs->heat >= 0);
