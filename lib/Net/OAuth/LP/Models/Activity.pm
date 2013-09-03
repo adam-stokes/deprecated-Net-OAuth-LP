@@ -1,7 +1,5 @@
 package Net::OAuth::LP::Models::Activity;
 
-# VERSION
-
 use strictures 1;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);

@@ -1,7 +1,5 @@
 package Net::OAuth::LP::Models::Bug;
 
-# VERSION
-
 use strictures 1;
 
 # MODELS
