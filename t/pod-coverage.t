@@ -1,5 +1,5 @@
 #!perl -T
-use strictures 1;
+use common::sense;
 use Test::More;
 
 # Ensure a recent version of Test::Pod::Coverage

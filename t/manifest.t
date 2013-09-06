@@ -1,5 +1,5 @@
 #!perl -T
-use strictures 1;
+use common::sense;
 use Test::More;
 
 unless ( $ENV{RELEASE_TESTING} ) {
