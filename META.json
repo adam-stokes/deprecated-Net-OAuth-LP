@@ -57,8 +57,8 @@
             "URI" : "0",
             "URI::Encode" : "0",
             "URI::QueryParam" : "0",
-            "perl" : "v5.10.0",
-            "strictures" : "1"
+            "common::sense" : "0",
+            "perl" : "v5.10.0"
          }
       },
       "test" : {

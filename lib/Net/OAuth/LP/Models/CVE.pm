@@ -1,6 +1,6 @@
 package Net::OAuth::LP::Models::CVE;
 
-use strictures 1;
+use common::sense;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef HashRef);
 use Method::Signatures;

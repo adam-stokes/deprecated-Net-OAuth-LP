@@ -1,6 +1,6 @@
 package Net::OAuth::LP::Models::Bug;
 
-use strictures 1;
+use common::sense;
 
 # MODELS
 use Net::OAuth::LP::Models::Activity;
