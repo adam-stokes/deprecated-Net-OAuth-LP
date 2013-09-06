@@ -10,8 +10,8 @@ notifications:
   email: false
 matrix:
   allow_failures:
-    - perl: 5.10 
-    - perl: 5.12
+    - perl: '5.10' 
+    - perl: '5.12'
 install:
   - cpanm -q --notest --mirror-only .
 script:
