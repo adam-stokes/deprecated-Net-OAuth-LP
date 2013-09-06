@@ -1,0 +1,90 @@
+{
+   "abstract" : "Launchpad.net OAuth 1.0",
+   "author" : [
+      "Adam 'battlemidget' Stokes, C<< <adamjs at cpan.org> >>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 4.300037, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Net-OAuth-LP",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Test::More" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0.026"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::Pod" : "1.41"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "HTTP::Request" : "0",
+            "HTTP::Request::Common" : "0",
+            "Hash::AsObject" : "0",
+            "IO::Socket::SSL" : "0",
+            "JSON" : "0",
+            "LWP::Protocol::https" : "0",
+            "LWP::UserAgent" : "0",
+            "List::Objects::WithUtils" : "0",
+            "Method::Signatures" : "0",
+            "Moo" : "0",
+            "Moo::Role" : "0",
+            "Net::OAuth" : "0",
+            "Types::Standard" : "0",
+            "URI" : "0",
+            "URI::Encode" : "0",
+            "URI::QueryParam" : "0",
+            "perl" : "v5.10.0",
+            "strictures" : "1"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "bareword::filehandles" : "0",
+            "indirect" : "0",
+            "multidimensional" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/battlemidget/Net-OAuth-LP/issues"
+      },
+      "homepage" : "https://github.com/battlemidget/Net-OAuth-LP",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/battlemidget/Net-OAuth-LP.git",
+         "web" : "https://github.com/battlemidget/Net-OAuth-LP"
+      }
+   },
+   "version" : "0.016",
+   "x_contributors" : [
+      "Adam Stokes <adam.stokes@ubuntu.com>",
+      "Adam Stokes <hackr@cypherbook.com>"
+   ]
+}
+

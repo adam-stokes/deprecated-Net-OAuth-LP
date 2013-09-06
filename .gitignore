@@ -2,10 +2,9 @@ Makefile
 Makefile.old
 Build
 Build.bat
-META.*
 MYMETA.*
-.build/
-_build/
+/.build
+/_build*
 cover_db/
 blib/
 inc/
@@ -19,5 +18,4 @@ Net-OAuth-LP-*.tar.gz
 MANIFEST.bak
 .carton
 local/
-_build_params
-local/
+!META.json
