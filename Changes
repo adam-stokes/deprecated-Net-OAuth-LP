@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.017_1  2014-01-02 15:24:07 EST
+  - Next build dev release
+
 0.016  2013-09-03 17:41:10 EDT
   - Fix unittests
   - Extend api
