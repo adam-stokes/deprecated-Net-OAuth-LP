@@ -1,6 +1,7 @@
 package Net::OAuth::LP::Models;
 
-use strictures 1;
+use strict;
+use warnings;
 use Moo::Role;
 use Method::Signatures;
 
