@@ -8,7 +8,7 @@ OAuth 1.0a authorization and client for Launchpad.net
 
 # ATTRIBUTES
 
-[Net::OAuth::LP](http://search.cpan.org/perldoc?Net::OAuth::LP) implements the following attributes:
+[Net::OAuth::LP](https://metacpan.org/pod/Net::OAuth::LP) implements the following attributes:
 
 ## __consumer\_key__
 

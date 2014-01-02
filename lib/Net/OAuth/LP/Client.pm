@@ -1,8 +1,9 @@
 package Net::OAuth::LP::Client;
 
 # VERSION
-use v5.10;
-use strictures 1;
+use v5.18.0;
+use strict;
+use warnings;
 use Moo;
 use Method::Signatures;
 

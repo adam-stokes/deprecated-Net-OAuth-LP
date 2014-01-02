@@ -4,7 +4,7 @@
       "Adam 'battlemidget' Stokes, C<< <adamjs at cpan.org> >>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 4.300037, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 5.008, CPAN::Meta::Converter version 2.133380",
    "license" : [
       "perl_5"
    ],
@@ -31,7 +31,7 @@
       },
       "configure" : {
          "requires" : {
-            "Module::Build::Tiny" : "0.026"
+            "Module::Build::Tiny" : "0.030"
          }
       },
       "develop" : {
@@ -69,7 +69,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/battlemidget/Net-OAuth-LP/issues"
@@ -81,7 +81,7 @@
          "web" : "https://github.com/battlemidget/Net-OAuth-LP"
       }
    },
-   "version" : "0.016",
+   "version" : "0.017_1",
    "x_contributors" : [
       "Adam Stokes <adam.stokes@ubuntu.com>",
       "Adam Stokes <hackr@cypherbook.com>"

@@ -1,6 +1,7 @@
 package Net::OAuth::LP::Models::Bug;
 
-use common::sense;
+use strict;
+use warnings;
 
 # MODELS
 use Net::OAuth::LP::Models::Activity;
