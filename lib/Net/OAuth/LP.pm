@@ -123,7 +123,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 COPYRIGHT
 
-Copyright 2013- Adam Stokes
+Copyright 2013-2014 Adam Stokes
 
 =head1 LICENSE
 
