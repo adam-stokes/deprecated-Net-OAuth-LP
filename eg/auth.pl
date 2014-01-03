@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-use strictures 1;
-use warnings;
+use Mojo::Base -strict;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Client;

@@ -1,8 +1,6 @@
 package Net::OAuth::LP::Client;
 
-# VERSION
-
-use Mojo::Base 'Net::OAuth::LP';
+use Mojo::Base -base;
 use Mojo::JSON;
 
 use URI::Encode;
@@ -10,7 +8,7 @@ use URI::QueryParam;
 use URI;
 use DDP;
 
-has json => Mojo::JSON->new;
+has 'json' => Mojo::JSON->new;
 
 sub __query_from_hash {
     my ($self, $params) = @_;

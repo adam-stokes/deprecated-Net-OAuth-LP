@@ -8,11 +8,12 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 our $VERSION = '0.017_1';
 
-has ua => Mojo::UserAgent->new;
-has consumer_key => 'im-a-key';
-has access_token;
-has access_token_secret;
-has request_token_url => sub {
+has 'ua'           => Mojo::UserAgent->new;
+has 'consumer_key' => 'im-a-key';
+has 'access_token';
+has 'access_token_secret';
+
+sub request_token_url {
     my $self = shift;
     if ($self->staging) {
         'https://staging.launchpad.net/+request-token';
@@ -20,37 +21,39 @@ has request_token_url => sub {
     else {
         'https://launchpad.net/+request-token';
     }
-};
+}
 
-has access_token_url => sub {
+sub access_token_url {
+    my $self = shift;
     if ($self->staging) {
         'https://staging.launchpad.net/+access-token';
     }
     else {
         'https://launchpad.net/+access-token';
     }
-};
+}
 
-has authorize_token_url => sub {
+sub authorize_token_url {
+    my $self = shift;
     if ($self->staging) {
         'https://staging.launchpad.net/+authorize-token';
     }
     else {
         'https://launchpad.net/+authorize-token';
     }
-};
+}
 
-has api_url => sub {
+sub api_url {
+    my $self = shift;
     if ($self->staging) {
         'https://api.staging.launchpad.net/1.0';
     }
     else {
         'https://api.launchpad.net/1.0';
     }
-};
+}
 
 has staging => 0;
-
 
 sub _nonce {
     my $self  = shift;
@@ -59,8 +62,7 @@ sub _nonce {
     for (0 .. 31) {
         $nonce .= $a[rand(scalar(@a))];
     }
-
-    $nonce;
+    return $nonce;
 }
 
 1;
