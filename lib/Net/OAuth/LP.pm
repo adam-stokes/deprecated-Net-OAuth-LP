@@ -8,7 +8,7 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 our $VERSION = '0.017_1';
 
-has 'ua'           => Mojo::UserAgent->new;
+has 'ua' => sub { my $self = shift; Mojo::UserAgent->new };
 has 'consumer_key' => 'im-a-key';
 has 'access_token';
 has 'access_token_secret';
