@@ -5,9 +5,6 @@ package Net::OAuth::LP::Client;
 use Mojo::Base 'Net::OAuth::LP';
 use Mojo::JSON;
 
-use HTTP::Request::Common;
-use HTTP::Request;
-
 use URI::Encode;
 use URI::QueryParam;
 use URI;
@@ -90,8 +87,6 @@ sub _request {
         die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
     }
     elsif ($method eq "PATCH") {
-
-        # HTTP::Request::Common doesnt support PATCH verb
         my $_req = $self->ua->patch(
             $request->normalized_request_url => {
                 'User-Agent'   => 'imafreakinninjai/1.0',

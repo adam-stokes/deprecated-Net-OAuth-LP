@@ -50,7 +50,7 @@ You can find documentation for this module with the perldoc command.
 
 # COPYRIGHT
 
-Copyright 2013- Adam Stokes
+Copyright 2013-2014 Adam Stokes
 
 # LICENSE
 

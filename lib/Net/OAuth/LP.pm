@@ -3,8 +3,6 @@ package Net::OAuth::LP;
 use Mojo::Base -base;
 use Mojo::UserAgent;
 
-use HTTP::Request::Common;
-
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 

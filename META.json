@@ -41,24 +41,14 @@
       },
       "runtime" : {
          "requires" : {
-            "Data::Dump" : "0",
-            "HTTP::Request" : "0",
-            "HTTP::Request::Common" : "0",
-            "Hash::AsObject" : "0",
+            "DDP" : "0",
             "IO::Socket::SSL" : "0",
-            "JSON" : "0",
             "LWP::Protocol::https" : "0",
-            "LWP::UserAgent" : "0",
-            "List::Objects::WithUtils" : "0",
-            "Method::Signatures" : "0",
-            "Moo" : "0",
-            "Moo::Role" : "0",
+            "Mojolicious" : "0",
             "Net::OAuth" : "0",
-            "Types::Standard" : "0",
             "URI" : "0",
             "URI::Encode" : "0",
-            "URI::QueryParam" : "0",
-            "perl" : "v5.10.0"
+            "URI::QueryParam" : "0"
          }
       },
       "test" : {
