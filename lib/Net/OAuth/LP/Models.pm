@@ -1,20 +1,19 @@
 package Net::OAuth::LP::Models;
 
-use strict;
-use warnings;
-use Moo::Role;
-use Method::Signatures;
+use Mojo::Base 'Net::OAuth::LP::Client';
 
-has 'c' => (is => 'rw',);
-
-method fetch         { }
-method fetch_by_link { }
-
-method search ($path, $segments) {
+sub search {
+    my ($self, $path, $segments) = @_;
     my $query = $self->c->__query_from_hash($segments);
     my $uri = join("?", $path, $query);
-    $self->c->get($uri);
+    $self->get($uri);
 }
+
+sub get_bug {
+  my ($self, $resource) = @_;
+  $self->get($self->api_url . "/bugs/" . $resource);
+}
+
 
 1;
 

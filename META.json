@@ -41,6 +41,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Data::Dump" : "0",
             "HTTP::Request" : "0",
             "HTTP::Request::Common" : "0",
             "Hash::AsObject" : "0",
@@ -57,7 +58,6 @@
             "URI" : "0",
             "URI::Encode" : "0",
             "URI::QueryParam" : "0",
-            "common::sense" : "0",
             "perl" : "v5.10.0"
          }
       },

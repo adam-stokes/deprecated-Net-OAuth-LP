@@ -12,10 +12,10 @@ requires 'Types::Standard';
 requires 'URI';
 requires 'URI::Encode';
 requires 'URI::QueryParam';
-requires 'perl', 'v5.10.0';
 requires 'IO::Socket::SSL';
 requires 'LWP::Protocol::https';
-requires 'common::sense';
+requires 'DDP';
+requires 'Mojolicious';
 
 on build => sub {
     requires 'Test::More';

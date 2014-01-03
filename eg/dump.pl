@@ -3,8 +3,9 @@
 # for quick tests only, should not be depended upon for
 # proper examples of current api.
 
-use strictures 1;
-use 5.16.3;
+use strict;
+use warnings;
+use 5.14.0;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Models::Bug;

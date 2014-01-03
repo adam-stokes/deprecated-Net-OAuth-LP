@@ -1,43 +1,42 @@
 package Net::OAuth::LP::Client;
 
 # VERSION
-use v5.18.0;
-use strict;
-use warnings;
-use Moo;
-use Method::Signatures;
+
+use Mojo::Base 'Net::OAuth::LP';
+use Mojo::JSON;
 
 use HTTP::Request::Common;
 use HTTP::Request;
-use JSON;
 
 use URI::Encode;
 use URI::QueryParam;
 use URI;
-use LWP::UserAgent;
-use Hash::AsObject;
+use DDP;
 
-with('Net::OAuth::LP');
+has json => Mojo::JSON->new;
 
-method __query_from_hash ($params) {
+sub __query_from_hash {
+    my ($self, $params) = @_;
     my $uri = URI->new;
     for my $param (keys $params) {
         $uri->query_param_append($param, $params->{$param});
     }
-    $uri->query;
+    return $uri->query;
 }
 
 # construct path, if a resource link just provide as is.
-method __path_cons ($path) {
+sub __path_cons {
+    my ($self, $path) = @_;
     if ($path =~ /^http.*api/) {
         return URI->new("$path", 'https');
     }
-    URI->new($self->api_url . "/$path", 'https');
+    return URI->new($self->api_url . "/$path", 'https');
 }
 
-method __oauth_authorization_header ($request) {
+sub __oauth_authorization_header {
+    my ($self, $request) = @_;
     my $enc = URI::Encode->new({encode_reserved => 1});
-    join(",",
+    return join(",",
         'OAuth realm="https://api.launchpad.net"',
         'oauth_consumer_key="' . $request->consumer_key . '"',
         'oauth_token="' . $request->token . '"',
@@ -46,10 +45,11 @@ method __oauth_authorization_header ($request) {
         'oauth_timestamp="' . $request->timestamp . '"',
         'oauth_nonce="' . $request->nonce . '"',
         'oauth_version="' . $request->version . '"');
+
 }
 
-method _request ($resource, $params, $method) {
-    my $ua  = LWP::UserAgent->new();
+sub _request {
+    my ($self, $resource, $params, $method) = @_;
     my $uri = $self->__path_cons($resource);
 
     # If no credentials we assume data is public and
@@ -58,9 +58,9 @@ method _request ($resource, $params, $method) {
         || !defined($self->access_token)
         || !defined($self->access_token_secret))
     {
-        my $res = $ua->request(GET $uri->as_string);
+        my $res = $self->ua->get($uri->as_string);
         die $res->{_content} unless $res->is_success;
-        return Hash::AsObject->new(decode_json($res->content));
+        return $self->json->decode($res->content);
     }
 
     # If we are here then it is assumed we've passed the
@@ -79,25 +79,31 @@ method _request ($resource, $params, $method) {
     $request->sign;
 
     if ($method eq "POST") {
-        my $_req =
-          HTTP::Request->new(POST => $request->normalized_request_url);
-        $_req->header(
-            'Authorization' => $self->__oauth_authorization_header($request));
+        my $_req = $self->ua->post(
+            $request->normalized_request_url => {
+                'Authorization' =>
+                  $self->__oauth_authorization_header($request)
+            }
+        );
+        p $_req;
         $_req->content($self->__query_from_hash($params));
-        my $res = $ua->request($_req);
+        my $res = $self->ua->get($_req);
         die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
     }
     elsif ($method eq "PATCH") {
 
         # HTTP::Request::Common doesnt support PATCH verb
-        my $_req =
-          HTTP::Request->new(PATCH => $request->normalized_request_url);
-        $_req->header('User-Agent'   => 'imafreakinninjai/1.0');
-        $_req->header('Content-Type' => 'application/json');
-        $_req->header(
-            'Authorization' => $self->__oauth_authorization_header($request));
-        $_req->content(encode_json($params));
-        my $res = $ua->request($_req);
+        my $_req = $self->ua->patch(
+            $request->normalized_request_url => {
+                'User-Agent'   => 'imafreakinninjai/1.0',
+                'Content-Type' => 'application/json',
+                'Authorization' =>
+                  $self->__oauth_authorization_header($request)
+            }
+        );
+        p $_req;
+        $_req->content($self->json->encode($params));
+        my $res = $self->ua->get($_req);
 
         # For current Launchpad API 1.0 the response code is 209
         # (Initially in draft spec for PATCH, but, later removed
@@ -105,30 +111,35 @@ method _request ($resource, $params, $method) {
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
         die $res->{_content} unless $res->{_rc} == 209;
-        Hash::AsObject->new(decode_json($res->content));
+        return $self->json->decode($res->content);
     }
     else {
-        my $res = $ua->request(GET $request->to_url);
+        my $res = $self->ua->get($request->to_url);
+        p $res;
         die $res->{_content} unless $res->is_success;
-        Hash::AsObject->new(decode_json($res->content));
+        return $self->json->decode($res->content);
     }
 }
 
-method get ($resource) {
-    $self->_request($resource, undef, 'GET');
+
+sub get {
+    my ($self, $resource) = @_;
+    return $self->_request($resource, undef, 'GET');
 }
 
 
-method post ($resource, $params) {
-    $self->_request($resource, $params, 'POST');
+sub post {
+    my ($self, $resource, $params) = @_;
+    return $self->_request($resource, $params, 'POST');
 }
 
-method update ($resource, $params) {
-    $self->_request($resource, $params, 'PATCH');
+sub update {
+    my ($self, $resource, $params) = @_;
+    return $self->_request($resource, $params, 'PATCH');
 }
 
-method login_with_creds {
-    my $ua      = LWP::UserAgent->new();
+sub login_with_creds {
+    my $self    = shift;
     my $request = Net::OAuth->request('consumer')->new(
         consumer_key     => $self->consumer_key,
         consumer_secret  => '',
@@ -140,8 +151,8 @@ method login_with_creds {
     );
 
     $request->sign;
-    my $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
+    my $res = $self->ua->post($request->to_url,
+        Content => $request->to_post_body);
     die "Failed to get response" unless $res->is_success;
     my $response =
       Net::OAuth->response('request token')->from_post_body($res->content);
@@ -165,13 +176,14 @@ method login_with_creds {
     );
 
     $request->sign;
-    $res =
-      $ua->request(POST $request->to_url, Content => $request->to_post_body);
+    $res = $self->ua->post($request->to_url,
+        Content => $request->to_post_body);
     die "Failed to get response" unless $res->is_success;
     $response =
       Net::OAuth->response('access token')->from_post_body($res->content);
     $self->access_token($response->token);
     $self->access_token_secret($response->token_secret);
+    return;
 }
 
 1;    # End of Net::OAuth::LP::Client

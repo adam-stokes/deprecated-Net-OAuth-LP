@@ -1,104 +1,62 @@
 package Net::OAuth::LP;
 
-use strict;
-use warnings;
-use v5.18.0;
-use Moo::Role;
-use Method::Signatures;
+use Mojo::Base -base;
+use Mojo::UserAgent;
 
 use HTTP::Request::Common;
-use LWP::UserAgent;
 
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
 our $VERSION = '0.017_1';
 
-has consumer_key => (
-    is      => 'rw',
-    isa     => method {},
-    lazy    => 1,
-    default => 'im-a-key',
-);
+has ua => Mojo::UserAgent->new;
+has consumer_key => 'im-a-key';
+has access_token;
+has access_token_secret;
+has request_token_url => sub {
+    my $self = shift;
+    if ($self->staging) {
+        'https://staging.launchpad.net/+request-token';
+    }
+    else {
+        'https://launchpad.net/+request-token';
+    }
+};
 
-has access_token => (
-    is      => 'rw',
-    isa     => method {},
-    default => '',
-    lazy    => 1,
-);
+has access_token_url => sub {
+    if ($self->staging) {
+        'https://staging.launchpad.net/+access-token';
+    }
+    else {
+        'https://launchpad.net/+access-token';
+    }
+};
 
-has access_token_secret => (
-    is      => 'rw',
-    isa     => method {},
-    default => '',
-    lazy    => 1,
-);
+has authorize_token_url => sub {
+    if ($self->staging) {
+        'https://staging.launchpad.net/+authorize-token';
+    }
+    else {
+        'https://launchpad.net/+authorize-token';
+    }
+};
 
-has request_token_url => (
-    is      => 'ro',
-    isa     => method {},
-    default => method {
-        if ($self->staging) {
-            'https://staging.launchpad.net/+request-token';
-        }
-        else {
-            'https://launchpad.net/+request-token';
-        }
-    },
-    lazy => 1,
-);
+has api_url => sub {
+    if ($self->staging) {
+        'https://api.staging.launchpad.net/1.0';
+    }
+    else {
+        'https://api.launchpad.net/1.0';
+    }
+};
 
-has access_token_url => (
-    is      => 'ro',
-    isa     => method {},
-    default => method {
-        if ($self->staging) {
-            'https://staging.launchpad.net/+access-token';
-        }
-        else {
-            'https://launchpad.net/+access-token';
-        }
-    },
-    lazy => 1,
-);
+has staging => 0;
 
-has authorize_token_url => (
-    is      => 'ro',
-    isa     => method {},
-    default => method {
-        if ($self->staging) {
-            'https://staging.launchpad.net/+authorize-token';
-        }
-        else {
-            'https://launchpad.net/+authorize-token';
-        }
-    },
-    lazy => 1,
-);
 
-has api_url => (
-    is      => 'ro',
-    isa     => method {},
-    lazy    => 1,
-    default => method {
-        if ($self->staging) {
-            'https://api.staging.launchpad.net/1.0';
-        }
-        else {
-            'https://api.launchpad.net/1.0';
-        }
-    },
-);
-
-has staging => (
-    is      => 'rw',
-    isa     => method {},
-    default => method { 0 },
-);
-
-method _nonce {
-    my @a = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
+sub _nonce {
+    my $self  = shift;
+    my @a     = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
     my $nonce = '';
     for (0 .. 31) {
         $nonce .= $a[rand(scalar(@a))];
