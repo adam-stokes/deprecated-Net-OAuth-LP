@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Mojo;
-use DDP;
 
 # Some tests run if we've already authenticated again launchpad.net
 # otherwise just some basic testing
@@ -28,20 +27,18 @@ else {
 }
 
 $c->staging(1);
-$c->namespace('Bug');
+ok($c->api_url =~ m/api\.staging\.launchpad\.net/i);
 
-my $bug = $c->get('859600');
-p $bug;
-
-ok($bug->{attrs}->{id} eq '859600');
-ok( defined($bug->{attrs}->{title})
-       && ($bug->{attrs}->{title} =~ m/Please convert gnome-keyring to multiarch/i),
-     'verify title'
+my $bug = $c->namespace('Bug')->id('859600');
+ok($bug->{id} eq '859600');
+ok( defined($bug->{title})
+      && ($bug->{title} =~ m/Please convert gnome-keyring to multiarch/i),
+    'verify title'
 );
-ok(defined($bug->{attrs}->{description}));
-ok(defined($bug->{attrs}->{tags}) && ref($bug->{attrs}->{tags}) eq "ARRAY");
-ok(defined($bug->{attrs}->{heat}) && $bug->{attrs}->{heat} >= 0);
-ok(defined($bug->{attrs}->{owner}));
+ok(defined($bug->{description}));
+ok(defined($bug->{tags}) && ref($bug->{tags}) eq "ARRAY");
+ok(defined($bug->{heat}) && $bug->{heat} >= 0);
+ok(defined($bug->{owner_link}));
 
 SKIP: {
     skip "No credentials so no POSTing", 1

@@ -2,7 +2,7 @@ package Net::OAuth::LP::Client;
 
 use Mojo::Base 'Net::OAuth::LP';
 use Mojo::JSON;
-use Mojo::Util qw(class_to_path);
+use Class::Load ':all';
 use URI::Encode;
 use URI::QueryParam;
 use URI;
@@ -53,7 +53,6 @@ sub _request {
         || !defined($self->access_token_secret))
     {
         my $res = $self->ua->get($uri->as_string);
-        p $res->res;
         die $res->res->body unless $res->res->code == 200;
         return $self->json->decode($res->res->body);
     }
@@ -80,7 +79,6 @@ sub _request {
                   $self->__oauth_authorization_header($request)
             }
         );
-        p $_req;
         $_req->content($self->__query_from_hash($params));
         my $res = $self->ua->get($_req);
         die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
@@ -94,7 +92,6 @@ sub _request {
                   $self->__oauth_authorization_header($request)
             }
         );
-        p $_req;
         $_req->content($self->json->encode($params));
         my $res = $self->ua->get($_req);
 
@@ -104,19 +101,19 @@ sub _request {
         # FIXME: Check for Proper response code 200 after 2015 when
         # API is expired.
         die $res->{_content} unless $res->{_rc} == 209;
-        return $self->json->decode($res->content);
+        return $self->json->decode($res->body);
     }
     else {
         my $res = $self->ua->get($request->to_url);
-        p $res->res;
         die $res->res->body unless $res->res->code == 200;
-        return $self->json->decode($res->res->content);
+        return $self->json->decode($res->res->body);
     }
 }
 
 sub namespace {
     my ($self, $name) = @_;
-    return class_to_path("Net::OAuth::LP::Model::$name");
+    my $model = "Net::OAuth::LP::Model::$name";
+    return load_class($model)->new;
 }
 
 
@@ -176,7 +173,6 @@ sub login_with_creds {
     $request->sign;
     $res = $self->ua->post($request->to_url,
         Content => $request->to_post_body);
-    p $res->res;
     die "Failed to get response" unless $res->res->code == 200;
     $response =
       Net::OAuth->response('access token')->from_post_body($res->content);

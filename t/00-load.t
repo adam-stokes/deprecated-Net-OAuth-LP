@@ -7,6 +7,5 @@ use Test::Mojo;
 # otherwise just some basic testing
 
 use_ok 'Net::OAuth::LP';
-#use_ok 'Net::OAuth::LP::Client';
 
 done_testing;
