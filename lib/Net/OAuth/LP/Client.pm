@@ -81,7 +81,7 @@ sub _request {
         );
         $_req->content($self->__query_from_hash($params));
         my $res = $self->ua->get($_req);
-        die "Failed to POST: " . $res->{_msg} unless ($res->{_rc} == 201);
+        die "Failed to POST: " . $res->res->message unless ($res->-res>code == 201);
     }
     elsif ($method eq "PATCH") {
         my $_req = $self->ua->patch(

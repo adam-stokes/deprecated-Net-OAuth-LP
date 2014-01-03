@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Switch out to use Mojo as networking library
+  - Re-worked Model interfaces
 
 0.017_1  2014-01-02 15:24:07 EST
   - Next build dev release
