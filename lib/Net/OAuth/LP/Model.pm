@@ -1,4 +1,4 @@
-package Net::OAuth::LP::Models;
+package Net::OAuth::LP::Model;
 
 use Mojo::Base 'Net::OAuth::LP::Client';
 

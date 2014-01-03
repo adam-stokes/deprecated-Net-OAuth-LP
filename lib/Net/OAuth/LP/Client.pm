@@ -45,7 +45,6 @@ sub __oauth_authorization_header {
         'oauth_timestamp="' . $request->timestamp . '"',
         'oauth_nonce="' . $request->nonce . '"',
         'oauth_version="' . $request->version . '"');
-
 }
 
 sub _request {
