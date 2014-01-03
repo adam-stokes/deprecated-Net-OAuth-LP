@@ -2,7 +2,7 @@ package Net::OAuth::LP::Client;
 
 use Mojo::Base 'Net::OAuth::LP';
 use Mojo::JSON;
-
+use Mojo::Util qw(class_to_path);
 use URI::Encode;
 use URI::QueryParam;
 use URI;
@@ -53,9 +53,9 @@ sub _request {
         || !defined($self->access_token_secret))
     {
         my $res = $self->ua->get($uri->as_string);
-	p $res->res;
-        die $res->{_content} unless $res->is_success;
-        return $self->json->decode($res->content);
+        p $res->res;
+        die $res->res->body unless $res->res->code == 200;
+        return $self->json->decode($res->res->body);
     }
 
     # If we are here then it is assumed we've passed the
@@ -109,9 +109,14 @@ sub _request {
     else {
         my $res = $self->ua->get($request->to_url);
         p $res->res;
-        die $res->{_content} unless $res->is_success;
-        return $self->json->decode($res->content);
+        die $res->res->body unless $res->res->code == 200;
+        return $self->json->decode($res->res->content);
     }
+}
+
+sub namespace {
+    my ($self, $name) = @_;
+    return class_to_path("Net::OAuth::LP::Model::$name");
 }
 
 
@@ -172,7 +177,7 @@ sub login_with_creds {
     $res = $self->ua->post($request->to_url,
         Content => $request->to_post_body);
     p $res->res;
-    die "Failed to get response" unless $res->is_success;
+    die "Failed to get response" unless $res->res->code == 200;
     $response =
       Net::OAuth->response('access token')->from_post_body($res->content);
     $self->access_token($response->token);
