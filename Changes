@@ -1,4 +1,8 @@
 {{$NEXT}}
+  - Extend a few more attributes Ive commonly used.
+  - Return the list reference of bug->tasks->entries
+  - Added example on searching bug tasks for first entry
+    found on requirements.
 
 0.017_3  2014-01-03 20:26:18 EST
   - Updated unittests to work with new api
