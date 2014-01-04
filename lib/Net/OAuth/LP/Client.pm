@@ -81,7 +81,7 @@ sub _request {
         );
         $_req->content($self->__query_from_hash($params));
         my $res = $self->ua->get($_req);
-        die "Failed to POST: " . $res->res->message unless ($res->-res>code == 201);
+        die "Failed to POST: " . $res->res->message unless ($res->res->code == 201);
     }
     elsif ($method eq "PATCH") {
         my $_req = $self->ua->patch(
@@ -207,6 +207,25 @@ Net::OAuth::LP::Client - Launchpad.net Client routines
     # Authorize yourself
     $lp->login_with_creds;
 
+=head2 B<namespace>
+
+    $lp->namespace('Bug');
+
+Sets model namespace of the Launchpad interface you want to
+use. E.g. 'Bug' for bugs and 'Person' for person model.
+
+=head2 B<get>
+
+Performs a HTTP GET request for a particular resource.
+
+=head2 B<post>
+
+Performs a HTTP POST request for a resource.
+
+=head2 B<update>
+
+Performs a HTTP PATCH request to update a resource.
+
 =head1 DEVELOPMENT
 
 =head2 Repository
@@ -221,7 +240,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2013 Adam Stokes.
+Copyright 2013-2014 Adam Stokes.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

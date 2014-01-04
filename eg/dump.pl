@@ -12,12 +12,20 @@ use Net::OAuth::LP::Client;
 use DDP;
 
 my $c = Net::OAuth::LP::Client->new;
-p $c;
 $c->staging(1);
-p $c;
-# my $bug = Net::OAuth::LP::Model::Bug->new(c => $c, resource => '859600');
-# my $person =
-#   Net::OAuth::LP::Model::Person->new(c => $c, resource => '~adam-stokes');
+
+my $bug = $c->namespace('Bug')->by_id(859600);
+
+say "Title: ". $bug->title;
+say "Desc:  ". $bug->description;
+say "Heat:  ". $bug->heat;
+say "Br0ke: ". $bug->bug->{test};
+
+my $person = $c->namespace('Person');
+#->by_name('~adam-stokes');
+p $person;
+
+
 
 #$c->get_bug(859600);
 # my $bugtask = $bug->tasks->entries->first(
