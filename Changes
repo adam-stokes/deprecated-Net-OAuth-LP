@@ -1,4 +1,7 @@
 {{$NEXT}}
+  - Updated unittests to work with new api
+  - Enabled pod test coverage to make sure I was
+    completing all documentation :)
 
 0.017_2  2014-01-03 20:02:47 EST
   - Switch out to use Mojo as networking library

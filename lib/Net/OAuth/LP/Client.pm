@@ -195,6 +195,12 @@ Net::OAuth::LP::Client - Launchpad.net Client routines
     my $lp = Net::OAuth::LP::Client->new;
     $lp->login_with_creds;
 
+=head1 ATTRIBUTES
+
+=head2 B<json>
+
+A L<Mojo::JSON> object.
+
 =head1 METHODS
 
 =head2 B<login_with_creds>

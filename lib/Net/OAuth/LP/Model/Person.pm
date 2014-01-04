@@ -45,6 +45,12 @@ Net::OAuth::LP::Model::Person - Launchpad.net person interface
 
 Person model for Launchpad.net.
 
+=head1 ATTRIBUTES
+
+=head2 person
+
+Holds person object.
+
 =head1 METHODS
 
 =head2 by_name

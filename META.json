@@ -1,7 +1,7 @@
 {
    "abstract" : "Launchpad.net OAuth 1.0",
    "author" : [
-      "Adam 'battlemidget' Stokes, C<< <adamjs at cpan.org> >>"
+      "Adam Stokes, C<< <adamjs at cpan.org> >>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 5.008, CPAN::Meta::Converter version 2.133380",
@@ -26,7 +26,9 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::More" : "0"
+            "Test::More" : "0",
+            "Test::Pod" : "0",
+            "Test::Pod::Coverage" : "0"
          }
       },
       "configure" : {
@@ -71,7 +73,7 @@
          "web" : "https://github.com/battlemidget/Net-OAuth-LP"
       }
    },
-   "version" : "0.017_2",
+   "version" : "0.017_3",
    "x_contributors" : [
       "Adam Stokes <adam.stokes@ubuntu.com>",
       "Adam Stokes <hackr@cypherbook.com>"

@@ -82,11 +82,25 @@ Net::OAuth::LP::Model::Bug - Launchpad.net bug Interface
 
 Bug model for Launchpad.net Bugs.
 
+=head1 ATTRIBUTES
+
+=head2 bug
+
+Bug object.
+
 =head1 METHODS
 
 =head2 by_id
 
 This needs to be called before any of the below methods. Takes a Bug ID number.
+
+=head2 id
+
+Returns bug number.
+
+=head2 title
+
+Returns title of bug.
 
 =head2 tasks
 

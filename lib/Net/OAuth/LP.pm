@@ -12,6 +12,7 @@ has 'ua' => sub { my $self = shift; Mojo::UserAgent->new };
 has 'consumer_key' => 'im-a-key';
 has 'access_token';
 has 'access_token_secret';
+has staging => 0;
 
 sub request_token_url {
     my $self = shift;
@@ -53,8 +54,6 @@ sub api_url {
     }
 }
 
-has staging => 0;
-
 sub _nonce {
     my $self  = shift;
     my @a     = ('A' .. 'Z', 'a' .. 'z', 0 .. 9);
@@ -85,17 +84,43 @@ Holds the string that identifies your application.
 
     $lp->consumer_key('my-app-name');
 
-=head2 B<token>
+=head2 B<access_token>
 
 Token received from authorized request
 
-=head2 B<token_secret>
+=head2 B<access_token_secret>
 
 Token secret received from authorized request
 
+=head2 B<staging>
+
+Boolean to interact with staging server or production.
+
+=head2 B<ua>
+
+A L<Mojo::UserAgent>.
+
+=head1 METHODS
+
+=head2 B<access_token_url>
+
+OAuth Access token url
+
+=head2 B<authorize_token_url>
+
+OAuth Authorize token url
+
+=head2 B<request_token_url>
+
+OAuth Request token url
+
+=head2 B<api_url>
+
+API url for doing the client interactions with launchpad.net
+
 =head1 AUTHOR
 
-Adam 'battlemidget' Stokes, C<< <adamjs at cpan.org> >>
+Adam Stokes, C<< <adamjs at cpan.org> >>
 
 =head1 BUGS
 

@@ -16,17 +16,43 @@ Holds the string that identifies your application.
 
     $lp->consumer_key('my-app-name');
 
-## __token__
+## __access\_token__
 
 Token received from authorized request
 
-## __token\_secret__
+## __access\_token\_secret__
 
 Token secret received from authorized request
 
+## __staging__
+
+Boolean to interact with staging server or production.
+
+## __ua__
+
+A [Mojo::UserAgent](https://metacpan.org/pod/Mojo::UserAgent).
+
+# METHODS
+
+## __access\_token\_url__
+
+OAuth Access token url
+
+## __authorize\_token\_url__
+
+OAuth Authorize token url
+
+## __request\_token\_url__
+
+OAuth Request token url
+
+## __api\_url__
+
+API url for doing the client interactions with launchpad.net
+
 # AUTHOR
 
-Adam 'battlemidget' Stokes, `<adamjs at cpan.org>`
+Adam Stokes, `<adamjs at cpan.org>`
 
 # BUGS
 
