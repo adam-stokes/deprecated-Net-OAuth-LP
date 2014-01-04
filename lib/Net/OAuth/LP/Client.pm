@@ -6,7 +6,6 @@ use Class::Load ':all';
 use URI::Encode;
 use URI::QueryParam;
 use URI;
-use DDP;
 
 has 'json' => sub { my $self = shift; Mojo::JSON->new };
 

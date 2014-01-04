@@ -3,9 +3,8 @@ requires 'URI';
 requires 'URI::Encode';
 requires 'URI::QueryParam';
 requires 'IO::Socket::SSL';
-requires 'LWP::Protocol::https';
-requires 'DDP';
 requires 'Mojolicious';
+requires 'Class::Load';
 
 on build => sub {
     requires 'Test::More';
