@@ -16,7 +16,8 @@ sub id {
 
 sub tasks {
     my $self = shift;
-    return $self->get($self->bug->{bug_tasks_collection_link});
+    my $tasks = $self->get($self->bug->{bug_tasks_collection_link});
+    return $tasks->{entries};
 }
 
 sub description {
@@ -37,6 +38,11 @@ sub heat {
 sub information_type {
     my $self = shift;
     return $self->bug->{information_type};
+}
+
+sub web_link {
+    my $self = shift;
+    return $self->bug->{web_link};
 }
 
 sub message_count {
@@ -109,6 +115,10 @@ Returns a list of entries in the tasks object.
 =head2 owner
 
 Returns creator of bug
+
+=head2 web_link
+
+Returns browseable URL link to resource.
 
 =head2 messages
 
