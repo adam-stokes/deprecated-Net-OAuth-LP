@@ -1,42 +1,34 @@
 <!doctype html>
-<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
-<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Net-oauth-lp by battlemidget</title>
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Net-oauth-lp</h1>
+        <p>Perl interface for Launchpad.net oauth 1.0a and client utilities</p>
 
-  <title>Net-oauth-lp</title>
-  <meta name="description" content="Perl interface for Launchpad.net oauth 1.0a and client utilities">
+        <p class="view"><a href="https://github.com/battlemidget/Net-OAuth-LP">View the Project on GitHub <small>battlemidget/Net-OAuth-LP</small></a></p>
 
-  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-</head>
-
-<body>
-
-  <div class="wrapper">
-    <header>
-      <h1 class="title">Net-oauth-lp</h1>
-    </header>
-    <div id="container">
-      <p class="tagline">Perl interface for Launchpad.net oauth 1.0a and client utilities</p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/battlemidget/Net-OAuth-LP" class="code">View Net-oauth-lp on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
-          <h1>
+        <ul>
+          <li><a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/battlemidget/Net-OAuth-LP">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
 <a name="name" class="anchor" href="#name"><span class="octicon octicon-link"></span></a>NAME</h1>
 
 <p>Net::OAuth::LP - Launchpad.net OAuth 1.0</p>
@@ -49,7 +41,7 @@
 <h1>
 <a name="attributes" class="anchor" href="#attributes"><span class="octicon octicon-link"></span></a>ATTRIBUTES</h1>
 
-<p><a href="http://search.cpan.org/perldoc?Net::OAuth::LP">Net::OAuth::LP</a> implements the following attributes:</p>
+<p><a href="https://metacpan.org/pod/Net::OAuth::LP">Net::OAuth::LP</a> implements the following attributes:</p>
 
 <h2>
 <a name="consumer_key" class="anchor" href="#consumer_key"><span class="octicon octicon-link"></span></a><strong>consumer_key</strong>
@@ -61,21 +53,60 @@
 </code></pre>
 
 <h2>
-<a name="token" class="anchor" href="#token"><span class="octicon octicon-link"></span></a><strong>token</strong>
+<a name="access_token" class="anchor" href="#access_token"><span class="octicon octicon-link"></span></a><strong>access_token</strong>
 </h2>
 
 <p>Token received from authorized request</p>
 
 <h2>
-<a name="token_secret" class="anchor" href="#token_secret"><span class="octicon octicon-link"></span></a><strong>token_secret</strong>
+<a name="access_token_secret" class="anchor" href="#access_token_secret"><span class="octicon octicon-link"></span></a><strong>access_token_secret</strong>
 </h2>
 
 <p>Token secret received from authorized request</p>
 
+<h2>
+<a name="staging" class="anchor" href="#staging"><span class="octicon octicon-link"></span></a><strong>staging</strong>
+</h2>
+
+<p>Boolean to interact with staging server or production.</p>
+
+<h2>
+<a name="ua" class="anchor" href="#ua"><span class="octicon octicon-link"></span></a><strong>ua</strong>
+</h2>
+
+<p>A <a href="https://metacpan.org/pod/Mojo::UserAgent">Mojo::UserAgent</a>.</p>
+
+<h1>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>METHODS</h1>
+
+<h2>
+<a name="access_token_url" class="anchor" href="#access_token_url"><span class="octicon octicon-link"></span></a><strong>access_token_url</strong>
+</h2>
+
+<p>OAuth Access token url</p>
+
+<h2>
+<a name="authorize_token_url" class="anchor" href="#authorize_token_url"><span class="octicon octicon-link"></span></a><strong>authorize_token_url</strong>
+</h2>
+
+<p>OAuth Authorize token url</p>
+
+<h2>
+<a name="request_token_url" class="anchor" href="#request_token_url"><span class="octicon octicon-link"></span></a><strong>request_token_url</strong>
+</h2>
+
+<p>OAuth Request token url</p>
+
+<h2>
+<a name="api_url" class="anchor" href="#api_url"><span class="octicon octicon-link"></span></a><strong>api_url</strong>
+</h2>
+
+<p>API url for doing the client interactions with launchpad.net</p>
+
 <h1>
 <a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>AUTHOR</h1>
 
-<p>Adam 'battlemidget' Stokes, <code>&lt;adamjs at cpan.org&gt;</code></p>
+<p>Adam Stokes, <code>&lt;adamjs at cpan.org&gt;</code></p>
 
 <h1>
 <a name="bugs" class="anchor" href="#bugs"><span class="octicon octicon-link"></span></a>BUGS</h1>
@@ -108,33 +139,20 @@
 </ul><h1>
 <a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>COPYRIGHT</h1>
 
-<p>Copyright 2013- Adam Stokes</p>
+<p>Copyright 2013-2014 Adam Stokes</p>
 
 <h1>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>LICENSE</h1>
 
 <p>This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.</p>
-        </article>
-      </div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/battlemidget">battlemidget</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <div class="owner">
-      <p><a href="https://github.com/battlemidget" class="avatar"><img src="https://0.gravatar.com/avatar/8c9c565991f088ac5b0886ef08712e5f?d=https%3A%2F%2Fidenticons.github.com%2F57d52315bb7494c8b0679a446fe95c6a.png&amp;s=30" width="48" height="48"/></a> <a href="https://github.com/battlemidget">battlemidget</a> maintains <a href="https://github.com/battlemidget/Net-OAuth-LP">Net-oauth-lp</a></p>
-
-
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
-    </footer>
-  </div>
-  <div class="current-section">
-    <a href="#top">Scroll to top</a>
-    <a href="https://github.com/battlemidget/Net-OAuth-LP/tarball/master" class="tar">tar</a><a href="https://github.com/battlemidget/Net-OAuth-LP/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
-    <p class="name"></p>
-  </div>
-
-  
-</body>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
 </html>
