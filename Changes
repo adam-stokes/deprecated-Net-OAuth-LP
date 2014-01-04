@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.017_4  2014-01-03 21:50:49 EST
   - Extend a few more attributes Ive commonly used.
   - Return the list reference of bug->tasks->entries
   - Added example on searching bug tasks for first entry
