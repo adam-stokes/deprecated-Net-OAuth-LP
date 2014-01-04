@@ -55,9 +55,8 @@ Holds person object.
 
 =head2 by_name
 
-This needs to be called before any of the below methods. Takes a login id number.
-
-e.g. ~adam-stokes
+This needs to be called before any of the below methods. Takes a login
+id, e.g. ~adam-stokes
 
 =head2 name
 
