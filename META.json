@@ -43,9 +43,8 @@
       },
       "runtime" : {
          "requires" : {
-            "DDP" : "0",
+            "Class::Load" : "0",
             "IO::Socket::SSL" : "0",
-            "LWP::Protocol::https" : "0",
             "Mojolicious" : "0",
             "Net::OAuth" : "0",
             "URI" : "0",
