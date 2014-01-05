@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.018  2014-01-05 14:57:25 EST
+  - Tests run and ready for release.
+
 0.017_4  2014-01-03 21:50:49 EST
   - Extend a few more attributes Ive commonly used.
   - Return the list reference of bug->tasks->entries
