@@ -2,7 +2,6 @@ package Net::OAuth::LP::Client;
 
 use Mojo::Base 'Net::OAuth::LP';
 use Mojo::JSON;
-use Class::Load ':all';
 use URI::Encode;
 use URI::QueryParam;
 use URI;
@@ -113,13 +112,6 @@ sub _request {
     }
 }
 
-sub namespace {
-    my ($self, $name) = @_;
-    my $model = "Net::OAuth::LP::Model::$name";
-    return load_class($model)->new;
-}
-
-
 sub get {
     my ($self, $resource) = @_;
     return $self->_request($resource, undef, 'GET');
@@ -215,13 +207,6 @@ A L<Mojo::JSON> object.
     # Authorize yourself
     $lp->login_with_creds;
 
-=head2 B<namespace>
-
-    $lp->namespace('Bug');
-
-Sets model namespace of the Launchpad interface you want to
-use. E.g. 'Bug' for bugs and 'Person' for person model.
-
 =head2 B<get>
 
 Performs a HTTP GET request for a particular resource.
@@ -234,6 +219,14 @@ Performs a HTTP POST request for a resource.
 
 Performs a HTTP PATCH request to update a resource.
 
+=head1 AUTHOR
+
+Adam Stokes, C<< <adamjs at cpan.org> >>
+
+=head1 BUGS
+
+Report bugs to https://github.com/battlemidget/Net-OAuth-LP/issues.
+
 =head1 DEVELOPMENT
 
 =head2 Repository
@@ -244,17 +237,23 @@ Performs a HTTP PATCH request to update a resource.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Net::OAuth::LP::Client
+    perldoc Net::OAuth::LP
 
-=head1 LICENSE AND COPYRIGHT
+=head1 SEE ALSO
 
-Copyright 2013-2014 Adam Stokes.
+=over 4
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+=item * L<https://launchpad.net/launchpadlib>, "Python implementation"
 
-See L<http://dev.perl.org/licenses/> for more information.
+=back
+
+=head1 COPYRIGHT
+
+Copyright 2013-2014 Adam Stokes
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
-

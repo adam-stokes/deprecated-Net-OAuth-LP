@@ -1,6 +1,13 @@
 package Net::OAuth::LP::Model;
 
 use Mojo::Base 'Net::OAuth::LP::Client';
+use Class::Load ':all';
+
+sub namespace {
+    my ($self, $name) = @_;
+    my $model = "Net::OAuth::LP::Model::$name";
+    return load_class($model)->new($self);
+}
 
 sub search {
     my ($self, $path, $segments) = @_;
@@ -23,6 +30,14 @@ Base Model Role
 
 =head1 METHODS
 
+=head2 B<namespace>
+
+    $model->namespace('Bug');
+
+Sets model namespace of the Launchpad interface you want to
+use. E.g. 'Bug' for bugs and 'Person' for person model.
+
+
 =head2 B<search>
 
 Performs a search request against the target distribution.
@@ -35,14 +50,41 @@ Performs a search request against the target distribution.
         }
     );
 
-=head1 LICENSE AND COPYRIGHT
+=head1 AUTHOR
 
-Copyright 2013-2014 Adam Stokes.
+Adam Stokes, C<< <adamjs at cpan.org> >>
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+=head1 BUGS
 
-See L<http://dev.perl.org/licenses/> for more information.
+Report bugs to https://github.com/battlemidget/Net-OAuth-LP/issues.
+
+=head1 DEVELOPMENT
+
+=head2 Repository
+
+    http://github.com/battlemidget/Net-OAuth-LP
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Net::OAuth::LP
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<https://launchpad.net/launchpadlib>, "Python implementation"
+
+=back
+
+=head1 COPYRIGHT
+
+Copyright 2013-2014 Adam Stokes
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut

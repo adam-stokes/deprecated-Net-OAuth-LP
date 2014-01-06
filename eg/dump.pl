@@ -8,6 +8,7 @@ use 5.14.0;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use Net::OAuth::LP::Client;
+use Net::OAuth::LP::Model;
 use List::AllUtils qw(first);
 
 use DDP;
@@ -22,10 +23,16 @@ if (   defined($ENV{LP_CONSUMER_KEY})
     $c->access_token_secret($ENV{LP_ACCESS_TOKEN_SECRET});
 }
 
+# Set whether we want staging or not
 $c->staging(1);
+
 p $c;
 
-my $bug = $c->namespace('Bug')->by_id($ENV{LP_BUG});
+my $model = Net::OAuth::LP::Model->new($c);
+
+p $model;
+
+my $bug = $model->namespace('Bug')->by_id($ENV{LP_BUG});
 
 say "Bug representation";
 
