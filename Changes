@@ -1,0 +1,33 @@
+{{$NEXT}}
+
+0.018  2014-01-05 14:57:25 EST
+  - Tests run and ready for release.
+
+0.017_4  2014-01-03 21:50:49 EST
+  - Extend a few more attributes Ive commonly used.
+  - Return the list reference of bug->tasks->entries
+  - Added example on searching bug tasks for first entry
+    found on requirements.
+
+0.017_3  2014-01-03 20:26:18 EST
+  - Updated unittests to work with new api
+  - Enabled pod test coverage to make sure I was
+    completing all documentation :)
+
+0.017_2  2014-01-03 20:02:47 EST
+  - Switch out to use Mojo as networking library
+  - Re-worked Model interfaces
+
+0.017_1  2014-01-02 15:24:07 EST
+  - Next build dev release
+
+0.016  2013-09-03 17:41:10 EDT
+  - Fix unittests
+  - Extend api
+
+0.015_04  2013-08-05 13:45:31 EDT
+  - more test coverage
+
+0.015_03  2013-07-11 01:04:03 EDT
+  - Update to milla build spec
+  - Add additional requirements to cpanfile
