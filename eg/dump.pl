@@ -49,7 +49,7 @@ my $bugtask =
 
 # p $bugtask;
 
-my $person = $c->namespace('Person')->by_name('~adam-stokes');
+my $person = $model->namespace('Person')->by_name('~adam-stokes');
 
 p $person;
 

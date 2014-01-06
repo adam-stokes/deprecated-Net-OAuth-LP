@@ -77,7 +77,7 @@ Net::OAuth::LP::Model::CVE - Launchpad.net cve Interface
     $c->staging(1);
 
     my $model = Net::OAuth::LP::Model->new($c);
-    my $cve = $model->namespace('CVE')->by_seq('XXXX-XXXX');
+    my $cve = $model->namespace('CVE')->by_sequence('XXXX-XXXX');
 
     say "Title: ". $cve->title;
     say "Desc:  ". $cve->description;
