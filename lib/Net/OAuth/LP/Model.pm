@@ -6,8 +6,13 @@ use Class::Load ':all';
 sub namespace {
     my ($self, $name) = @_;
     my $model = "Net::OAuth::LP::Model::$name";
-    return load_class($model)->new($self);
+    return load_class($model)->new(
+        consumer_key        => $self->consumer_key,
+        access_token        => $self->access_token,
+        access_token_secret => $self->access_token_secret
+    );
 }
+
 
 sub search {
     my ($self, $path, $segments) = @_;

@@ -9,6 +9,7 @@ use Test::Mojo;
 diag("Testing LP Person,Team methods");
 
 use_ok 'Net::OAuth::LP::Client';
+use_ok 'Net::OAuth::LP::Model';
 
 my $c;
 
@@ -28,7 +29,9 @@ else {
 }
 
 $c->staging(1);
-my $person = $c->namespace('Person')->by_name('~adam-stokes');
+my $model = Net::OAuth::LP::Model->new($c);
+
+my $person = $model->namespace('Person')->by_name('~adam-stokes');
 
 ok($person->name eq 'adam-stokes');
 ok(defined($person->karma) && $person->karma >= '0');

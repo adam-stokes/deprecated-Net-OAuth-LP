@@ -9,6 +9,7 @@ use Test::Mojo;
 diag("Testing LP Bug methods");
 
 use_ok 'Net::OAuth::LP::Client';
+use_ok 'Net::OAuth::LP::Model';
 
 my $c;
 
@@ -29,7 +30,9 @@ else {
 $c->staging(1);
 ok($c->api_url =~ m/api\.staging\.launchpad\.net/i);
 
-my $bug = $c->namespace('Bug')->by_id(859600);
+my $model = Net::OAuth::LP::Model->new($c);
+
+my $bug = $model->namespace('Bug')->by_id(859600);
 
 ok($bug->id eq '859600');
 ok(($bug->title =~ m/Please convert gnome-keyring to multiarch/i),  'verify title');

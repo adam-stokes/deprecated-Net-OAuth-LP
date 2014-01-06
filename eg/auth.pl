@@ -8,6 +8,7 @@ use v5.14;
 
 my $client = Net::OAuth::LP::Client->new;
 
+$client->staging(1);
 $client->consumer_key('cts-pika-bot');
 $client->login_with_creds;
 

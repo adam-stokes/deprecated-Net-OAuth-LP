@@ -24,7 +24,7 @@ if (   defined($ENV{LP_CONSUMER_KEY})
 }
 
 # Set whether we want staging or not
-$c->staging(1);
+$c->staging(0);
 
 p $c;
 
