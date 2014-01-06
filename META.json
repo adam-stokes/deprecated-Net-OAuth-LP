@@ -60,7 +60,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/battlemidget/Net-OAuth-LP/issues"
@@ -72,7 +72,7 @@
          "web" : "https://github.com/battlemidget/Net-OAuth-LP"
       }
    },
-   "version" : "0.021_02",
+   "version" : "0.022",
    "x_contributors" : [
       "Adam Stokes <adam.stokes@ubuntu.com>",
       "Adam Stokes <hackr@cypherbook.com>"
