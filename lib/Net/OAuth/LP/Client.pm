@@ -8,6 +8,8 @@ use URI::QueryParam;
 use URI;
 use DDP;
 
+our $VERSION = '0.021_00';
+
 has 'json' => sub { my $self = shift; Mojo::JSON->new };
 
 sub __query_from_hash {
