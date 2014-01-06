@@ -6,7 +6,7 @@ use URI::Encode;
 use URI::QueryParam;
 use URI;
 
-our $VERSION = '0.021_01';
+our $VERSION = '0.021_02';
 
 has 'json' => sub { my $self = shift; Mojo::JSON->new };
 

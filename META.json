@@ -72,7 +72,7 @@
          "web" : "https://github.com/battlemidget/Net-OAuth-LP"
       }
    },
-   "version" : "0.021_01",
+   "version" : "0.021_02",
    "x_contributors" : [
       "Adam Stokes <adam.stokes@ubuntu.com>",
       "Adam Stokes <hackr@cypherbook.com>"
