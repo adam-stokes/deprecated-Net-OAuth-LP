@@ -7,8 +7,7 @@ use Net::OAuth::LP::Client;
 use DDP;
 
 my $client = Net::OAuth::LP::Client->new;
-$client->consumer_key('cts-pika-bot');
-$client->login_with_creds;
-
 p $client;
 
+$client->consumer_key('cts-pika-bot');
+$client->login_with_creds;

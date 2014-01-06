@@ -17,14 +17,23 @@ $c->staging(1);
 
 my $bug = $c->namespace('Bug')->by_id(859600);
 
-# p $bug->tasks;
+say "Bug representation";
+
+p $bug;
+
+p $bug->tasks;
+
+p $bug->date_created;
+
+p $bug->watches;
 
 my $bugtask =
   first { $_->{bug_target_name} =~ /ubuntu-advantage|(Ubuntu)/ } @{$bug->tasks};
 
-p $bugtask;
+# p $bugtask;
 
 my $person = $c->namespace('Person')->by_name('~adam-stokes');
 
-# p $person;
+p $person;
 
+p $person->ppas;

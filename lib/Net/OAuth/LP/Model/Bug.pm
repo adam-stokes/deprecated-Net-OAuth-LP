@@ -15,9 +15,42 @@ sub id {
 }
 
 sub tasks {
-    my $self = shift;
+    my $self  = shift;
     my $tasks = $self->get($self->bug->{bug_tasks_collection_link});
     return $tasks->{entries};
+}
+
+sub watches {
+    my $self    = shift;
+    my $watches = $self->get($self->bug->{bug_watches_collection_link});
+    return $watches->{entries};
+}
+
+sub attachments {
+    my $self        = shift;
+    my $attachments = $self->get($self->bug->{attachments_collection_link});
+    return $attachments->{entries};
+}
+
+sub activity {
+    my $self     = shift;
+    my $activity = $self->get($self->bug->{activity_collection_link});
+    return $activity->{entries};
+}
+
+sub duplicate_of {
+    my $self = shift;
+    return $self->get($self->bug->{duplicate_of_link});
+}
+
+sub duplicate_count {
+    my $self = shift;
+    return $self->bug->{number_of_duplicates};
+}
+
+sub users_affected_count {
+    my $self = shift;
+    return $self->bug->{users_affected_count};
 }
 
 sub description {
@@ -63,6 +96,26 @@ sub tags {
 sub owner {
     my $self = shift;
     return $self->get($self->bug->{owner_link});
+}
+
+sub date_created {
+    my $self = shift;
+    return $self->bug->{date_created};
+}
+
+sub date_last_message {
+    my $self = shift;
+    return $self->bug->{date_last_message};
+}
+
+sub date_last_updated {
+    my $self = shift;
+    return $self->bug->{date_last_updated};
+}
+
+sub can_expire {
+    my $self = shift;
+    return $self->bug->{can_expire};
 }
 
 1;
@@ -143,6 +196,46 @@ Returns whether this bug is a public/private issue.
 =head2 tags
 
 Returns a list of Tags associated with bug.
+
+=head2 activity
+
+Returns a bug activity collection
+
+=head2 attachments
+
+Returns list of bug attachments
+
+=head2 can_expire
+
+Returns whether the incomplete bug can be expired
+
+=head2 date_created
+
+Returns date bug was created
+
+=head2 date_last_message
+
+Return date of last posted bug message
+
+=head2 date_last_updated
+
+Returns date of last update, can be bug message or status changes.
+
+=head2 duplicate_count
+
+Returns number of bug duplicates
+
+=head2 duplicate_of
+
+Returns a bug resource that the specific bug is a duplicate of
+
+=head2 users_affected_count
+
+Returns count of users affected by bug
+
+=head2 watches
+
+Returns bug watch collection
 
 =head1 AUTHOR
 

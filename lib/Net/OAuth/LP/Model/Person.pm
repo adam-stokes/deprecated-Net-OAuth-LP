@@ -24,6 +24,77 @@ sub display_name {
     return $self->person->{display_name};
 }
 
+sub date_created {
+    my $self = shift;
+    return $self->person->{date_created};
+}
+
+sub description {
+    my $self = shift;
+    return $self->person->{description};
+}
+
+sub gpg_keys {
+    my $self = shift;
+    my $gpg_keys = $self->get($self->person->{gpg_keys_collection_link});
+    return $gpg_keys->{entries};
+}
+
+sub irc_nicks {
+    my $self = shift;
+    my $irc_nicks = $self->get($self->person->{irc_nicknames_collection_link});
+    return $irc_nicks->{entries};
+}
+
+sub is_team {
+    my $self = shift;
+    return $self->person->{is_team};
+}
+
+sub is_ubuntu_coc_signer {
+    my $self = shift;
+    return $self->person->{is_ubuntu_coc_signer};
+}
+
+sub is_valid {
+    my $self = shift;
+    return $self->person->{is_valid};
+}
+
+sub ppas {
+    my $self = shift;
+    my $ppas = $self->get($self->person->{ppas_collection_link});
+    return $ppas->{entries};
+}
+
+sub private {
+    my $self = shift;
+    return $self->person->{private};
+}
+
+sub source_recipes {
+    my $self = shift;
+    my $s_recipes = $self->get($self->person->{recipes_collection_link});
+    return $s_recipes->{entries};
+}
+
+sub ssh_keys {
+    my $self = shift;
+    my $ssh_keys = $self->get($self->person->{sshkeys_collection_link});
+    return $ssh_keys->{entries};
+
+}
+
+sub time_zone {
+    my $self = shift;
+    return $self->person->{time_zone};
+}
+
+sub web_link {
+    my $self = shift;
+    return $self->person->{web_link};
+}
+
 1;
 
 __END__
@@ -67,6 +138,58 @@ Returns person name.
 Returns person karma.
 
 =head2 display_name
+
+Returns friendly display name
+
+=head2 date_created
+
+Returns date person registered
+
+=head2 description
+
+Returns description blob
+
+=head2 gpg_keys
+
+Returns list a gpg keys registered
+
+=head2 irc_nicks
+
+Returns list of irc nicks
+
+=head2 is_team
+
+Returns whether collection is a person or team
+
+=head2 is_ubuntu_coc_signer
+
+Returns if person signed Ubuntu COC
+
+=head2 is_valid
+
+Returns if person is valid and not a deactivated account
+
+=head2 ppas
+
+Returns list of ppas associated
+
+=head2 private
+
+Returns if person or team is registered as private
+
+=head2 source_recipes
+
+Returns recipe collection of package builds
+
+=head2 ssh_keys
+
+Returns list of public ssh keys
+
+=head2 time_zone
+
+Returns persons time zone
+
+=head2 web_link
 
 Returns friendly display name, usually first and last name.
 

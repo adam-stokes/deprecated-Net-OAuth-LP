@@ -32,8 +32,20 @@ my $person = $c->namespace('Person')->by_name('~adam-stokes');
 
 ok($person->name eq 'adam-stokes');
 ok(defined($person->karma) && $person->karma >= '0');
-ok($person->display_name);
-ok(defined($person->person->{description}));
+ok(defined($person->display_name));
+ok(defined($person->description));
+ok(defined($person->date_created));
+ok(defined($person->gpg_keys));
+ok(defined($person->irc_nicks));
+ok(defined($person->is_team));
+ok(defined($person->is_ubuntu_coc_signer));
+ok(defined($person->is_valid));
+ok(defined($person->ppas) && ref($person->ppas) eq "ARRAY");
+ok(defined($person->private));
+ok(defined($person->source_recipes));
+ok(defined($person->ssh_keys) && ref($person->ssh_keys) eq "ARRAY");
+ok(defined($person->time_zone) || !defined($person->time_zone));
+ok(defined($person->web_link));
 
 # SKIP: {
 #     skip "No credentials so no POSTing", 2
