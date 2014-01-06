@@ -128,10 +128,13 @@ Net::OAuth::LP::Model::Bug - Launchpad.net bug Interface
 
 =head1 SYNOPSIS
 
+    use Net::OAuth::LP::Client;
+    use Net::OAuth::LP::Model;
     my $c = Net::OAuth::LP::Client->new;
     $c->staging(1);
 
-    my $bug = $c->namespace('Bug')->by_id(3);
+    my $model = Net::OAuth::LP::Model->new($c);
+    my $bug = $model->namespace('Bug')->by_id(3);
 
     say "Title: ". $bug->title;
     say "Desc:  ". $bug->description;

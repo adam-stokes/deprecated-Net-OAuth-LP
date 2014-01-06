@@ -105,10 +105,13 @@ Net::OAuth::LP::Model::Person - Launchpad.net person interface
 
 =head1 SYNOPSIS
 
+    use Net::OAuth::LP::Client;
+    use Net::OAuth::LP::Model;
     my $c = Net::OAuth::LP::Client->new;
     $c->staging(1);
 
-    my $person = $c->namespace('Person')->by_name('~adam-stokes');
+    my $model = Net::OAuth::LP::Model->new($c);
+    my $person = $model->namespace('Person')->by_name('~adam-stokes');
 
     say "Name: ". $person->name;
 
