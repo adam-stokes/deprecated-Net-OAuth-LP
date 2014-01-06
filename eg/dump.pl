@@ -13,9 +13,19 @@ use List::AllUtils qw(first);
 use DDP;
 
 my $c = Net::OAuth::LP::Client->new;
-$c->staging(1);
+if (   defined($ENV{LP_CONSUMER_KEY})
+    && defined($ENV{LP_ACCESS_TOKEN})
+    && defined($ENV{LP_ACCESS_TOKEN_SECRET}))
+{
+    $c->consumer_key($ENV{LP_CONSUMER_KEY});
+    $c->access_token($ENV{LP_ACCESS_TOKEN});
+    $c->access_token_secret($ENV{LP_ACCESS_TOKEN_SECRET});
+}
 
-my $bug = $c->namespace('Bug')->by_id(859600);
+$c->staging(1);
+p $c;
+
+my $bug = $c->namespace('Bug')->by_id($ENV{LP_BUG});
 
 say "Bug representation";
 

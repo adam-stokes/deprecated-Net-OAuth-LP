@@ -6,13 +6,13 @@ use Mojo::UserAgent;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.020';
+our $VERSION = '0.021_00';
 
 has 'ua' => sub { my $self = shift; Mojo::UserAgent->new };
-has 'consumer_key' => 'im-a-key';
+has staging => 0;
+has 'consumer_key';
 has 'access_token';
 has 'access_token_secret';
-has staging => 0;
 
 sub request_token_url {
     my $self = shift;
@@ -78,6 +78,14 @@ OAuth 1.0a authorization and client for Launchpad.net
 
 L<Net::OAuth::LP> implements the following attributes:
 
+=head2 B<staging>
+
+Boolean to interact with staging server or production.
+
+=head2 B<ua>
+
+A L<Mojo::UserAgent>.
+
 =head2 B<consumer_key>
 
 Holds the string that identifies your application.
@@ -91,14 +99,6 @@ Token received from authorized request
 =head2 B<access_token_secret>
 
 Token secret received from authorized request
-
-=head2 B<staging>
-
-Boolean to interact with staging server or production.
-
-=head2 B<ua>
-
-A L<Mojo::UserAgent>.
 
 =head1 METHODS
 

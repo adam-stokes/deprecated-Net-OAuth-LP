@@ -48,6 +48,7 @@ sub _request {
 
     # If no credentials we assume data is public and
     # bail out afterwards
+    p $self;
     if (   !defined($self->consumer_key)
         || !defined($self->access_token)
         || !defined($self->access_token_secret))

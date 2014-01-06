@@ -10,6 +10,14 @@ OAuth 1.0a authorization and client for Launchpad.net
 
 [Net::OAuth::LP](https://metacpan.org/pod/Net::OAuth::LP) implements the following attributes:
 
+## __staging__
+
+Boolean to interact with staging server or production.
+
+## __ua__
+
+A [Mojo::UserAgent](https://metacpan.org/pod/Mojo::UserAgent).
+
 ## __consumer\_key__
 
 Holds the string that identifies your application.
@@ -23,14 +31,6 @@ Token received from authorized request
 ## __access\_token\_secret__
 
 Token secret received from authorized request
-
-## __staging__
-
-Boolean to interact with staging server or production.
-
-## __ua__
-
-A [Mojo::UserAgent](https://metacpan.org/pod/Mojo::UserAgent).
 
 # METHODS
 
