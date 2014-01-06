@@ -8,7 +8,7 @@ use URI::QueryParam;
 use URI;
 use DDP;
 
-our $VERSION = '0.021_00';
+our $VERSION = '0.021_01';
 
 has 'json' => sub { my $self = shift; Mojo::JSON->new };
 
