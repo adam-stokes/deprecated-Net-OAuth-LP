@@ -6,7 +6,7 @@ use Mojo::UserAgent;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0;
 
-our $VERSION = '0.019_1';
+our $VERSION = '0.020';
 
 has 'ua' => sub { my $self = shift; Mojo::UserAgent->new };
 has 'consumer_key' => 'im-a-key';

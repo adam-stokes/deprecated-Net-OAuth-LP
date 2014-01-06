@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.020  2014-01-06 12:36:15 EST
+  - Fix authentication responses
+  - Extend Bug/Person api
+
 0.019_1  2014-01-06 10:49:00 EST
   - Next dev series
 
